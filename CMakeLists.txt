@@ -22,5 +22,8 @@ add_executable(
 # Set the include directory.
 target_include_directories(Tests PUBLIC ${INVENTORY_INCLUDE_DIR})
 
-# Set the C++ standard as C++20.
-set_property(TARGET Tests PROPERTY CXX_STANDARD 20)
+# Set the C++ standard as C++17.
+set_property(TARGET Tests PROPERTY CXX_STANDARD 17)
+
+# Add a test.
+add_test(NAME Tests COMMAND Tests)

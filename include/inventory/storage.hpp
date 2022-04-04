@@ -9,7 +9,7 @@ namespace inventory
 {
 	/**
 	 * @brief Storage interface class.
-	 * This class acts as the main anchorpoint of the main storage class.
+	 * This class acts as the main anchor point of the main storage class.
 	 *
 	 * @tparam Callable The callable type.
 	 */
