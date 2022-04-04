@@ -67,7 +67,7 @@ namespace inventory
 		const_iterator find(const key_type &key) const { return std::lower_bound(m_Container.begin(), m_Container.end(), key, comparison_function); }
 
 		/**
-		 * @brief Check if a given key is presend in the container.
+		 * @brief Check if a given key is present in the container.
 		 *
 		 * @param key The key to check.
 		 * @return true If the key is present.
