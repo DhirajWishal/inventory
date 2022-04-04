@@ -1,4 +1,6 @@
-#include "../include/inventory/inventory.hpp"
+// Copyright (c) 2022 Dhiraj Wishal
+
+#include "inventory/inventory.hpp"
 
 struct Component
 {
