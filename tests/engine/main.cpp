@@ -22,5 +22,7 @@ int main()
 	[[maybe_unused]] auto& c4 = registry.emplace_back<cat>(gameEngine);
 
 	game_object_updater updater;
-	registry.apply(updater);
+	for (int i = 0; i < 1000000; i++)
+		registry.apply(updater);
+	updater;
 }

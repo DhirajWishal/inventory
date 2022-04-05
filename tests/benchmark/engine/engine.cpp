@@ -1,10 +1,25 @@
 // Copyright (c) 2022 Dhiraj Wishal
 
 #include "engine.hpp"
-#include "constants.hpp"
+#include "../constants.hpp"
 #include "inventory/inventory.hpp"
-#include "engine/player.hpp"
-#include "engine/cat.hpp"
+#include "player.hpp"
+#include "cat.hpp"
+
+void engine::update(const model_component& component) const
+{
+	volatile int x = 0;
+}
+
+void engine::update(const camera_component& component) const
+{
+	volatile int x = 0;
+}
+
+void engine::update(const position_component& component) const
+{
+	volatile int x = 0;
+}
 
 namespace engine_test
 {

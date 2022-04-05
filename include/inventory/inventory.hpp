@@ -315,7 +315,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, Type&& value) { return get_storage<Type>().insert(pos, std::forward<Type>(value)); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, Type &&value) { return get_storage<Type>().insert(pos, std::forward<Type>(value)); }
 
 		/**
 		 * @brief Inserts elements at the specified location in the container.
@@ -328,7 +328,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, size_t count, const Type& value) { return get_storage<Type>().insert(pos, count, value); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, size_t count, const Type &value) { return get_storage<Type>().insert(pos, count, value); }
 
 		/**
 		 * @brief Inserts elements at the specified location in the container.

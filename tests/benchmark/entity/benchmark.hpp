@@ -4,12 +4,12 @@
 
 #include <benchmark/benchmark.h>
 
-namespace engine_test
+namespace entity
 {
 	/**
 	 * @brief Test function to test the engine.
 	 *
 	 * @param state The benchmark state.
 	 */
-	void test(benchmark::State &state);
+	void test(benchmark::State& state);
 }

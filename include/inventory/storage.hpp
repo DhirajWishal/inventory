@@ -3,6 +3,7 @@
 #pragma once
 
 #include "platform.hpp"
+
 #include <vector>
 
 namespace inventory
