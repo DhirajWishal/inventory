@@ -10,7 +10,9 @@ add_executable(
 	entity/cat.cpp
 	entity/engine.cpp
 	entity/player.cpp
- "engine/cat.cpp" "engine/cat.hpp" "engine/component_store.hpp" "engine/components.hpp"   "engine/game_object.hpp" "engine/player.cpp" "engine/player.hpp")
+	engine/cat.cpp
+	engine/player.cpp
+)
 
 # Set the include directory.
 target_include_directories(Benchmark PUBLIC ${INVENTORY_INCLUDE_DIR} ${BENCHMARK_INCLUDE_DIR} ${ENTT_INCLUDE_DIR} ${TESTS_DIR})
