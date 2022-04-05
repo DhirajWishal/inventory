@@ -3,7 +3,6 @@
 #pragma once
 
 #include <vector>
-#include <algorithm>
 
 namespace inventory
 {
@@ -32,14 +31,14 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		virtual void apply(Callable &callable) = 0;
+		virtual void apply(Callable& callable) = 0;
 
 		/**
 		 * @brief Apply a callable function over the stored data.
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		virtual void apply(const Callable &callable) const = 0;
+		virtual void apply(const Callable& callable) const = 0;
 
 		/**
 		 * @brief Get the number of data stored.
@@ -87,14 +86,22 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		void apply(Callable &callable) override { std::for_each(m_Container.begin(), m_Container.end(), callable); }
+		void apply(Callable& callable) override
+		{
+			for (auto& item : m_Container)
+				callable(item);
+		}
 
 		/**
 		 * @brief Apply a callable function over the stored data.
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		void apply(const Callable &callable) const override { std::for_each(m_Container.begin(), m_Container.end(), callable); }
+		void apply(const Callable& callable) const override
+		{
+			for (auto& item : m_Container)
+				callable(item);
+		}
 
 		/**
 		 * @brief Get the number of data stored.
@@ -120,7 +127,7 @@ namespace inventory
 		 *
 		 * @return std::vector<Type>& container.
 		 */
-		std::vector<Type> &container() { return m_Container; }
+		std::vector<Type>& container() { return m_Container; }
 
 		/**
 		 * @brief Get the stored container.

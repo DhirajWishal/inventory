@@ -47,14 +47,14 @@ public:
 	template <class Type>
 	const Type &get_component() const { return component_store<Type>::get(); }
 
-	void update_components() override final { update_components<Types...>(); }
-	void update_components() const override final { update_components<Types...>(); }
+	void update_components() final { update_components<Types...>(); }
+	void update_components() const final { update_components<Types...>(); }
 };
 
 struct game_object_updater
 {
 	template <class Type>
-	void operator()(std::remove_const_t<Type> &element)
+	void operator()(Type &element)
 	{
 		element.update();
 		element.update_components();
