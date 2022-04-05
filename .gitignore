@@ -2,3 +2,6 @@
 .vscode
 out
 build
+.idea
+cmake-build-debug
+cmake-build-release
