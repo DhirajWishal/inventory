@@ -31,14 +31,14 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		virtual void apply(Callable& callable) = 0;
+		virtual void apply(Callable &callable) = 0;
 
 		/**
 		 * @brief Apply a callable function over the stored data.
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		virtual void apply(const Callable& callable) const = 0;
+		virtual void apply(const Callable &callable) const = 0;
 
 		/**
 		 * @brief Get the number of data stored.
@@ -86,9 +86,9 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		void apply(Callable& callable) override
+		void apply(Callable &callable) override
 		{
-			for (auto& item : m_Container)
+			for (auto &item : m_Container)
 				callable(item);
 		}
 
@@ -97,9 +97,9 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		void apply(const Callable& callable) const override
+		void apply(const Callable &callable) const override
 		{
-			for (auto& item : m_Container)
+			for (auto &item : m_Container)
 				callable(item);
 		}
 
@@ -127,7 +127,7 @@ namespace inventory
 		 *
 		 * @return std::vector<Type>& container.
 		 */
-		std::vector<Type>& container() { return m_Container; }
+		std::vector<Type> &container() { return m_Container; }
 
 		/**
 		 * @brief Get the stored container.

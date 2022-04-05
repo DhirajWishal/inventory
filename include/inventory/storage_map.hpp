@@ -13,8 +13,7 @@ namespace inventory
 	/**
 	 * @brief Storage map class.
 	 * This class is an associative container which stores all of its data in a vector.
-	 * Key-value pairs are determined using a binary search, this makes is much more faster than the usual
-	 * std::unordered_map<,>;
+	 * Key-value pairs are determined using a binary search, this makes is much more faster than the usual std::unordered_map<,>
 	 *
 	 * @tparam Callable The callable type.
 	 */

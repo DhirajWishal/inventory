@@ -8,7 +8,7 @@
 
 namespace engine_test
 {
-	void test(benchmark::State& state)
+	void test(benchmark::State &state)
 	{
 		engine gameEngine;
 
@@ -24,7 +24,6 @@ namespace engine_test
 		}
 
 		game_object_updater updater;
-
 		for (auto _ : state)
 			registry.apply(updater);
 	}
