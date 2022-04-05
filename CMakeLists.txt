@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Dhiraj Wishal
 
 # Set the minimum required CMake version.
-cmake_minimum_required(VERSION 3.22.2)
+cmake_minimum_required(VERSION 3.18.4)
 
 # Set the basic project description.
 project(
@@ -13,17 +13,6 @@ project(
 # Set the include directory.
 set(INVENTORY_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Add the test executable.
-add_executable(
-	Tests
-	tests/main.cpp
-)
-
-# Set the include directory.
-target_include_directories(Tests PUBLIC ${INVENTORY_INCLUDE_DIR})
-
-# Set the C++ standard as C++17.
-set_property(TARGET Tests PROPERTY CXX_STANDARD 17)
-
-# Add a test.
-add_test(NAME Tests COMMAND Tests)
+# Add the test subdirectories.
+add_subdirectory(tests/basic)
+add_subdirectory(tests/engine)
