@@ -1,3 +1,6 @@
 [submodule "tests/third_party/benchmark"]
 	path = tests/third_party/benchmark
 	url = https://github.com/google/benchmark
+[submodule "tests/third_party/entt"]
+	path = tests/third_party/entt
+	url = https://github.com/skypjack/entt

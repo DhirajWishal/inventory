@@ -22,6 +22,9 @@ add_subdirectory(tests/third_party/benchmark)
 # Set the google benchmark include directory.
 set(BENCHMARK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/benchmark/include)
 
+# Set the EnTT library's include path.
+set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/entt/src)
+
 # Add the test subdirectories.
 add_subdirectory(tests/basic)
 add_subdirectory(tests/benchmark)
