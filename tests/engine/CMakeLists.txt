@@ -3,9 +3,9 @@
 # Add the test executable.
 add_executable(
 	EngineTest
+	cat.cpp
 	main.cpp
 	engine.cpp
-	cat.cpp
 	player.cpp
 )
 

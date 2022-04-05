@@ -34,7 +34,7 @@ class game_object : public game_object_interface, private component_store<Types.
 	{
 		m_Engine.update(get_component<Component>());
 
-		if constexpr (sizeof...(Components))
+		if constexpr (sizeof...(Components) > 0)
 			update_components<Components...>();
 	}
 
@@ -61,7 +61,7 @@ struct game_object_updater
 	}
 
 	template <class Type>
-	void operator()([[maybe_unused]] const Type &element) const
+	void operator()(const Type &element) const
 	{
 		element.update_components();
 	}
