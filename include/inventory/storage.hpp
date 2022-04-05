@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "platform.hpp"
 #include <vector>
 
 namespace inventory
@@ -45,14 +46,14 @@ namespace inventory
 		 *
 		 * @return size_t Size.
 		 */
-		virtual size_t size() const = 0;
+		INV_NODISCARD virtual size_t size() const = 0;
 
 		/**
 		 * @brief Capacity of the current allocation.
 		 *
 		 * @return size_t The capacity.
 		 */
-		virtual size_t capacity() const = 0;
+		INV_NODISCARD virtual size_t capacity() const = 0;
 
 		/**
 		 * @brief Clear the stored data.
@@ -108,14 +109,14 @@ namespace inventory
 		 *
 		 * @return size_t Size.
 		 */
-		size_t size() const override { return m_Container.size(); }
+		INV_NODISCARD size_t size() const override { return m_Container.size(); }
 
 		/**
 		 * @brief Capacity of the current allocation.
 		 *
 		 * @return size_t The capacity.
 		 */
-		size_t capacity() const override { return m_Container.capacity(); }
+		INV_NODISCARD size_t capacity() const override { return m_Container.capacity(); }
 
 		/**
 		 * @brief Clear the stored data.
@@ -127,14 +128,14 @@ namespace inventory
 		 *
 		 * @return std::vector<Type>& container.
 		 */
-		std::vector<Type> &container() { return m_Container; }
+		INV_NODISCARD std::vector<Type> &container() { return m_Container; }
 
 		/**
 		 * @brief Get the stored container.
 		 *
 		 * @return std::vector<Type> container.
 		 */
-		std::vector<Type> container() const { return m_Container; }
+		INV_NODISCARD std::vector<Type> container() const { return m_Container; }
 
 	private:
 		std::vector<Type> m_Container = {};

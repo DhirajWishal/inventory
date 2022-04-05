@@ -19,8 +19,8 @@ namespace engine_test
 
 		for (int i = 0; i < ObjectCount; i++)
 		{
-			auto& p = registry.emplace_back<player>(gameEngine);
-			auto& c = registry.emplace_back<cat>(gameEngine);
+			[[maybe_unused]] auto& p = registry.emplace_back<player>(gameEngine);
+			[[maybe_unused]] auto& c = registry.emplace_back<cat>(gameEngine);
 		}
 
 		game_object_updater updater;

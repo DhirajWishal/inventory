@@ -41,10 +41,10 @@ struct Updater
 int main()
 {
 	auto registry = inventory::inventory<Updater>();
-	auto& a = registry.emplace_back<Apple>();
-	auto& o = registry.emplace_back<Orange>();
-	auto& b = registry.emplace_back<Banana>();
-	auto& m = registry.emplace_back<Mango>();
+	[[maybe_unused]] auto& a = registry.emplace_back<Apple>();
+	[[maybe_unused]] auto& o = registry.emplace_back<Orange>();
+	[[maybe_unused]] auto& b = registry.emplace_back<Banana>();
+	[[maybe_unused]] auto& m = registry.emplace_back<Mango>();
 
 	Updater updater;
 	registry.apply(updater);

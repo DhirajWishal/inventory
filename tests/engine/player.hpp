@@ -7,6 +7,6 @@
 class player final : public game_object<model_component, camera_component>
 {
 public:
-	player(engine &engine) : game_object(engine) {}
+	explicit player(engine &engine) : game_object(engine) {}
 	void update() override;
 };

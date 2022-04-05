@@ -11,15 +11,15 @@ int main()
 	engine gameEngine;
 
 	auto registry = inventory::inventory<game_object_updater>();
-	auto& p1 = registry.emplace_back<player>(gameEngine);
-	auto& p2 = registry.emplace_back<player>(gameEngine);
-	auto& p3 = registry.emplace_back<player>(gameEngine);
-	auto& p4 = registry.emplace_back<player>(gameEngine);
+	[[maybe_unused]] auto& p1 = registry.emplace_back<player>(gameEngine);
+	[[maybe_unused]] auto& p2 = registry.emplace_back<player>(gameEngine);
+	[[maybe_unused]] auto& p3 = registry.emplace_back<player>(gameEngine);
+	[[maybe_unused]] auto& p4 = registry.emplace_back<player>(gameEngine);
 
-	auto& c1 = registry.emplace_back<cat>(gameEngine);
-	auto& c2 = registry.emplace_back<cat>(gameEngine);
-	auto& c3 = registry.emplace_back<cat>(gameEngine);
-	auto& c4 = registry.emplace_back<cat>(gameEngine);
+	[[maybe_unused]] auto& c1 = registry.emplace_back<cat>(gameEngine);
+	[[maybe_unused]] auto& c2 = registry.emplace_back<cat>(gameEngine);
+	[[maybe_unused]] auto& c3 = registry.emplace_back<cat>(gameEngine);
+	[[maybe_unused]] auto& c4 = registry.emplace_back<cat>(gameEngine);
 
 	game_object_updater updater;
 	registry.apply(updater);

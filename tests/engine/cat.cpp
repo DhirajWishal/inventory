@@ -4,7 +4,7 @@
 
 void cat::update()
 {
-	auto& model = get_component<model_component>();
-	auto& camera = get_component<camera_component>();
-	auto& pos = get_component<position_component>();
+	[[maybe_unused]] auto& model = get_component<model_component>();
+	[[maybe_unused]] auto& camera = get_component<camera_component>();
+	[[maybe_unused]] auto& pos = get_component<position_component>();
 }

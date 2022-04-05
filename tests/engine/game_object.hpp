@@ -39,7 +39,7 @@ class game_object : public game_object_interface, private component_store<Types.
 	}
 
 public:
-	game_object(engine &engine) : m_Engine(engine) {}
+	explicit game_object(engine &engine) : m_Engine(engine) {}
 
 	template <class Type>
 	Type &get_component() { return component_store<Type>::get(); }

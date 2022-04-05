@@ -108,7 +108,7 @@ namespace inventory
 		 * @return allocator_type The storage's allocator.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) get_allocator() const noexcept { return get_storage<Type>().get_allocator(); }
+		constexpr INV_NODISCARD decltype(auto) get_allocator() const noexcept { return get_storage<Type>().get_allocator(); }
 
 		/**
 		 * @brief Get an element from the given position.
@@ -118,7 +118,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) at(size_t pos) { return get_storage<Type>().at(pos); }
+		constexpr INV_NODISCARD decltype(auto) at(size_t pos) { return get_storage<Type>().at(pos); }
 
 		/**
 		 * @brief Get an element from the given position.
@@ -128,7 +128,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) at(size_t pos) const { return get_storage<Type>().at(pos); }
+		constexpr INV_NODISCARD decltype(auto) at(size_t pos) const { return get_storage<Type>().at(pos); }
 
 		/**
 		 * @brief Get an element from the given position.
@@ -138,7 +138,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) operator[](size_t pos) { return get_storage<Type>()[pos]; }
+		constexpr INV_NODISCARD decltype(auto) operator[](size_t pos) { return get_storage<Type>()[pos]; }
 
 		/**
 		 * @brief Get an element from the given position.
@@ -148,7 +148,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) operator[](size_t pos) const { return get_storage<Type>()[pos]; }
+		constexpr INV_NODISCARD decltype(auto) operator[](size_t pos) const { return get_storage<Type>()[pos]; }
 
 		/**
 		 * @brief Get the first element from the storage.
@@ -157,7 +157,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) front() { return get_storage<Type>().front(); }
+		constexpr INV_NODISCARD decltype(auto) front() { return get_storage<Type>().front(); }
 
 		/**
 		 * @brief Get the first element from the storage.
@@ -166,7 +166,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) front() const { return get_storage<Type>().front(); }
+		constexpr INV_NODISCARD decltype(auto) front() const { return get_storage<Type>().front(); }
 
 		/**
 		 * @brief Get the last element from the storage.
@@ -175,7 +175,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) back() { return get_storage<Type>().back(); }
+		constexpr INV_NODISCARD decltype(auto) back() { return get_storage<Type>().back(); }
 
 		/**
 		 * @brief Get the last element from the storage.
@@ -184,7 +184,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type reference.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) back() const { return get_storage<Type>().back(); }
+		constexpr INV_NODISCARD decltype(auto) back() const { return get_storage<Type>().back(); }
 
 		/**
 		 * @brief Get the data pointer from the storage.
@@ -193,7 +193,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type pointer.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) data() { return get_storage<Type>().data(); }
+		constexpr INV_NODISCARD decltype(auto) data() { return get_storage<Type>().data(); }
 
 		/**
 		 * @brief Get the data pointer from the storage.
@@ -202,7 +202,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The type pointer.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) data() const { return get_storage<Type>().data(); }
+		constexpr INV_NODISCARD decltype(auto) data() const { return get_storage<Type>().data(); }
 
 		/**
 		 * @brief Get the begin iterator of the storage.
@@ -211,7 +211,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) begin() noexcept { return get_storage<Type>().begin(); }
+		constexpr INV_NODISCARD decltype(auto) begin() noexcept { return get_storage<Type>().begin(); }
 
 		/**
 		 * @brief Get the begin iterator of the storage.
@@ -220,7 +220,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) begin() const noexcept { return get_storage<Type>().begin(); }
+		constexpr INV_NODISCARD decltype(auto) begin() const noexcept { return get_storage<Type>().begin(); }
 
 		/**
 		 * @brief Get the constant begin iterator of the storage.
@@ -229,7 +229,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) cbegin() const noexcept { return get_storage<Type>().begin(); }
+		constexpr INV_NODISCARD decltype(auto) cbegin() const noexcept { return get_storage<Type>().begin(); }
 
 		/**
 		 * @brief Check if the storage is empty.
@@ -239,7 +239,7 @@ namespace inventory
 		 * @return false if the storage is not empty.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) empty() const noexcept { return get_storage<Type>().empty(); }
+		constexpr INV_NODISCARD decltype(auto) empty() const noexcept { return get_storage<Type>().empty(); }
 
 		/**
 		 * @brief Get the number of elements stored in the storage.
@@ -248,7 +248,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The size of the storage.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) size() const noexcept { return get_storage<Type>().size(); }
+		constexpr INV_NODISCARD decltype(auto) size() const noexcept { return get_storage<Type>().size(); }
 
 		/**
 		 * @brief Get the maximum number of elements that can be stored in the storage.
@@ -257,7 +257,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The maximum size of the storage.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) max_size() const noexcept { return get_storage<Type>().max_size(); }
+		constexpr INV_NODISCARD decltype(auto) max_size() const noexcept { return get_storage<Type>().max_size(); }
 
 		/**
 		 * @brief Reserve the storage memory.
@@ -275,7 +275,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) the size.
 		 */
 		template <class Type>
-		constexpr [[nodiscard]] decltype(auto) capacity() const noexcept { return get_storage<Type>().capacity(); }
+		constexpr INV_NODISCARD decltype(auto) capacity() const noexcept { return get_storage<Type>().capacity(); }
 
 		/**
 		 * @brief Shrink the container to fit the size.
@@ -303,7 +303,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr [[nodiscard]] decltype(auto) insert(ConstIterator pos, const Type &value) { return get_storage<Type>().insert(pos, value); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, const Type &value) { return get_storage<Type>().insert(pos, value); }
 
 		/**
 		 * @brief Inserts elements at the specified location in the container.
@@ -315,7 +315,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr [[nodiscard]] decltype(auto) insert(ConstIterator pos, Type&& value) { return get_storage<Type>().insert(pos, std::forward<Type>(value)); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, Type&& value) { return get_storage<Type>().insert(pos, std::forward<Type>(value)); }
 
 		/**
 		 * @brief Inserts elements at the specified location in the container.
@@ -328,7 +328,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr [[nodiscard]] decltype(auto) insert(ConstIterator pos, size_t count, const Type& value) { return get_storage<Type>().insert(pos, count, value); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, size_t count, const Type& value) { return get_storage<Type>().insert(pos, count, value); }
 
 		/**
 		 * @brief Inserts elements at the specified location in the container.
@@ -342,7 +342,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator, class Iterator>
-		constexpr [[nodiscard]] decltype(auto) insert(ConstIterator pos, Iterator first, Iterator last) { return get_storage<Type>().insert(pos, first, last); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, Iterator first, Iterator last) { return get_storage<Type>().insert(pos, first, last); }
 
 		/**
 		 * @briefInserts elements at the specified location in the container.
@@ -354,7 +354,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr [[nodiscard]] decltype(auto) insert(ConstIterator pos, std::initializer_list<Type> ilist) { return get_storage<Type>().insert(pos, ilist); }
+		constexpr INV_NODISCARD decltype(auto) insert(ConstIterator pos, std::initializer_list<Type> ilist) { return get_storage<Type>().insert(pos, ilist); }
 
 		/**
 		 * @brief Inserts a new element into the container directly before pos.
@@ -367,7 +367,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator, class... Types>
-		constexpr [[nodiscard]] decltype(auto) emplace(ConstIterator pos, Types &&...args) { return get_storage<Type>().emplace(pos, std::forward<Types>(args)...); }
+		constexpr INV_NODISCARD decltype(auto) emplace(ConstIterator pos, Types &&...args) { return get_storage<Type>().emplace(pos, std::forward<Types>(args)...); }
 
 		/**
 		 * @brief Erases the specified elements from the container.
@@ -378,7 +378,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr [[nodiscard]] decltype(auto) erase(ConstIterator pos) { return get_storage<Type>().erase(pos); }
+		constexpr INV_NODISCARD decltype(auto) erase(ConstIterator pos) { return get_storage<Type>().erase(pos); }
 
 		/**
 		 * @brief Erases the specified elements from the container.
@@ -390,7 +390,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		template <class Type, class ConstIterator>
-		constexpr [[nodiscard]] decltype(auto) erase(ConstIterator first, ConstIterator last) { return get_storage<Type>().erase(first, last); }
+		constexpr INV_NODISCARD decltype(auto) erase(ConstIterator first, ConstIterator last) { return get_storage<Type>().erase(first, last); }
 
 		/**
 		 * @brief Appends a new element to the end of the container
@@ -401,7 +401,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The inserted value reference.
 		 */
 		template <class Type, class... Types>
-		constexpr [[nodiscard]] decltype(auto) emplace_back(Types &&...args) { return get_storage<Type>().emplace_back(std::forward<Types>(args)...); }
+		constexpr INV_NODISCARD decltype(auto) emplace_back(Types &&...args) { return get_storage<Type>().emplace_back(std::forward<Types>(args)...); }
 
 		/**
 		 * @brief Removes the last element of the container.
