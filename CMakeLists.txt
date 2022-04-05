@@ -13,6 +13,9 @@ project(
 # Set the include directory.
 set(INVENTORY_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Set a variable stating where the tests directory is.
+set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
 # Set basic defines for google benchmark.
 set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON)
 
@@ -26,6 +29,6 @@ set(BENCHMARK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/benchmar
 set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/entt/src)
 
 # Add the test subdirectories.
-add_subdirectory(tests/basic)
-add_subdirectory(tests/benchmark)
-add_subdirectory(tests/engine)
+add_subdirectory(${TESTS_DIR}/basic)
+add_subdirectory(${TESTS_DIR}/engine)
+add_subdirectory(${TESTS_DIR}/benchmark)

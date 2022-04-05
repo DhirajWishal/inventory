@@ -2,12 +2,9 @@
 
 #include "cat.hpp"
 
-#include <iostream>
-
 void cat::update()
 {
-	std::cout << "Updating Cat...\n";
-	auto &model = get_component<model_component>();
-	auto &camera = get_component<camera_component>();
-	auto &pos = get_component<position_component>();
+	auto& model = get_component<model_component>();
+	auto& camera = get_component<camera_component>();
+	auto& pos = get_component<position_component>();
 }

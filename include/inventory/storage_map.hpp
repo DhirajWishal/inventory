@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <typeindex>
+#include <algorithm>
 
 namespace inventory
 {
