@@ -13,10 +13,10 @@ namespace entity
 			update_component(modelCameraView.get<camera_component>(entity));
 		}
 
-		const auto position = m_Registry.view<position_component>();
-		for (auto entity : position)
+        const auto position = m_Registry.view<position_component>();
+        for (auto entity : position)
 		{
-			update_component(position.get<position_component>(entity));
+            update_component(position.get<position_component>(entity));
 		}
 	}
 

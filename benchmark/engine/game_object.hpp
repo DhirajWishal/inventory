@@ -3,7 +3,8 @@
 #pragma once
 
 #include "engine.hpp"
-#include "component_store.hpp"
+
+#include "inventory/component_store.hpp"
 
 #include <type_traits>
 
@@ -16,14 +17,16 @@ public:
 };
 
 template <class... Types>
-class game_object : public game_object_interface, private component_store<Types...>
+class game_object : public game_object_interface, public inventory::component_store<Types...>
 {
+    using super = inventory::component_store<Types...>;
+
 	engine &m_Engine;
 
 	template <class Component, class... Components>
 	void update_components()
 	{
-		m_Engine.update(get_component<Component>());
+		m_Engine.update(inventory::get_component<Component>(*this));
 
 		if constexpr (sizeof...(Components) > 0)
 			update_components<Components...>();
@@ -32,7 +35,7 @@ class game_object : public game_object_interface, private component_store<Types.
 	template <class Component, class... Components>
 	void update_components() const
 	{
-		m_Engine.update(get_component<Component>());
+		m_Engine.update(inventory::get_component<Component>(this));
 
 		if constexpr (sizeof...(Components) > 0)
 			update_components<Components...>();
@@ -40,12 +43,6 @@ class game_object : public game_object_interface, private component_store<Types.
 
 public:
 	explicit game_object(engine &engine) : m_Engine(engine) {}
-
-	template <class Type>
-	Type &get_component() { return component_store<Type>::get(); }
-
-	template <class Type>
-	const Type &get_component() const { return component_store<Type>::get(); }
 
 	void update_components() final { update_components<Types...>(); }
 	void update_components() const final { update_components<Types...>(); }

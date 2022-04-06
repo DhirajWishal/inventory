@@ -459,7 +459,7 @@ namespace inventory
 		 * @return std::type_index.
 		 */
 		template <class Type>
-		std::type_index get_index() const { return std::type_index(typeid(Type)); }
+        INV_NODISCARD std::type_index get_index() const { return std::type_index(typeid(Type)); }
 
 		/**
 		 * @brief Check if a type is registered.
@@ -469,7 +469,7 @@ namespace inventory
 		 * @return false if the type is not registered.
 		 */
 		template <class Type>
-		bool is_registered() const { return m_Storage.contains(get_index<Type>()); }
+        constexpr INV_NODISCARD bool is_registered() const { return m_Storage.contains(get_index<Type>()); }
 
 		/**
 		 * @brief Register a new type to the storage system.
@@ -477,7 +477,7 @@ namespace inventory
 		 * @tparam Type The type to store.
 		 */
 		template <class Type>
-		void register_type() { m_Storage[get_index<Type>()] = std::make_unique<storage<Type, Callable>>(); }
+		constexpr void register_type() { m_Storage[get_index<Type>()] = std::make_unique<storage<Type, Callable>>(); }
 
 	private:
 		storage_map<Callable> m_Storage = {};
