@@ -20,7 +20,7 @@ namespace entity
 		}
 	}
 
-	void engine::update_component(model_component& component) const { volatile int x = 0; }
-	void engine::update_component(camera_component& component) const { volatile int x = 0; }
-	void engine::update_component(position_component& component) const { volatile int x = 0; }
+	void engine::update_component(model_component& component) const { [[maybe_unused]] volatile int x = 0; }
+	void engine::update_component(camera_component& component) const { [[maybe_unused]] volatile int x = 0; }
+	void engine::update_component(position_component& component) const { [[maybe_unused]] volatile int x = 0; }
 }
