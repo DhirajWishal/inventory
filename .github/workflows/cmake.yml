@@ -32,13 +32,17 @@ jobs:
       working-directory: ${{github.workspace}}/build
       run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
 
-    - name: Benchmark
+    - name: Benchmark-Windows
     - if: ${{ matrix.os == 'windows-latest' }}
       working-directory: ${{github.workspace}}/build
       run: ./benchmark/Benchmark.exe
+
+    - name: Benchmark-Ubuntu
     - if: ${{ matrix.os == 'ubuntu-latest' }}
       working-directory: ${{github.workspace}}/build
       run: ./benchmark/Benchmark
+
+    - name: Benchmark-macOS
     - if: ${{ matrix.os == 'macos-latest' }}
       working-directory: ${{github.workspace}}/build
       run: ./benchmark/Benchmark
