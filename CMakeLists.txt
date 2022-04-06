@@ -26,7 +26,7 @@ add_subdirectory(benchmark/third_party/benchmark)
 set(BENCHMARK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/third_party/benchmark/include)
 
 # Set the EnTT library's include path.
-set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/entt/src)
+set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/third_party/entt/src)
 
 # Add the benchmark directory.
 add_subdirectory(benchmark)
