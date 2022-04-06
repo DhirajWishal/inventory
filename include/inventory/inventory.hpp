@@ -430,6 +430,27 @@ namespace inventory
 		template <class Type>
 		constexpr void resize(size_t count, const Type &value) { get_storage<Type>().resize(count, value); }
 
+		/**
+		 * @brief Get the number of types stored in the internal storage.
+		 *
+		 * @return constexpr size_t The count.
+		 */
+		constexpr INV_NODISCARD decltype(auto) type_count() const { return m_Storage.size(); }
+
+		/**
+		 * @brief Get the total number of objects stored in the container.
+		 *
+		 * @return constexpr decltype(auto) The object count.
+		 */
+		constexpr INV_NODISCARD decltype(auto) object_count() const
+		{
+			size_t count = 0;
+			for (auto &[index, pStorage] : m_Storage)
+				count += pStorage->size();
+
+			return count;
+		}
+
 	private:
 		/**
 		 * @brief Get the type index.

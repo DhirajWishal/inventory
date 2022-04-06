@@ -20,8 +20,5 @@ target_include_directories(Benchmark PUBLIC ${INVENTORY_INCLUDE_DIR} ${BENCHMARK
 # Set the C++ standard as C++20.
 set_property(TARGET Benchmark PROPERTY CXX_STANDARD 20)
 
-# Add a test.
-add_test(NAME Benchmark COMMAND Benchmark)
-
 # Add the benchmark library as a target link library.
 target_link_libraries(Benchmark benchmark::benchmark)
