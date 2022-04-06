@@ -20,18 +20,20 @@ set(TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON)
 
 # Add the benchmark subdirectory.
-add_subdirectory(tests/third_party/benchmark)
+add_subdirectory(benchmark/third_party/benchmark)
 
 # Set the google benchmark include directory.
-set(BENCHMARK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/benchmark/include)
+set(BENCHMARK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/benchmark/third_party/benchmark/include)
 
 # Set the EnTT library's include path.
 set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/entt/src)
 
+# Add the benchmark directory.
+add_subdirectory(benchmark)
+
 # Add the test subdirectories.
 add_subdirectory(${TESTS_DIR}/basic)
 add_subdirectory(${TESTS_DIR}/engine)
-add_subdirectory(${TESTS_DIR}/benchmark)
 
 # Enable testing.
 enable_testing()
