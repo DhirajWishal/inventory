@@ -6,20 +6,20 @@
 
 namespace inventory
 {
-	template<class... Types>
+	template <class... Types>
 	class component_store;
 
 	template <class Component, class... Components>
-	constexpr inline Component &get_component(component_store<Components...> *pStore);
+	constexpr Component &get_component(component_store<Components...> *pStore);
 
 	template <class Component, class... Components>
-	constexpr inline const Component &get_component(const component_store<Components...> *pStore);
+	constexpr const Component &get_component(const component_store<Components...> *pStore);
 
 	template <class Component, class... Components>
-	constexpr inline Component &get_component(component_store<Components...> &store);
+	constexpr Component &get_component(component_store<Components...> &store);
 
 	template <class Component, class... Components>
-	constexpr inline const Component &get_component(const component_store<Components...> &store);
+	constexpr const Component &get_component(const component_store<Components...> &store);
 
 	/**
 	 * @brief Component store class.
@@ -34,20 +34,32 @@ namespace inventory
 	class component_store : public component_store_base<Types...>
 	{
 		template <class Component, class... Components>
-		friend constexpr inline Component &get_component(component_store<Components...> *pStore);
+		friend constexpr Component &get_component(component_store<Components...> *pStore);
 
 		template <class Component, class... Components>
-		friend constexpr inline const Component &get_component(const component_store<Components...> *pStore);
+		friend constexpr const Component &get_component(const component_store<Components...> *pStore);
 
 		template <class Component, class... Components>
-		friend constexpr inline Component &get_component(component_store<Components...> &store);
+		friend constexpr Component &get_component(component_store<Components...> &store);
 
 		template <class Component, class... Components>
-		friend constexpr inline const Component &get_component(const component_store<Components...> &store);
+		friend constexpr const Component &get_component(const component_store<Components...> &store);
 
+		/**
+		 * @brief Get the component object.
+		 *
+		 * @tparam Component The component type.
+		 * @return constexpr Component& The component reference.
+		 */
 		template <class Component>
 		constexpr Component &get_component() { return component_store_base<Component>::get(); }
 
+		/**
+		 * @brief Get the component object.
+		 *
+		 * @tparam Component The component type.
+		 * @return constexpr const Component& The component reference.
+		 */
 		template <class Component>
 		constexpr const Component &get_component() const { return component_store_base<Component>::get(); }
 	};
@@ -56,43 +68,43 @@ namespace inventory
 	 * @brief Get the component object from an object which is inherited from the component_store.
 	 *
 	 * @tparam Component The type of the component.
-	 * @tparam Object The type of the object.
+	 * @tparam Components The rest of the components.
 	 * @param pStore The storage pointer. Usually this would be `this`.
 	 * @return constexpr Type& The component reference.
 	 */
 	template <class Component, class... Components>
-	constexpr inline Component &get_component(component_store<Components...> *pStore) { return pStore->template get_component<Component>(); }
+	constexpr Component &get_component(component_store<Components...> *pStore) { return pStore->template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
 	 *
 	 * @tparam Component The type of the component.
-	 * @tparam Object The type of the object.
+	 * @tparam Components The rest of the components.
 	 * @param pStore The storage pointer. Usually this would be `this`.
 	 * @return constexpr const Type& The component reference.
 	 */
 	template <class Component, class... Components>
-	constexpr inline const Component &get_component(const component_store<Components...> *pStore) { return pStore->template get_component<Component>(); }
+	constexpr const Component &get_component(const component_store<Components...> *pStore) { return pStore->template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
 	 *
 	 * @tparam Component The type of the component.
-	 * @tparam Object The type of the object.
+	 * @tparam Components The rest of the components.
 	 * @param store The storage reference. Usually this would be `*this`.
 	 * @return constexpr Type& The component reference.
 	 */
 	template <class Component, class... Components>
-	constexpr inline Component &get_component(component_store<Components...> &store) { return store.template get_component<Component>(); }
+	constexpr Component &get_component(component_store<Components...> &store) { return store.template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
 	 *
 	 * @tparam Component The type of the component.
-	 * @tparam Object The type of the object.
+	 * @tparam Components The rest of the components.
 	 * @param store The storage reference. Usually this would be `*this`.
 	 * @return constexpr const Type& The component reference.
 	 */
 	template <class Component, class... Components>
-	constexpr inline const Component &get_component(const component_store<Components...> &store) { return store.template get_component<Component>(); }
+	constexpr const Component &get_component(const component_store<Components...> &store) { return store.template get_component<Component>(); }
 }

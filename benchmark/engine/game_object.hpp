@@ -24,7 +24,7 @@ class game_object : public game_object_interface, public inventory::component_st
 	template <class Component, class... Components>
 	void update_components()
 	{
-		m_Engine.update(inventory::get_component<Component>(*this));
+		m_Engine.update(inventory::get_component<Component>(this));
 
 		if constexpr (sizeof...(Components) > 0)
 			update_components<Components...>();
