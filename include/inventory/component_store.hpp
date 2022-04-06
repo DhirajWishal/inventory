@@ -6,6 +6,21 @@
 
 namespace inventory
 {
+	template<class... Types>
+	class component_store;
+
+	template <class Component, class... Components>
+	constexpr inline Component &get_component(component_store<Components...> *pStore);
+
+	template <class Component, class... Components>
+	constexpr inline const Component &get_component(const component_store<Components...> *pStore);
+
+	template <class Component, class... Components>
+	constexpr inline Component &get_component(component_store<Components...> &store);
+
+	template <class Component, class... Components>
+	constexpr inline const Component &get_component(const component_store<Components...> &store);
+
 	/**
 	 * @brief Component store class.
 	 * This class is the component store class and will contain the required components.
@@ -18,6 +33,23 @@ namespace inventory
 	template <class... Types>
 	class component_store : public component_store_base<Types...>
 	{
+		template <class Component, class... Components>
+		friend constexpr inline Component &get_component(component_store<Components...> *pStore);
+
+		template <class Component, class... Components>
+		friend constexpr inline const Component &get_component(const component_store<Components...> *pStore);
+
+		template <class Component, class... Components>
+		friend constexpr inline Component &get_component(component_store<Components...> &store);
+
+		template <class Component, class... Components>
+		friend constexpr inline const Component &get_component(const component_store<Components...> &store);
+
+		template <class Component>
+		constexpr Component &get_component() { return component_store_base<Component>::get(); }
+
+		template <class Component>
+		constexpr const Component &get_component() const { return component_store_base<Component>::get(); }
 	};
 
 	/**
@@ -28,8 +60,8 @@ namespace inventory
 	 * @param pStore The storage pointer. Usually this would be `this`.
 	 * @return constexpr Type& The component reference.
 	 */
-	template <class Component, class Object>
-	constexpr inline Component &get_component(Object *pStore) { return pStore->template component_store_base<Component>::get(); }
+	template <class Component, class... Components>
+	constexpr inline Component &get_component(component_store<Components...> *pStore) { return pStore->template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
@@ -39,8 +71,8 @@ namespace inventory
 	 * @param pStore The storage pointer. Usually this would be `this`.
 	 * @return constexpr const Type& The component reference.
 	 */
-	template <class Component, class Object>
-	constexpr inline const Component &get_component(const Object *pStore) { return pStore->template component_store_base<Component>::get(); }
+	template <class Component, class... Components>
+	constexpr inline const Component &get_component(const component_store<Components...> *pStore) { return pStore->template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
@@ -50,8 +82,8 @@ namespace inventory
 	 * @param store The storage reference. Usually this would be `*this`.
 	 * @return constexpr Type& The component reference.
 	 */
-	template <class Component, class Object>
-	constexpr inline Component &get_component(Object &store) { return store.template component_store_base<Component>::get(); }
+	template <class Component, class... Components>
+	constexpr inline Component &get_component(component_store<Components...> &store) { return store.template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
@@ -61,6 +93,6 @@ namespace inventory
 	 * @param store The storage reference. Usually this would be `*this`.
 	 * @return constexpr const Type& The component reference.
 	 */
-	template <class Component, class Object>
-	constexpr inline const Component &get_component(const Object &store) { return store.template component_store_base<Component>::get(); }
+	template <class Component, class... Components>
+	constexpr inline const Component &get_component(const component_store<Components...> &store) { return store.template get_component<Component>(); }
 }
