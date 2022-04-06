@@ -7,11 +7,11 @@ on:
     branches: [ main ]
 
 env:
-  BUILD_TYPE: Release
+  BUILD_TYPE: [ Release, Debug ]
 
 jobs:
   # Build and benchmark on Ubuntu and macOS. This is because we can't run the benchmark target on Windows, the same way we do it here.
-  build-and-benchmark-ubuntu-and-macos:
+  build-and-benchmarks:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -56,4 +56,4 @@ jobs:
 
     - name: Benchmark
       working-directory: ${{github.workspace}}/build
-      run: ./benchmark/Benchmark.exe
+      run: ./benchmark/Release/Benchmark.exe

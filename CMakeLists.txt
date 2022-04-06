@@ -37,3 +37,11 @@ add_subdirectory(${TESTS_DIR}/engine)
 
 # Enable testing.
 enable_testing()
+
+# Set the startup project for Visual Studio and set multi processor compilation for other projects that we build.
+if (MSVC) 
+	target_compile_options(benchmark PRIVATE "/MP")	
+	target_compile_options(Benchmark PRIVATE "/MP")	
+	target_compile_options(BasicTest PRIVATE "/MP")	
+	target_compile_options(EngineTest PRIVATE "/MP")	
+endif ()
