@@ -76,7 +76,7 @@ namespace inventory
 		/**
 		 * @brief Construct a new storage interface object.
 		 */
-		storage() = default;
+		constexpr storage() = default;
 
 		/**
 		 * @brief Destroy the storage interface object.
@@ -88,7 +88,7 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		void apply(Callable &callable) override
+		constexpr void apply(Callable &callable) override
 		{
 			for (auto &item : m_Container)
 				callable(item);
@@ -99,7 +99,7 @@ namespace inventory
 		 *
 		 * @param callable The callable which will be applied.
 		 */
-		void apply(const Callable &callable) const override
+		constexpr void apply(const Callable &callable) const override
 		{
 			for (auto &item : m_Container)
 				callable(item);
@@ -110,33 +110,33 @@ namespace inventory
 		 *
 		 * @return size_t Size.
 		 */
-		INV_NODISCARD size_t size() const override { return m_Container.size(); }
+		constexpr INV_NODISCARD size_t size() const override { return m_Container.size(); }
 
 		/**
 		 * @brief Capacity of the current allocation.
 		 *
 		 * @return size_t The capacity.
 		 */
-		INV_NODISCARD size_t capacity() const override { return m_Container.capacity(); }
+		constexpr INV_NODISCARD size_t capacity() const override { return m_Container.capacity(); }
 
 		/**
 		 * @brief Clear the stored data.
 		 */
-		void clear() override { m_Container.clear(); }
+		constexpr void clear() override { m_Container.clear(); }
 
 		/**
 		 * @brief Get the stored container.
 		 *
 		 * @return std::vector<Type>& container.
 		 */
-		INV_NODISCARD std::vector<Type> &container() { return m_Container; }
+		constexpr INV_NODISCARD std::vector<Type> &container() { return m_Container; }
 
 		/**
 		 * @brief Get the stored container.
 		 *
 		 * @return std::vector<Type> container.
 		 */
-		INV_NODISCARD std::vector<Type> container() const { return m_Container; }
+		constexpr INV_NODISCARD std::vector<Type> container() const { return m_Container; }
 
 	private:
 		std::vector<Type> m_Container = {};

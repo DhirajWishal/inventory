@@ -24,5 +24,4 @@ int main()
 	game_object_updater updater;
 	for (int i = 0; i < 1000000; i++)
 		registry.apply(updater);
-	updater;
 }
