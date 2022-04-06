@@ -19,8 +19,6 @@ public:
 template <class... Types>
 class game_object : public game_object_interface, public inventory::component_store<Types...>
 {
-    using super = inventory::component_store<Types...>;
-
 	engine &m_Engine;
 
 	template <class Component, class... Components>

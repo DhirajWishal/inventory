@@ -10,6 +10,9 @@ namespace inventory
 	 * @brief Component store class.
 	 * This class is the component store class and will contain the required components.
 	 *
+	 * @note Make sure that this class has public inheritance with the derived classes, so the helper getter functions
+	 * would work freely.
+	 *
 	 * @tparam Types The components to store.
 	 */
 	template <class... Types>

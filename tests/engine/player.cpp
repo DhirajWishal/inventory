@@ -4,6 +4,6 @@
 
 void player::update()
 {
-	[[maybe_unused]] auto &model = get_component<model_component>();
-	[[maybe_unused]] auto &camera = get_component<camera_component>();
+	[[maybe_unused]] auto &model = inventory::get_component<model_component>(this);
+	[[maybe_unused]] auto &camera = inventory::get_component<camera_component>(this);
 }
