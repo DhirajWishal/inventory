@@ -32,3 +32,6 @@ set(ENTT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/entt/src)
 add_subdirectory(${TESTS_DIR}/basic)
 add_subdirectory(${TESTS_DIR}/engine)
 add_subdirectory(${TESTS_DIR}/benchmark)
+
+# Enable testing.
+enable_testing()
