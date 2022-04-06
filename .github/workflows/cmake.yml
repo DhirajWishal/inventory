@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 env:
-  BUILD_TYPE: [ Release, Debug ]
+  BUILD_TYPE: Release
 
 jobs:
   # Build and benchmark on Ubuntu and macOS. This is because we can't run the benchmark target on Windows, the same way we do it here.
