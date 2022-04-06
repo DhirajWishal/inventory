@@ -21,7 +21,7 @@ namespace inventory
 	 * @tparam Callable The callable type.
 	 */
 	template <class Callable>
-	class inventory final : public inventory_interface
+	class inventory : public inventory_interface
 	{
 	public:
 		/**
