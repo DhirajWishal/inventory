@@ -72,6 +72,40 @@ namespace inventory
 		}
 
 		/**
+		 * @brief Apply a callable functor to a custom type.
+		 *
+		 * @param index The type index to apply to.
+		 * @param callable The callable functor.
+		 */
+		void apply_custom(const std::type_index &index, Callable &callable) { m_Storage[index]->apply(callable); }
+
+		/**
+		 * @brief Apply a callable functor to a custom type.
+		 *
+		 * @param index The type index to apply to.
+		 * @param callable The callable functor.
+		 */
+		void apply_custom(const std::type_index &index, const Callable &callable) const { m_Storage[index]->apply(callable); }
+
+		/**
+		 * @brief Apply a callable functor to a custom type.
+		 *
+		 * @tparam Type The type of the object to apply to.
+		 * @param callable The callable functor.
+		 */
+		template <class Type>
+		void apply_manual(Callable &callable) { static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].get())->apply(callable); }
+
+		/**
+		 * @brief Apply a callable functor to a custom type.
+		 *
+		 * @tparam Type The type of the object to apply to.
+		 * @param callable The callable functor.
+		 */
+		template <class Type>
+		void apply_manual(const Callable &callable) const { static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].get())->apply(callable); }
+
+		/**
 		 * @brief Replace the contents of the container.
 		 *
 		 * @tparam Type The type of the storage.
@@ -438,6 +472,22 @@ namespace inventory
 		constexpr INV_NODISCARD decltype(auto) type_count() const { return m_Storage.size(); }
 
 		/**
+		 * @brief Get all the type indexes stored.
+		 *
+		 * @return constexpr decltype(auto) The type indexes.
+		 */
+		constexpr INV_NODISCARD decltype(auto) get_type_indexes() const
+		{
+			std::vector<std::type_index> indexes;
+			indexes.reserve(m_Storage.size());
+
+			for (const auto &[index, pStorage] : m_Storage)
+				indexes.emplace_back(index);
+
+			return indexes;
+		}
+
+		/**
 		 * @brief Get the total number of objects stored in the container.
 		 *
 		 * @return constexpr decltype(auto) The object count.
@@ -445,7 +495,7 @@ namespace inventory
 		constexpr INV_NODISCARD decltype(auto) object_count() const
 		{
 			size_t count = 0;
-			for (auto &[index, pStorage] : m_Storage)
+			for (const auto &[index, pStorage] : m_Storage)
 				count += pStorage->size();
 
 			return count;

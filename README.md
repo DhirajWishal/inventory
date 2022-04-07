@@ -9,7 +9,7 @@ it more or less distances the connection between data and logic. Inventory can b
 used to tightly couple game logic, and components together, and use compile time
 goodness to optimize the storage system.
 
-This can be especially useful if you're game framework uses C++ to code the game logic,
+This can be especially useful if your game framework uses C++ to code the game logic,
 like what we have in Unreal Engine.
 
 ## How it works

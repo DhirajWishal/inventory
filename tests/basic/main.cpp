@@ -48,6 +48,18 @@ void basic_test()
 
 	Updater updater;
 	registry.apply(updater);
+
+	registry.apply_custom(std::type_index(typeid(Apple)), updater);
+	registry.apply_manual<Apple>(updater);
+
+	registry.apply_custom(std::type_index(typeid(Orange)), updater);
+	registry.apply_manual<Orange>(updater);
+
+	registry.apply_custom(std::type_index(typeid(Banana)), updater);
+	registry.apply_manual<Banana>(updater);
+
+	registry.apply_custom(std::type_index(typeid(Mango)), updater);
+	registry.apply_manual<Mango>(updater);
 }
 
 // Setup the basic components.
@@ -116,6 +128,12 @@ void update_entities(entity_storage &storage)
 {
 	updater myUpdater;
 	storage.apply(myUpdater);
+
+	storage.apply_custom(std::type_index(typeid(player)), myUpdater);
+	storage.apply_custom(std::type_index(typeid(ghost)), myUpdater);
+
+	storage.apply_manual<player>(myUpdater);
+	storage.apply_manual<ghost>(myUpdater);
 }
 
 void entity_test()

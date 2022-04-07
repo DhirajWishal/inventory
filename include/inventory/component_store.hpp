@@ -47,29 +47,29 @@ namespace inventory
 	template <class... Types>
 	class component_store : public component_store_base<Types...>
 	{
-		template <class Component, class... Types_2>
-		friend constexpr decltype(auto) get_component(component_store<Types_2...> *pObject);
+		template <class Component, class... _Types>
+		friend constexpr decltype(auto) get_component(component_store<_Types...> *pObject);
 
-		template <class Component, class... Types_2>
-		friend constexpr decltype(auto) get_component(const component_store<Types_2...> *pObject);
+		template <class Component, class... _Types>
+		friend constexpr decltype(auto) get_component(const component_store<_Types...> *pObject);
 
-		template <class Component, class... Types_2>
-		friend constexpr decltype(auto) get_component(component_store<Types_2...> &object);
+		template <class Component, class... _Types>
+		friend constexpr decltype(auto) get_component(component_store<_Types...> &object);
 
-		template <class Component, class... Types_2>
-		friend constexpr decltype(auto) get_component(const component_store<Types_2...> &object);
+		template <class Component, class... _Types>
+		friend constexpr decltype(auto) get_component(const component_store<_Types...> &object);
 
-		template <class... Components, class... Types_2>
-		friend constexpr decltype(auto) get_components(component_store<Types_2...> *pObject);
+		template <class... Components, class... _Types>
+		friend constexpr decltype(auto) get_components(component_store<_Types...> *pObject);
 
-		template <class... Components, class... Types_2>
-		friend constexpr decltype(auto) get_components(const component_store<Types_2...> *pObject);
+		template <class... Components, class... _Types>
+		friend constexpr decltype(auto) get_components(const component_store<_Types...> *pObject);
 
-		template <class... Components, class... Types_2>
-		friend constexpr decltype(auto) get_components(component_store<Types_2...> &object);
+		template <class... Components, class... _Types>
+		friend constexpr decltype(auto) get_components(component_store<_Types...> &object);
 
-		template <class... Components, class... Types_2>
-		friend constexpr decltype(auto) get_components(const component_store<Types_2...> &object);
+		template <class... Components, class... _Types>
+		friend constexpr decltype(auto) get_components(const component_store<_Types...> &object);
 
 	public:
 		/**
