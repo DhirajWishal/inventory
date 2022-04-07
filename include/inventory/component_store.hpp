@@ -10,22 +10,34 @@ namespace inventory
 	class component_store;
 
 	template <class Component, class Object>
-	constexpr Component &get_component(Object *pStore);
+	constexpr decltype(auto) get_component(Object *pStore);
 
 	template <class Component, class Object>
-	constexpr const Component &get_component(const Object *pStore);
+	constexpr decltype(auto) get_component(const Object *pStore);
 
 	template <class Component, class Object>
-	constexpr Component &get_component(Object &store);
+	constexpr decltype(auto) get_component(Object &store);
 
 	template <class Component, class Object>
-	constexpr const Component &get_component(const Object &store);
+	constexpr decltype(auto) get_component(const Object &store);
+
+	template <class... Components, class Object>
+	constexpr decltype(auto) view(Object *pObject);
+
+	template <class... Components, class Object>
+	constexpr decltype(auto) view(const Object *pObject);
+
+	template <class... Components, class Object>
+	constexpr decltype(auto) view(Object &object);
+
+	template <class... Components, class Object>
+	constexpr decltype(auto) view(const Object &object);
 
 	/**
 	 * @brief Component store class.
 	 * This class is the component store class and will contain the required components.
 	 *
-	 * @note Make sure that this class has public inheritance with the derived classes, so the helper getter functions
+	 * @note If inheriting from this class, make sure that this class has public inheritance with the derived classes, so the helper getter functions
 	 * would work freely.
 	 *
 	 * @tparam Types The components to store.
@@ -34,34 +46,85 @@ namespace inventory
 	class component_store : public component_store_base<Types...>
 	{
 		template <class Component, class Object>
-		friend constexpr Component &get_component(Object *pStore);
+		friend constexpr decltype(auto) get_component(Object *pStore);
 
 		template <class Component, class Object>
-		friend constexpr const Component &get_component(const Object *pStore);
+		friend constexpr decltype(auto) get_component(const Object *pStore);
 
 		template <class Component, class Object>
-		friend constexpr Component &get_component(Object &store);
+		friend constexpr decltype(auto) get_component(Object &store);
 
 		template <class Component, class Object>
-		friend constexpr const Component &get_component(const Object &store);
+		friend constexpr decltype(auto) get_component(const Object &store);
+
+		template <class... Components, class Object>
+		friend constexpr decltype(auto) view(Object *pObject);
+
+		template <class... Components, class Object>
+		friend constexpr decltype(auto) view(const Object *pObject);
+
+		template <class... Components, class Object>
+		friend constexpr decltype(auto) view(Object &object);
+
+		template <class... Components, class Object>
+		friend constexpr decltype(auto) view(const Object &object);
+
+	public:
+		/**
+		 * @brief Construct a new component store object.
+		 */
+		component_store() = default;
+
+		/**
+		 * @brief Construct a new component store object.
+		 *
+		 * @param data The data to be passed to the components.
+		 */
+		explicit component_store(const Types &...data) : component_store_base<Types...>(std::forward<Types>(data)...) {}
+
+		/**
+		 * @brief Construct a new component store object.
+		 *
+		 * @param data The data to be passed to the components.
+		 */
+		explicit component_store(Types &&...data) : component_store_base<Types...>(std::forward<Types>(data)...) {}
+
+	private:
+		/**
+		 * @brief Get the component object.
+		 *
+		 * @tparam Component The component type.
+		 * @return constexpr decltype(auto) The component reference.
+		 */
+		template <class Component>
+		constexpr INV_NODISCARD decltype(auto) get_component() { return component_store_base<Component>::get(); }
 
 		/**
 		 * @brief Get the component object.
 		 *
 		 * @tparam Component The component type.
-		 * @return constexpr Component& The component reference.
+		 * @return constexpr decltype(auto) The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD Component &get_component() { return component_store_base<Component>::get(); }
+		constexpr INV_NODISCARD decltype(auto) get_component() const { return component_store_base<Component>::get(); }
 
 		/**
-		 * @brief Get the component object.
+		 * @brief Get the tuple object.
 		 *
-		 * @tparam Component The component type.
-		 * @return constexpr const Component& The component reference.
+		 * @tparam Components The components to get.
+		 * @return constexpr std::tuple<Components...> The tuple of components.
 		 */
-		template <class Component>
-		constexpr INV_NODISCARD const Component &get_component() const { return component_store_base<Component>::get(); }
+		template <class... Components>
+		constexpr INV_NODISCARD decltype(auto) view() { return std::tie(get_component<Components>()...); }
+
+		/**
+		 * @brief Get the tuple object.
+		 *
+		 * @tparam Components The components to get.
+		 * @return constexpr std::tuple<Components...> The tuple of components.
+		 */
+		template <class... Components>
+		constexpr INV_NODISCARD decltype(auto) view() const { return std::make_tuple(get_component<Components>()...); }
 	};
 
 	/**
@@ -70,10 +133,10 @@ namespace inventory
 	 * @tparam Component The type of the component.
 	 * @tparam Object The object type.
 	 * @param pObject The storage pointer. Usually this would be `this`.
-	 * @return constexpr Type& The component reference.
+	 * @return constexpr decltype(auto) The component reference.
 	 */
 	template <class Component, class Object>
-	constexpr Component &get_component(Object *pObject) { return pObject->template get_component<Component>(); }
+	constexpr INV_NODISCARD decltype(auto) get_component(Object *pObject) { return pObject->template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
@@ -81,10 +144,10 @@ namespace inventory
 	 * @tparam Component The type of the component.
 	 * @tparam Object The object type.
 	 * @param pObject The storage pointer. Usually this would be `this`.
-	 * @return constexpr const Type& The component reference.
+	 * @return constexpr decltype(auto) The component reference.
 	 */
 	template <class Component, class Object>
-	constexpr const Component &get_component(const Object *pObject) { return pObject->template get_component<Component>(); }
+	constexpr INV_NODISCARD decltype(auto) get_component(const Object *pObject) { return pObject->template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
@@ -92,10 +155,10 @@ namespace inventory
 	 * @tparam Component The type of the component.
 	 * @tparam Object The object type.
 	 * @param object The storage reference. Usually this would be `*this`.
-	 * @return constexpr Type& The component reference.
+	 * @return constexpr decltype(auto) The component reference.
 	 */
 	template <class Component, class Object>
-	constexpr Component &get_component(Object &object) { return object.template get_component<Component>(); }
+	constexpr INV_NODISCARD decltype(auto) get_component(Object &object) { return object.template get_component<Component>(); }
 
 	/**
 	 * @brief Get the component object from an object which is inherited from the component_store.
@@ -103,8 +166,52 @@ namespace inventory
 	 * @tparam Component The type of the component.
 	 * @tparam Object The object type.
 	 * @param object The storage reference. Usually this would be `*this`.
-	 * @return constexpr const Type& The component reference.
+	 * @return constexpr decltype(auto) The component reference.
 	 */
 	template <class Component, class Object>
-	constexpr const Component &get_component(const Object &object) { return object.template get_component<Component>(); }
+	constexpr INV_NODISCARD decltype(auto) get_component(const Object &object) { return object.template get_component<Component>(); }
+
+	/**
+	 * @brief Get the components view from an object which is inherited from the component_store.
+	 *
+	 * @tparam Components The component types.
+	 * @tparam Object The object type.
+	 * @param pObject The storage pointer. Usually this would be `this`.
+	 * @return constexpr decltype(auto) The tuple.
+	 */
+	template <class... Components, class Object>
+	constexpr INV_NODISCARD decltype(auto) view(Object *pObject) { return pObject->template view<Components...>(); }
+
+	/**
+	 * @brief Get the components view from an object which is inherited from the component_store.
+	 *
+	 * @tparam Components The component types.
+	 * @tparam Object The object type.
+	 * @param pObject The storage pointer. Usually this would be `this`.
+	 * @return constexpr decltype(auto) The tuple.
+	 */
+	template <class... Components, class Object>
+	constexpr INV_NODISCARD decltype(auto) view(const Object *pObject) { return pObject->template view<Components...>(); }
+
+	/**
+	 * @brief Get the components view from an object which is inherited from the component_store.
+	 *
+	 * @tparam Components The component types.
+	 * @tparam Object The object type.
+	 * @param object The storage reference. Usually this would be `*this`.
+	 * @return constexpr decltype(auto) The tuple.
+	 */
+	template <class... Components, class Object>
+	constexpr INV_NODISCARD decltype(auto) view(Object &object) { return object.template view<Components...>(); }
+
+	/**
+	 * @brief Get the components view from an object which is inherited from the component_store.
+	 *
+	 * @tparam Components The component types.
+	 * @tparam Object The object type.
+	 * @param object The storage reference. Usually this would be `*this`.
+	 * @return constexpr decltype(auto) The tuple.
+	 */
+	template <class... Components, class Object>
+	constexpr INV_NODISCARD decltype(auto) view(const Object &object) { return object.template view<Components...>(); }
 }

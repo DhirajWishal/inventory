@@ -30,18 +30,36 @@ namespace inventory
 		 * @brief Get the component object.
 		 *
 		 * @tparam Type The component type.
-		 * @return constexpr Type& The component reference.
+		 * @return constexpr decltype(auto) The component reference.
 		 */
 		template <class Type>
-		constexpr INV_NODISCARD Type &get_component() { return get_component<Type>(this); }
+		constexpr INV_NODISCARD decltype(auto) get_component() { return get_component<Type>(this); }
 
 		/**
 		 * @brief Get the component object.
 		 *
 		 * @tparam Type The component type.
-		 * @return constexpr Type& The component reference.
+		 * @return constexpr decltype(auto) The component reference.
 		 */
 		template <class Type>
-		constexpr INV_NODISCARD const Type &get_component() const { return get_component<Type>(this); }
+		constexpr INV_NODISCARD decltype(auto) get_component() const { return get_component<Type>(this); }
+
+		/**
+		 * @brief Get the view of the required components.
+		 *
+		 * @tparam Types The component types.
+		 * @return constexpr decltype(auto) The component view.
+		 */
+		template <class... Types>
+		constexpr INV_NODISCARD decltype(auto) view() { return view<Types...>(this); }
+
+		/**
+		 * @brief Get the view of the required components.
+		 *
+		 * @tparam Types The component types.
+		 * @return constexpr decltype(auto) The component view.
+		 */
+		template <class... Types>
+		constexpr INV_NODISCARD decltype(auto) view() const { return view<Types...>(this); }
 	};
 }

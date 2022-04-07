@@ -17,6 +17,34 @@ namespace inventory
 	template <class Type, class... Types>
 	class component_store_base : public component_store_base<Type>, public component_store_base<Types...>
 	{
+	public:
+		/**
+		 * @brief Construct a new component store base object.
+		 */
+		component_store_base() = default;
+
+		/**
+		 * @brief Construct a new component store base object.
+		 *
+		 * @param first The data to be passed for the first component.
+		 */
+		explicit component_store_base(const Type &first) : component_store_base<Type>(first) {}
+
+		/**
+		 * @brief Construct a new component store base object.
+		 *
+		 * @param first The data to be passed for the first component.
+		 * @param rest the data to be passed for the rest of the components.
+		 */
+		explicit component_store_base(const Type &first, const Types &...rest) : component_store_base<Type>(first), component_store_base<Types...>(std::forward<Types>(rest)...) {}
+
+		/**
+		 * @brief Construct a new component store base object.
+		 *
+		 * @param first The data to be passed for the first component.
+		 * @param rest the data to be passed for the rest of the components.
+		 */
+		explicit component_store_base(Type &&first, Types &&...rest) : component_store_base<Type>(std::forward<Type>(first)), component_store_base<Types...>(std::forward<Types>(rest)...) {}
 	};
 
 	/**
@@ -31,6 +59,25 @@ namespace inventory
 		Type m_Component;
 
 	public:
+		/**
+		 * @brief Construct a new component store base object.
+		 */
+		component_store_base() = default;
+
+		/**
+		 * @brief Construct a new component store base object.
+		 *
+		 * @param first The data to be passed for the first component.
+		 */
+		explicit component_store_base(const Type &first) : m_Component(first) {}
+
+		/**
+		 * @brief Construct a new component store base object.
+		 *
+		 * @param first The data to be passed for the first component.
+		 */
+		explicit component_store_base(Type &&first) : m_Component(std::move(first)) {}
+
 		/**
 		 * @brief Get the component.
 		 *
