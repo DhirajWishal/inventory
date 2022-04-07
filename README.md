@@ -29,10 +29,79 @@ resources.
 ## How to use
 
 Since this library is header-only, all you need to do is, clone this repository and set the include
-directory to `{CLONED DIR}/include` and you can start by including the `inventory/inventory.hpp`
-file.
+directory to `{CLONE DIR}/include` and you can start by including the `inventory/inventory.hpp` file.
 
-And now to show a simple demonstration, lets take a simple scenario. Let's say that our game framework
+### Simple demo
+
+```cpp
+#include <inventory/inventory.hpp>
+#include <inventory/entity.hpp>
+
+// Setup the basic components.
+struct model final { float m_Matrix[4][4]; };
+struct camera final { float m_View[4][4], m_Proj[4][4]; };
+
+// Setup the basic entities.
+using player = inventory::entity<model, camera>;
+using ghost = inventory::entity<model>;
+
+// Templated update methods.
+template <class Type> void update(Type &data) {}
+template <class Type> void update(const Type &data) {}
+
+// Player specialization of the update method.
+template <> void update<player>(player &p) { auto [mod, cam] = inventory::get_components<model, camera>(p); }
+template <> void update<player>(const player &p) { auto [mod, cam] = p.get_components<model, camera>(); }
+
+// Ghost specialization of the update method.
+template <> void update<ghost>(ghost &g) { auto mod = inventory::get_component<model>(g); }
+template <> void update<ghost>(const ghost &g) { auto mod = p.get_component<model>(); }
+
+// Setup the updater callable.
+struct updater final
+{
+ template <class Type>
+ void operator()(Type &entity)
+ {
+  update(entity);
+ }
+
+ template <class Type>
+ void operator()(const Type &entity) const
+ {
+  update(entity);
+ }
+};
+
+// Create the alias for the inventory where the callable is updater.
+using entity_storage = inventory::inventory<updater>;
+
+// Populate the storage with entities.
+void populate_entities(entity_storage& storage)
+{
+ auto& p = storage.emplace_back<player>();
+ auto& g = storage.emplace_back<ghost>();
+}
+
+// Update the entities.
+void update_entities(entity_storage& storage) 
+{ 
+ updater myUpdater;
+ storage.apply(myUpdater);
+}
+
+int main()
+{
+ entity_storage storage;
+
+ populate_entities(storage);
+ update_entities(storage);
+}
+```
+
+### Complex demo
+
+And now to show a complex demonstration, lets take a simple scenario. Let's say that our game framework
 is based on C++, and we have some components.
 
 ```cpp
@@ -181,6 +250,15 @@ int main()
  game_engine.update_entities();
 }
 ```
+
+Optionally you can inherit from the `inventory::inventory` class but that's up to the developer. I would't expect
+any significant (performance) gain from it other than some API differences.
+
+## Build in entity
+
+This library also comes with a build-in entity which basically resembles a normal entity that we can find with
+other ECS implementation, but again, it's a class not an integer. You can instantiate them by providing the
+components as template arguments.
 
 ## Benchmarks
 
