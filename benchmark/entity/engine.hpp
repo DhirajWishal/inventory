@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "engine/components.hpp"
+#include "components.hpp"
 
 #include <entt/entt.hpp>
 

@@ -2,8 +2,11 @@
 
 #include "player.hpp"
 
-void player::update()
+namespace engine
 {
-	[[maybe_unused]] auto &model = inventory::get_component<model_component>(this);
-	[[maybe_unused]] auto &camera = inventory::get_component<camera_component>(this);
+	void player::update()
+	{
+		[[maybe_unused]] auto& model = inventory::get_component<model_component>(this);
+		[[maybe_unused]] auto& camera = inventory::get_component<camera_component>(this);
+	}
 }

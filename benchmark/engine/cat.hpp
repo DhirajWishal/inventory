@@ -4,9 +4,12 @@
 
 #include "game_object.hpp"
 
-class cat final : public game_object<model_component, camera_component, position_component>
+namespace engine
 {
-public:
-	explicit cat(engine &engine) : game_object(engine) {}
-	void update() override;
-};
+	class cat final : public game_object<model_component, camera_component, position_component>
+	{
+	public:
+		explicit cat(engine& engine) : game_object(engine) {}
+		void update() override;
+	};
+}

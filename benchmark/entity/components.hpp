@@ -4,7 +4,7 @@
 
 #include <array>
 
-namespace engine
+namespace entity
 {
 	using vec2 = std::array<float, 2>;
 	using vec3 = std::array<float, 3>;

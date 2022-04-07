@@ -8,56 +8,59 @@
 
 #include <type_traits>
 
-class game_object_interface
+namespace engine
 {
-public:
-	virtual void update() = 0;
-	virtual void update_components() = 0;
-	virtual void update_components() const = 0;
-};
-
-template <class... Types>
-class game_object : public game_object_interface, public inventory::component_store<Types...>
-{
-	engine &m_Engine;
-
-	template <class Component, class... Components>
-	void update_components()
+	class game_object_interface
 	{
-		m_Engine.update(inventory::get_component<Component>(this));
+	public:
+		virtual void update() = 0;
+		virtual void update_components() = 0;
+		virtual void update_components() const = 0;
+	};
 
-		if constexpr (sizeof...(Components) > 0)
-			update_components<Components...>();
-	}
-
-	template <class Component, class... Components>
-	void update_components() const
+	template <class... Types>
+	class game_object : public game_object_interface, public inventory::component_store<Types...>
 	{
-		m_Engine.update(inventory::get_component<Component>(this));
+		engine& m_Engine;
 
-		if constexpr (sizeof...(Components) > 0)
-			update_components<Components...>();
-	}
+		template <class Component, class... Components>
+		void update_components()
+		{
+			m_Engine.update(inventory::get_component<Component>(this));
 
-public:
-	explicit game_object(engine &engine) : m_Engine(engine) {}
+			if constexpr (sizeof...(Components) > 0)
+				update_components<Components...>();
+		}
 
-	void update_components() final { update_components<Types...>(); }
-	void update_components() const final { update_components<Types...>(); }
-};
+		template <class Component, class... Components>
+		void update_components() const
+		{
+			m_Engine.update(inventory::get_component<Component>(this));
 
-struct game_object_updater
-{
-	template <class Type>
-	void operator()(Type &element)
+			if constexpr (sizeof...(Components) > 0)
+				update_components<Components...>();
+		}
+
+	public:
+		explicit game_object(engine& engine) : m_Engine(engine) {}
+
+		void update_components() final { update_components<Types...>(); }
+		void update_components() const final { update_components<Types...>(); }
+	};
+
+	struct game_object_updater
 	{
-		element.update();
-		element.update_components();
-	}
+		template <class Type>
+		void operator()(Type& element)
+		{
+			element.update();
+			element.update_components();
+		}
 
-	template <class Type>
-	void operator()(const Type &element) const
-	{
-		element.update_components();
-	}
-};
+		template <class Type>
+		void operator()(const Type& element) const
+		{
+			element.update_components();
+		}
+	};
+}
