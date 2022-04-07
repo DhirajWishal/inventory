@@ -272,9 +272,9 @@ int main()
 Optionally you can inherit from the `inventory::inventory` class but that's up to the developer. I wouldn't expect
 any significant (performance) gain from it other than some API differences.
 
-## Built in entity
+## Built-in entity
 
-This library also comes with a build-in entity which basically resembles a normal entity that we can find with
+This library also comes with a Built-in entity which basically resembles a normal entity that we can find with
 other ECS implementation, but again, it's a class not an integer. You can instantiate them by providing the
 components as template arguments.
 

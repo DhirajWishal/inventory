@@ -476,7 +476,7 @@ namespace inventory
 		 *
 		 * @return constexpr decltype(auto) The type indexes.
 		 */
-		constexpr INV_NODISCARD decltype(auto) get_type_indexes() const
+		INV_NODISCARD decltype(auto) get_type_indexes() const
 		{
 			std::vector<std::type_index> indexes;
 			indexes.reserve(m_Storage.size());
