@@ -6,7 +6,6 @@ add_executable(
 	main.cpp
 	engine/engine.cpp
 
-	entity/benchmark.cpp
 	entity/cat.cpp
 	entity/engine.cpp
 	entity/player.cpp

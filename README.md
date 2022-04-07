@@ -274,7 +274,7 @@ any significant (performance) gain from it other than some API differences.
 
 ## Built-in entity
 
-This library also comes with a Built-in entity which basically resembles a normal entity that we can find with
+This library also comes with a built-in entity which basically resembles a normal entity that we can find with
 other ECS implementation, but again, it's a class not an integer. You can instantiate them by providing the
 components as template arguments.
 
