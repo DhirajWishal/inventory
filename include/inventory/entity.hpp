@@ -33,7 +33,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The component reference.
 		 */
 		template <class Type>
-		constexpr INV_NODISCARD decltype(auto) get_component() { return get_component<Type>(this); }
+		constexpr INV_NODISCARD decltype(auto) get_component() { return ::inventory::get_component<Type>(this); }
 
 		/**
 		 * @brief Get the component object.
@@ -42,7 +42,16 @@ namespace inventory
 		 * @return constexpr decltype(auto) The component reference.
 		 */
 		template <class Type>
-		constexpr INV_NODISCARD decltype(auto) get_component() const { return get_component<Type>(this); }
+		constexpr INV_NODISCARD decltype(auto) get_component() const { return ::inventory::get_component<Type>(this); }
+
+		/**
+		 * @brief Get the view of the required components.
+		 *
+		 * @tparam Components The component types.
+		 * @return constexpr decltype(auto) The component view.
+		 */
+		template <class... Components>
+		constexpr INV_NODISCARD decltype(auto) get_components() { return ::inventory::get_components<Components...>(this); }
 
 		/**
 		 * @brief Get the view of the required components.
@@ -50,16 +59,7 @@ namespace inventory
 		 * @tparam Types The component types.
 		 * @return constexpr decltype(auto) The component view.
 		 */
-		template <class... Types>
-		constexpr INV_NODISCARD decltype(auto) get_components() { return get_components<Types...>(this); }
-
-		/**
-		 * @brief Get the view of the required components.
-		 *
-		 * @tparam Types The component types.
-		 * @return constexpr decltype(auto) The component view.
-		 */
-		template <class... Types>
-		constexpr INV_NODISCARD decltype(auto) get_components() const { return get_components<Types...>(this); }
+		template <class... Components>
+		constexpr INV_NODISCARD decltype(auto) get_components() const { return ::inventory::get_components<Components...>(this); }
 	};
 }

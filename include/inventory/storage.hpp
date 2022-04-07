@@ -67,7 +67,7 @@ namespace inventory
 		 *
 		 * @return const std::type_info& The type info object.
 		 */
-		virtual const std::type_info &get_type_info() const = 0;
+		virtual INV_NODISCARD const std::type_info &get_type_info() const = 0;
 	};
 
 	/**
@@ -151,7 +151,7 @@ namespace inventory
 		 *
 		 * @return const std::type_info& The type info object.
 		 */
-		virtual const std::type_info &get_type_info() const { return typeid(Type); }
+		virtual INV_NODISCARD const std::type_info &get_type_info() const override { return typeid(Type); }
 
 	private:
 		std::vector<Type> m_Container = {};
