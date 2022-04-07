@@ -83,7 +83,6 @@ class game_object : public game_object_interface, public inventory::component_st
 public:
  explicit game_object(engine &engine) : m_Engine(engine) {}
 
-
  void update_components() final { update_components<Types...>(); }
  void update_components() const final { update_components<Types...>(); }
 };
@@ -143,14 +142,10 @@ struct game_object_updater
 };
 ```
 
-> Note that it's the best idea to add some type checks in the form of
-> `if constexpr (std::is_base_of_v<game_object_interface, Type>)` before we call those member methods,
-> but for this tutorial lets assume that the game does not use the inventory to store other things.
-
 Finally, we can create the entities and put everything together.
 
 ```cpp
-class player final : game_object<position, transform, rotation, camera>
+class player final : public game_object<position, transform, rotation, camera>
 {
  public:
  player(entine& engine) : game_object(engine) {}
@@ -158,7 +153,7 @@ class player final : game_object<position, transform, rotation, camera>
  void update() override { auto [pos, trans, cam] = inventory::get_components<position, transform, camera>(this); }
 }
 
-class car final : game_object<position, transform, camera>
+class car final : public game_object<position, transform, camera>
 {
  public:
  car(entine& engine) : game_object(engine) {}
@@ -166,7 +161,7 @@ class car final : game_object<position, transform, camera>
  void update() override { auto [pos, trans, cam] = inventory::get_components<position, transform, camera>(this); }
 }
 
-class tree final : game_object<transform, camera>
+class tree final : public game_object<transform, camera>
 {
  public:
  tree(entine& engine) : game_object(engine) {}
@@ -190,7 +185,8 @@ int main()
 ## Benchmarks
 
 The workflow contains a simple benchmark, basically `inventory` against `entt`. Note that this is not to say that
-`entt` is bad or worse, this is to show that it has a slight edge over that library :)
+`entt` is bad, it sucks or whatever, this is to show that `inventory` has a slight edge over that library thanks
+to compile time optimizations and higher data locality.
 
 ## License
 
