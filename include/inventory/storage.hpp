@@ -5,6 +5,7 @@
 #include "platform.hpp"
 
 #include <vector>
+#include <typeinfo>
 
 namespace inventory
 {
@@ -60,6 +61,13 @@ namespace inventory
 		 * @brief Clear the stored data.
 		 */
 		virtual void clear() = 0;
+
+		/**
+		 * @brief Get the type info object.
+		 *
+		 * @return const std::type_info& The type info object.
+		 */
+		virtual const std::type_info &get_type_info() const = 0;
 	};
 
 	/**
@@ -137,6 +145,13 @@ namespace inventory
 		 * @return std::vector<Type> container.
 		 */
 		constexpr INV_NODISCARD std::vector<Type> container() const { return m_Container; }
+
+		/**
+		 * @brief Get the type info object.
+		 *
+		 * @return const std::type_info& The type info object.
+		 */
+		virtual const std::type_info &get_type_info() const { return typeid(Type); }
 
 	private:
 		std::vector<Type> m_Container = {};

@@ -51,7 +51,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The component view.
 		 */
 		template <class... Types>
-		constexpr INV_NODISCARD decltype(auto) view() { return view<Types...>(this); }
+		constexpr INV_NODISCARD decltype(auto) get_components() { return get_components<Types...>(this); }
 
 		/**
 		 * @brief Get the view of the required components.
@@ -60,6 +60,6 @@ namespace inventory
 		 * @return constexpr decltype(auto) The component view.
 		 */
 		template <class... Types>
-		constexpr INV_NODISCARD decltype(auto) view() const { return view<Types...>(this); }
+		constexpr INV_NODISCARD decltype(auto) get_components() const { return get_components<Types...>(this); }
 	};
 }

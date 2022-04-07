@@ -4,6 +4,8 @@
 
 #include "component_store_base.hpp"
 
+#include <tuple>
+
 namespace inventory
 {
 	template <class... Types>
@@ -22,16 +24,16 @@ namespace inventory
 	constexpr decltype(auto) get_component(const Object &store);
 
 	template <class... Components, class Object>
-	constexpr decltype(auto) view(Object *pObject);
+	constexpr decltype(auto) get_components(Object *pObject);
 
 	template <class... Components, class Object>
-	constexpr decltype(auto) view(const Object *pObject);
+	constexpr decltype(auto) get_components(const Object *pObject);
 
 	template <class... Components, class Object>
-	constexpr decltype(auto) view(Object &object);
+	constexpr decltype(auto) get_components(Object &object);
 
 	template <class... Components, class Object>
-	constexpr decltype(auto) view(const Object &object);
+	constexpr decltype(auto) get_components(const Object &object);
 
 	/**
 	 * @brief Component store class.
@@ -58,16 +60,16 @@ namespace inventory
 		friend constexpr decltype(auto) get_component(const Object &store);
 
 		template <class... Components, class Object>
-		friend constexpr decltype(auto) view(Object *pObject);
+		friend constexpr decltype(auto) get_components(Object *pObject);
 
 		template <class... Components, class Object>
-		friend constexpr decltype(auto) view(const Object *pObject);
+		friend constexpr decltype(auto) get_components(const Object *pObject);
 
 		template <class... Components, class Object>
-		friend constexpr decltype(auto) view(Object &object);
+		friend constexpr decltype(auto) get_components(Object &object);
 
 		template <class... Components, class Object>
-		friend constexpr decltype(auto) view(const Object &object);
+		friend constexpr decltype(auto) get_components(const Object &object);
 
 	public:
 		/**
@@ -109,22 +111,22 @@ namespace inventory
 		constexpr INV_NODISCARD decltype(auto) get_component() const { return component_store_base<Component>::get(); }
 
 		/**
-		 * @brief Get the tuple object.
+		 * @brief Get multiple components from the store.
 		 *
 		 * @tparam Components The components to get.
-		 * @return constexpr std::tuple<Components...> The tuple of components.
+		 * @return constexpr decltype(auto) The tuple of components.
 		 */
 		template <class... Components>
-		constexpr INV_NODISCARD decltype(auto) view() { return std::tie(get_component<Components>()...); }
+		constexpr INV_NODISCARD decltype(auto) get_components() { return std::tie(get_component<Components>()...); }
 
 		/**
-		 * @brief Get the tuple object.
+		 * @brief Get multiple components from the store.
 		 *
 		 * @tparam Components The components to get.
-		 * @return constexpr std::tuple<Components...> The tuple of components.
+		 * @return constexpr decltype(auto) The tuple of components.
 		 */
 		template <class... Components>
-		constexpr INV_NODISCARD decltype(auto) view() const { return std::make_tuple(get_component<Components>()...); }
+		constexpr INV_NODISCARD decltype(auto) get_components() const { return std::make_tuple(get_component<Components>()...); }
 	};
 
 	/**
@@ -172,7 +174,7 @@ namespace inventory
 	constexpr INV_NODISCARD decltype(auto) get_component(const Object &object) { return object.template get_component<Component>(); }
 
 	/**
-	 * @brief Get the components view from an object which is inherited from the component_store.
+	 * @brief Get multiple components from an object which is inherited from the component_store.
 	 *
 	 * @tparam Components The component types.
 	 * @tparam Object The object type.
@@ -180,10 +182,10 @@ namespace inventory
 	 * @return constexpr decltype(auto) The tuple.
 	 */
 	template <class... Components, class Object>
-	constexpr INV_NODISCARD decltype(auto) view(Object *pObject) { return pObject->template view<Components...>(); }
+	constexpr INV_NODISCARD decltype(auto) get_components(Object *pObject) { return pObject->template get_components<Components...>(); }
 
 	/**
-	 * @brief Get the components view from an object which is inherited from the component_store.
+	 * @brief Get multiple components from an object which is inherited from the component_store.
 	 *
 	 * @tparam Components The component types.
 	 * @tparam Object The object type.
@@ -191,10 +193,10 @@ namespace inventory
 	 * @return constexpr decltype(auto) The tuple.
 	 */
 	template <class... Components, class Object>
-	constexpr INV_NODISCARD decltype(auto) view(const Object *pObject) { return pObject->template view<Components...>(); }
+	constexpr INV_NODISCARD decltype(auto) get_components(const Object *pObject) { return pObject->template get_components<Components...>(); }
 
 	/**
-	 * @brief Get the components view from an object which is inherited from the component_store.
+	 * @brief Get multiple components from an object which is inherited from the component_store.
 	 *
 	 * @tparam Components The component types.
 	 * @tparam Object The object type.
@@ -202,10 +204,10 @@ namespace inventory
 	 * @return constexpr decltype(auto) The tuple.
 	 */
 	template <class... Components, class Object>
-	constexpr INV_NODISCARD decltype(auto) view(Object &object) { return object.template view<Components...>(); }
+	constexpr INV_NODISCARD decltype(auto) get_components(Object &object) { return object.template get_components<Components...>(); }
 
 	/**
-	 * @brief Get the components view from an object which is inherited from the component_store.
+	 * @brief Get multiple components from an object which is inherited from the component_store.
 	 *
 	 * @tparam Components The component types.
 	 * @tparam Object The object type.
@@ -213,5 +215,5 @@ namespace inventory
 	 * @return constexpr decltype(auto) The tuple.
 	 */
 	template <class... Components, class Object>
-	constexpr INV_NODISCARD decltype(auto) view(const Object &object) { return object.template view<Components...>(); }
+	constexpr INV_NODISCARD decltype(auto) get_components(const Object &object) { return object.template get_components<Components...>(); }
 }
