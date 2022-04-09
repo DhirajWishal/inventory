@@ -5,9 +5,7 @@
 namespace inventory
 {
 	template <class Type, class... Types>
-	class component_view : public component_view<Type>, public component_view<Types...>
+	class component_view
 	{
-	}
-
-	template<class
+	};
 }

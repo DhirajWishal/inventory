@@ -3,6 +3,9 @@
 #pragma once
 
 #include "storage_map.hpp"
+#include "component_store.hpp"
+
+#include <unordered_map>
 
 namespace inventory
 {
@@ -46,7 +49,7 @@ namespace inventory
 			if (!is_registered<Type>())
 				register_type<Type>();
 
-			return static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].get())->container();
+			return static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].m_StoragePointer.get())->container();
 		}
 
 		/**
@@ -57,7 +60,7 @@ namespace inventory
 		void apply(Callable &callable)
 		{
 			for (auto &[index, pStorage] : m_Storage)
-				pStorage->apply(callable);
+				pStorage->m_StoragePointer.apply(callable);
 		}
 
 		/**
@@ -68,7 +71,7 @@ namespace inventory
 		void apply(const Callable &callable) const
 		{
 			for (const auto &[index, pStorage] : m_Storage)
-				pStorage->apply(callable);
+				pStorage->m_StoragePointer.apply(callable);
 		}
 
 		/**
@@ -77,7 +80,7 @@ namespace inventory
 		 * @param index The type index to apply to.
 		 * @param callable The callable functor.
 		 */
-		void apply_custom(const std::type_index &index, Callable &callable) { m_Storage[index]->apply(callable); }
+		void apply_custom(const std::type_index &index, Callable &callable) { m_Storage.find(index)->second.m_StoragePointer.apply(callable); }
 
 		/**
 		 * @brief Apply a callable functor to a custom type.
@@ -85,7 +88,7 @@ namespace inventory
 		 * @param index The type index to apply to.
 		 * @param callable The callable functor.
 		 */
-		void apply_custom(const std::type_index &index, const Callable &callable) const { m_Storage[index]->apply(callable); }
+		void apply_custom(const std::type_index &index, const Callable &callable) const { m_Storage.find(index)->second.m_StoragePointer.apply(callable); }
 
 		/**
 		 * @brief Apply a callable functor to a custom type.
@@ -94,7 +97,7 @@ namespace inventory
 		 * @param callable The callable functor.
 		 */
 		template <class Type>
-		void apply_manual(Callable &callable) { static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].get())->apply(callable); }
+		void apply_manual(Callable &callable) { static_cast<storage<Type, Callable> *>(m_Storage.find(get_index<Type>())->second.m_StoragePointer.get())->apply(callable); }
 
 		/**
 		 * @brief Apply a callable functor to a custom type.
@@ -103,7 +106,7 @@ namespace inventory
 		 * @param callable The callable functor.
 		 */
 		template <class Type>
-		void apply_manual(const Callable &callable) const { static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].get())->apply(callable); }
+		void apply_manual(const Callable &callable) const { static_cast<storage<Type, Callable> *>(m_Storage.find(get_index<Type>())->second.m_StoragePointer.get())->apply(callable); }
 
 		/**
 		 * @brief Replace the contents of the container.
@@ -496,7 +499,7 @@ namespace inventory
 		{
 			size_t count = 0;
 			for (const auto &[index, pStorage] : m_Storage)
-				count += pStorage->size();
+				count += pStorage->m_StoragePointer.size();
 
 			return count;
 		}
@@ -527,9 +530,67 @@ namespace inventory
 		 * @tparam Type The type to store.
 		 */
 		template <class Type>
-		constexpr void register_type() { m_Storage[get_index<Type>()] = std::make_unique<storage<Type, Callable>>(); }
+		constexpr void register_type()
+		{
+			if constexpr (std::is_base_of_v<component_store_interface, Type>)
+				m_Storage[get_index<Type>()] = Container(std::make_unique<storage<Type, Callable>>(), std::move(resolve_components<Type>(Type::component_store())));
+
+			else
+				m_Storage[get_index<Type>()] = Container(std::make_unique<storage<Type, Callable>>());
+		}
+
+		/**
+		 * @brief Resolve the components of a given entity type.
+		 *
+		 * @tparam Type The entity type.
+		 * @tparam Types The entity's components.
+		 * @param store The component store used to resolve the components.
+		 * @return constexpr decltype(auto) The vector containing all the components.
+		 */
+		template <class Type, class... Types>
+		constexpr decltype(auto) resolve_components([[maybe_unused]] const component_store<Types...> &store)
+		{
+			std::vector<std::type_index> components;
+			components.reserve(sizeof...(Types));
+			(components.emplace_back(get_index<Types>()), ...);
+
+			return components;
+		}
 
 	private:
-		storage_map<Callable> m_Storage = {};
+		/**
+		 * @brief Container struct.
+		 * This contains the storage pointer and the components vector.
+		 */
+		struct Container
+		{
+			using Pointer = std::unique_ptr<storage_interface<Callable>>;
+			using Components = std::vector<std::type_index>;
+
+			/**
+			 * @brief Construct a new Container object.
+			 */
+			Container() = default;
+
+			/**
+			 * @brief Construct a new Container object.
+			 *
+			 * @param pointer The storage pointer.
+			 */
+			explicit Container(Pointer &&pointer) : m_StoragePointer(std::move(pointer)) {}
+
+			/**
+			 * @brief Construct a new Container object.
+			 *
+			 * @param pointer The storage pointer.
+			 * @param components The components vector.
+			 */
+			explicit Container(Pointer &&pointer, Components &&components) : m_StoragePointer(std::move(pointer)), m_Components(std::move(components)) {}
+
+			Pointer m_StoragePointer = nullptr;
+			Components m_Components = {};
+		};
+
+		storage_map<std::type_index, Container> m_Storage = {};
 	};
 }

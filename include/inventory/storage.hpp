@@ -109,7 +109,7 @@ namespace inventory
 		 */
 		constexpr void apply(const Callable &callable) const override
 		{
-			for (auto &item : m_Container)
+			for (const auto &item : m_Container)
 				callable(item);
 		}
 

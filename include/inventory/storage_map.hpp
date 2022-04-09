@@ -15,15 +15,15 @@ namespace inventory
 	 * This class is an associative container which stores all of its data in a vector.
 	 * Key-value pairs are determined using a binary search, this makes is much more faster than the usual std::unordered_map<,>
 	 *
-	 * @tparam Callable The callable type.
+	 * @tparam Key The key type.
+	 * @tparam Value The value type.
 	 */
-	template <class Callable>
+	template <class Key, class Value>
 	class storage_map final
 	{
 	public:
-		using key_type = std::type_index;
-		using storage_type = storage_interface<Callable>;
-		using value_type = std::unique_ptr<storage_type>;
+		using key_type = Key;
+		using value_type = Value;
 		using entry_type = std::pair<key_type, value_type>;
 		using container_type = std::vector<entry_type>;
 		using iterator = typename container_type::iterator;
@@ -114,7 +114,7 @@ namespace inventory
 		 * @param key The key value to index.
 		 * @return constexpr value_type& The value type reference.
 		 */
-		constexpr INV_NODISCARD value_type& operator[](const key_type &key)
+		constexpr INV_NODISCARD value_type &operator[](const key_type &key)
 		{
 			auto itr = find(key);
 

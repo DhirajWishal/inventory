@@ -36,6 +36,13 @@ namespace inventory
 	constexpr INV_NODISCARD decltype(auto) get_components(const component_store<Types...> &object);
 
 	/**
+	 * @brief Interface class for the component store used for entity identification and abstraction.
+	 */
+	class component_store_interface
+	{
+	};
+
+	/**
 	 * @brief Component store class.
 	 * This class is the component store class and will contain the required components.
 	 *
@@ -45,7 +52,7 @@ namespace inventory
 	 * @tparam Types The components to store.
 	 */
 	template <class... Types>
-	class component_store : public component_store_base<Types...>
+	class component_store : public component_store_interface, public component_store_base<Types...>
 	{
 		template <class Component, class... _Types>
 		friend constexpr decltype(auto) get_component(component_store<_Types...> *pObject);
