@@ -22,7 +22,7 @@ namespace inventory
 		/**
 		 * @brief Construct a new storage interface object.
 		 */
-		storage_interface() = default;
+		constexpr storage_interface() = default;
 
 		/**
 		 * @brief Destroy the storage interface object.
@@ -31,17 +31,13 @@ namespace inventory
 
 		/**
 		 * @brief Apply a callable function over the stored data.
-		 *
-		 * @param callable The callable which will be applied.
 		 */
-		virtual void apply(Callable &callable) = 0;
+		virtual void apply() = 0;
 
 		/**
 		 * @brief Apply a callable function over the stored data.
-		 *
-		 * @param callable The callable which will be applied.
 		 */
-		virtual void apply(const Callable &callable) const = 0;
+		virtual void apply() const = 0;
 
 		/**
 		 * @brief Get the number of data stored.
@@ -82,9 +78,11 @@ namespace inventory
 	{
 	public:
 		/**
-		 * @brief Construct a new storage interface object.
+		 * @brief Construct a new storage object.
+		 *
+		 * @param callable The callable object to be called.
 		 */
-		constexpr storage() = default;
+		constexpr explicit storage(Callable &callable) : m_Callable(callable), m_ConstCallable(callable) {}
 
 		/**
 		 * @brief Destroy the storage interface object.
@@ -93,24 +91,20 @@ namespace inventory
 
 		/**
 		 * @brief Apply a callable function over the stored data.
-		 *
-		 * @param callable The callable which will be applied.
 		 */
-		constexpr void apply(Callable &callable) override
+		constexpr void apply() override
 		{
 			for (auto &item : m_Container)
-				callable(item);
+				m_Callable(item);
 		}
 
 		/**
 		 * @brief Apply a callable function over the stored data.
-		 *
-		 * @param callable The callable which will be applied.
 		 */
-		constexpr void apply(const Callable &callable) const override
+		constexpr void apply() const override
 		{
 			for (const auto &item : m_Container)
-				callable(item);
+				m_ConstCallable(item);
 		}
 
 		/**
@@ -137,23 +131,26 @@ namespace inventory
 		 *
 		 * @return std::vector<Type>& container.
 		 */
-		constexpr INV_NODISCARD std::vector<Type> &container() { return m_Container; }
+		constexpr INV_NODISCARD std::vector<Type> &get_container() { return m_Container; }
 
 		/**
 		 * @brief Get the stored container.
 		 *
 		 * @return std::vector<Type> container.
 		 */
-		constexpr INV_NODISCARD std::vector<Type> container() const { return m_Container; }
+		constexpr INV_NODISCARD std::vector<Type> get_container() const { return m_Container; }
 
 		/**
 		 * @brief Get the type info object.
 		 *
 		 * @return const std::type_info& The type info object.
 		 */
-		virtual INV_NODISCARD const std::type_info &get_type_info() const override { return typeid(Type); }
+		constexpr INV_NODISCARD const std::type_info &get_type_info() const override { return typeid(Type); }
 
 	private:
 		std::vector<Type> m_Container = {};
+
+		Callable &m_Callable;
+		const Callable &m_ConstCallable;
 	};
 }

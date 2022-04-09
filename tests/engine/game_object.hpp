@@ -44,19 +44,3 @@ public:
 	void update_components() final { update_components<Types...>(); }
 	void update_components() const final { update_components<Types...>(); }
 };
-
-struct game_object_updater
-{
-	template <class Type>
-	void operator()(Type &element)
-	{
-		element.update();
-		element.update_components();
-	}
-
-	template <class Type>
-	void operator()(const Type &element) const
-	{
-		element.update_components();
-	}
-};

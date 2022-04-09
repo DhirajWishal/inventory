@@ -6,10 +6,11 @@
 
 #include "components.hpp"
 #include <inventory/component_store.hpp>
+#include <inventory/container.hpp>
 
 namespace engine
 {
-	class engine final
+	class engine final : public inventory::container<engine>
 	{
 	public:
 		void update([[maybe_unused]] const model_component &component) const;

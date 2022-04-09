@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "inventory/inventory.hpp"
 #include "player.hpp"
 #include "cat.hpp"
 
@@ -16,18 +15,16 @@ namespace ivnt_test
 	template <int ObjectCount>
 	inline void test(benchmark::State &state)
 	{
-		auto registry = inventory::inventory<engine::engine>();
-		auto &playerVector = registry.get_storage<engine::player>();
-		auto &catVector = registry.get_storage<engine::cat>();
-
 		engine::engine gameEngine;
+		auto &playerVector = gameEngine.get_storage<engine::player>();
+		auto &catVector = gameEngine.get_storage<engine::cat>();
+
 		playerVector.resize(ObjectCount, engine::player(gameEngine));
 		catVector.resize(ObjectCount, engine::cat(gameEngine));
 
 		for (auto _ : state)
 		{
-			registry.apply_manual<engine::player>(gameEngine);
-			registry.apply_manual<engine::cat>(gameEngine);
+			gameEngine.apply();
 		}
 	}
 }

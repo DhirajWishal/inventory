@@ -1,6 +1,6 @@
 // Copyright (c) 2022 Dhiraj Wishal
 
-#include <inventory/inventory.hpp>
+#include <inventory/container.hpp>
 #include <inventory/entity.hpp>
 
 void basic_test()
@@ -26,7 +26,7 @@ void basic_test()
 	{
 	};
 
-	struct Updater
+	struct Updater final : public inventory::container<Updater>
 	{
 		void operator()(Apple &component) {}
 		void operator()(const Apple &component) const {}
@@ -40,26 +40,25 @@ void basic_test()
 		void operator()(Mango &component) {}
 		void operator()(const Mango &component) const {}
 	};
-	auto registry = inventory::inventory<Updater>();
-	[[maybe_unused]] auto &a = registry.emplace_back<Apple>();
-	[[maybe_unused]] auto &o = registry.emplace_back<Orange>();
-	[[maybe_unused]] auto &b = registry.emplace_back<Banana>();
-	[[maybe_unused]] auto &m = registry.emplace_back<Mango>();
-
 	Updater updater;
-	registry.apply(updater);
+	[[maybe_unused]] auto &a = updater.emplace_back<Apple>();
+	[[maybe_unused]] auto &o = updater.emplace_back<Orange>();
+	[[maybe_unused]] auto &b = updater.emplace_back<Banana>();
+	[[maybe_unused]] auto &m = updater.emplace_back<Mango>();
 
-	registry.apply_custom(std::type_index(typeid(Apple)), updater);
-	registry.apply_manual<Apple>(updater);
+	updater.apply();
 
-	registry.apply_custom(std::type_index(typeid(Orange)), updater);
-	registry.apply_manual<Orange>(updater);
+	updater.apply_custom(std::type_index(typeid(Apple)));
+	updater.apply_manual<Apple>();
 
-	registry.apply_custom(std::type_index(typeid(Banana)), updater);
-	registry.apply_manual<Banana>(updater);
+	updater.apply_custom(std::type_index(typeid(Orange)));
+	updater.apply_manual<Orange>();
 
-	registry.apply_custom(std::type_index(typeid(Mango)), updater);
-	registry.apply_manual<Mango>(updater);
+	updater.apply_custom(std::type_index(typeid(Banana)));
+	updater.apply_manual<Banana>();
+
+	updater.apply_custom(std::type_index(typeid(Mango)));
+	updater.apply_manual<Mango>();
 }
 
 // Setup the basic components.
@@ -98,7 +97,7 @@ template <>
 void update<ghost>(const ghost &g) { auto mod = g.get_component<model>(); }
 
 // Setup the updater callable.
-struct updater final
+struct updater final : public inventory::container<updater>
 {
 	template <class Type>
 	void operator()(Type &entity)
@@ -114,7 +113,7 @@ struct updater final
 };
 
 // Create the alias for the inventory where the callable is updater.
-using entity_storage = inventory::inventory<updater>;
+using entity_storage = updater;
 
 // Populate the storage with entities.
 void populate_entities(entity_storage &storage)
@@ -127,13 +126,13 @@ void populate_entities(entity_storage &storage)
 void update_entities(entity_storage &storage)
 {
 	updater myUpdater;
-	storage.apply(myUpdater);
+	storage.apply();
 
-	storage.apply_custom(std::type_index(typeid(player)), myUpdater);
-	storage.apply_custom(std::type_index(typeid(ghost)), myUpdater);
+	storage.apply_custom(std::type_index(typeid(player)));
+	storage.apply_custom(std::type_index(typeid(ghost)));
 
-	storage.apply_manual<player>(myUpdater);
-	storage.apply_manual<ghost>(myUpdater);
+	storage.apply_manual<player>();
+	storage.apply_manual<ghost>();
 }
 
 void entity_test()

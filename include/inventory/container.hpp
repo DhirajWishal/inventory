@@ -5,108 +5,124 @@
 #include "storage_map.hpp"
 #include "component_store.hpp"
 
-#include <unordered_map>
-
 namespace inventory
 {
 	/**
-	 * @brief Inventory interface class.
-	 * This class is the base class of the inventory and acts as a polymorphic type for future abstraction.
-	 */
-	class inventory_interface
-	{
-	};
-
-	/**
-	 * @brief Inventory class.
+	 * @brief Container class.
 	 * This class is the main storage class and this contains all the required data using the storage map.
+	 * Note that this object is abstract, and is intended to be inherited by the Derived.
 	 *
-	 * @tparam Callable The callable type.
+	 * @tparam Derived The derived type.
 	 */
-	template <class Callable>
-	class inventory : public inventory_interface
+	template <class Derived>
+	class container
 	{
+		/**
+		 * @brief Entity component map struct.
+		 * This contains the storage pointer and the components vector.
+		 */
+		struct EntityComponentMap
+		{
+			using Pointer = std::unique_ptr<storage_interface<Derived>>;
+			using Components = std::vector<std::type_index>;
+
+			/**
+			 * @brief Construct a new EntityComponentMap object.
+			 */
+			constexpr EntityComponentMap() = default;
+
+			/**
+			 * @brief Construct a new EntityComponentMap object.
+			 *
+			 * @param pointer The storage pointer.
+			 */
+			constexpr explicit EntityComponentMap(Pointer &&pointer) : m_StoragePointer(std::move(pointer)) {}
+
+			/**
+			 * @brief Construct a new EntityComponentMap object.
+			 *
+			 * @param pointer The storage pointer.
+			 * @param components The components vector.
+			 */
+			constexpr explicit EntityComponentMap(Pointer &&pointer, Components &&components) : m_StoragePointer(std::move(pointer)), m_Components(std::move(components)) {}
+
+			Pointer m_StoragePointer = nullptr;
+			Components m_Components = {};
+		};
+
 	public:
 		/**
-		 * @brief Construct a new inventory object.
+		 * @brief Construct a new container object.
 		 */
-		inventory() = default;
+		constexpr container() = default;
 
 		/**
-		 * @brief Destroy the inventory object.
+		 * @brief Destroy the container object.
 		 */
-		~inventory() = default;
+		virtual ~container() = 0;
 
 		/**
 		 * @brief Get the storage object.
 		 *
 		 * @tparam Type The type of the storage to get.
-		 * @return std::storage<Type>& The storage.
+		 * @return std::vector<Type>& The storage.
 		 */
 		template <class Type>
-		std::vector<Type> &get_storage()
+		constexpr std::vector<Type> &get_storage()
 		{
 			if (!is_registered<Type>())
 				register_type<Type>();
 
-			return static_cast<storage<Type, Callable> *>(m_Storage[get_index<Type>()].m_StoragePointer.get())->container();
+			return static_cast<storage<Type, Derived> *>(m_Storage[get_index<Type>()].m_StoragePointer.get())->get_container();
 		}
 
 		/**
-		 * @brief Apply a callable functor to all the stored types.
-		 *
-		 * @param callable The callable functor.
+		 * @brief Apply a Derived functor to all the stored types.
 		 */
-		void apply(Callable &callable)
+		constexpr void apply()
 		{
-			for (auto &[index, pStorage] : m_Storage)
-				pStorage->m_StoragePointer.apply(callable);
+			for (auto &[index, storage] : m_Storage)
+				storage.m_StoragePointer->apply();
 		}
 
 		/**
-		 * @brief Apply a callable functor to all the stored types.
-		 *
-		 * @param callable The callable functor.
+		 * @brief Apply a Derived functor to all the stored types.
 		 */
-		void apply(const Callable &callable) const
+		constexpr void apply() const
 		{
-			for (const auto &[index, pStorage] : m_Storage)
-				pStorage->m_StoragePointer.apply(callable);
+			for (const auto &[index, storage] : m_Storage)
+				storage.m_StoragePointer->apply();
 		}
 
 		/**
-		 * @brief Apply a callable functor to a custom type.
+		 * @brief Apply a Derived functor to a custom type.
 		 *
 		 * @param index The type index to apply to.
-		 * @param callable The callable functor.
 		 */
-		void apply_custom(const std::type_index &index, Callable &callable) { m_Storage.find(index)->second.m_StoragePointer.apply(callable); }
+		constexpr void apply_custom(const std::type_index &index) { m_Storage.find(index)->second.m_StoragePointer->apply(); }
 
 		/**
-		 * @brief Apply a callable functor to a custom type.
+		 * @brief Apply a Derived functor to a custom type.
 		 *
 		 * @param index The type index to apply to.
-		 * @param callable The callable functor.
 		 */
-		void apply_custom(const std::type_index &index, const Callable &callable) const { m_Storage.find(index)->second.m_StoragePointer.apply(callable); }
+		constexpr void apply_custom(const std::type_index &index) const { m_Storage.find(index)->second.m_StoragePointer->apply(); }
 
 		/**
-		 * @brief Apply a callable functor to a custom type.
+		 * @brief Apply a Derived functor to a custom type.
 		 *
 		 * @tparam Type The type of the object to apply to.
-		 * @param callable The callable functor.
 		 */
 		template <class Type>
-		void apply_manual(Callable &callable) { static_cast<storage<Type, Callable> *>(m_Storage.find(get_index<Type>())->second.m_StoragePointer.get())->apply(callable); }
+		constexpr void apply_manual() { static_cast<storage<Type, Derived> *>(m_Storage.find(get_index<Type>())->second.m_StoragePointer.get())->apply(); }
 
 		/**
-		 * @brief Apply a callable functor to a custom type.
+		 * @brief Apply a Derived functor to a custom type.
 		 *
 		 * @tparam Type The type of the object to apply to.
-		 * @param callable The callable functor.
 		 */
 		template <class Type>
-		void apply_manual(const Callable &callable) const { static_cast<storage<Type, Callable> *>(m_Storage.find(get_index<Type>())->second.m_StoragePointer.get())->apply(callable); }
+		constexpr void apply_manual() const { static_cast<storage<Type, Derived> *>(m_Storage.find(get_index<Type>())->second.m_StoragePointer.get())->apply(); }
 
 		/**
 		 * @brief Replace the contents of the container.
@@ -533,10 +549,10 @@ namespace inventory
 		constexpr void register_type()
 		{
 			if constexpr (std::is_base_of_v<component_store_interface, Type>)
-				m_Storage[get_index<Type>()] = Container(std::make_unique<storage<Type, Callable>>(), std::move(resolve_components<Type>(Type::component_store())));
+				m_Storage[get_index<Type>()] = EntityComponentMap(std::make_unique<storage<Type, Derived>>(static_cast<Derived &>(*this)), std::move(resolve_components<Type>(Type::component_store())));
 
 			else
-				m_Storage[get_index<Type>()] = Container(std::make_unique<storage<Type, Callable>>());
+				m_Storage[get_index<Type>()] = EntityComponentMap(std::make_unique<storage<Type, Derived>>(static_cast<Derived &>(*this)));
 		}
 
 		/**
@@ -558,39 +574,9 @@ namespace inventory
 		}
 
 	private:
-		/**
-		 * @brief Container struct.
-		 * This contains the storage pointer and the components vector.
-		 */
-		struct Container
-		{
-			using Pointer = std::unique_ptr<storage_interface<Callable>>;
-			using Components = std::vector<std::type_index>;
-
-			/**
-			 * @brief Construct a new Container object.
-			 */
-			Container() = default;
-
-			/**
-			 * @brief Construct a new Container object.
-			 *
-			 * @param pointer The storage pointer.
-			 */
-			explicit Container(Pointer &&pointer) : m_StoragePointer(std::move(pointer)) {}
-
-			/**
-			 * @brief Construct a new Container object.
-			 *
-			 * @param pointer The storage pointer.
-			 * @param components The components vector.
-			 */
-			explicit Container(Pointer &&pointer, Components &&components) : m_StoragePointer(std::move(pointer)), m_Components(std::move(components)) {}
-
-			Pointer m_StoragePointer = nullptr;
-			Components m_Components = {};
-		};
-
-		storage_map<std::type_index, Container> m_Storage = {};
+		storage_map<std::type_index, EntityComponentMap> m_Storage = {};
 	};
+
+	template <class Derived>
+	inline container<Derived>::~container() {}
 }
