@@ -3,34 +3,59 @@
 #pragma once
 
 #include "components.hpp"
-#include <inventory/component_store.hpp>
-#include <inventory/container.hpp>
+
+#include <entt/entt.hpp>
+
+#include <inventory/system.hpp>
+#include <inventory/entity_factory.hpp>
 
 namespace engine
 {
-	class engine final : public inventory::container<engine>
+    using entity = inventory::entity<inventory::default_index_type>;
+    using entity_factory = inventory::entity_factory<inventory::default_index_type>;
+
+	class engine final
 	{
+		inventory::system<model_component> m_ModelComponents;
+		inventory::system<camera_component> m_CameraComponents;
+		inventory::system<position_component> m_PositionComponents;
+		entity_factory m_Factory;
+
 	public:
-		void update([[maybe_unused]] const model_component &component) const;
-		void update([[maybe_unused]] const camera_component &component) const;
-		void update([[maybe_unused]] const position_component &component) const;
+		engine() = default;
 
-		template <class... Types>
-		void update_components(const inventory::component_store<Types...> &store) const { (update(inventory::get_component<Types>(store)), ...); }
+		entity &create_entity() { return m_Factory.create(); }
 
-		template <class Type>
-		void operator()(Type &element)
+		template <class Component>
+		decltype(auto) register_to_system(const entity &e)
 		{
-			//element.update();
-			update_components(element);
-			[[maybe_unused]] volatile int x = 0;
+			if constexpr (std::is_same_v<Component, model_component>)
+				return m_ModelComponents.register_entity(e);
+
+			else if constexpr (std::is_same_v<Component, camera_component>)
+				return m_CameraComponents.register_entity(e);
+
+			else if constexpr (std::is_same_v<Component, position_component>)
+				return m_PositionComponents.register_entity(e);
 		}
 
-		template <class Type>
-		void operator()(const Type &element) const
+		template <class Component>
+		decltype(auto) get_component(const entity &e)
 		{
-			update_components(element);
-			[[maybe_unused]] volatile int x = 0;
+			if constexpr (std::is_same_v<Component, model_component>)
+				return m_ModelComponents.get(e);
+
+			else if constexpr (std::is_same_v<Component, camera_component>)
+				return m_CameraComponents.get(e);
+
+			else if constexpr (std::is_same_v<Component, position_component>)
+				return m_PositionComponents.get(e);
 		}
+
+		void update();
+
+		void update_component([[maybe_unused]] const model_component &component) const;
+		void update_component([[maybe_unused]] const camera_component &component) const;
+		void update_component([[maybe_unused]] const position_component &component) const;
 	};
 }

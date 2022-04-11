@@ -4,22 +4,22 @@
 
 #include "engine.hpp"
 
-#include <type_traits>
-
 namespace engine
 {
-	class game_object_interface
-	{
-	public:
-		virtual void update() = 0;
-	};
-
-	template <class... Types>
-	class game_object : public game_object_interface, public inventory::component_store<Types...>
+	class game_object
 	{
 		engine &m_Engine;
+		entity &m_Entity;
 
 	public:
-		explicit game_object(engine &engine) : m_Engine(engine) {}
+		explicit game_object(engine &engine) : m_Engine(engine), m_Entity(m_Engine.create_entity()) {}
+
+		template <class Type, class... Types>
+		decltype(auto) create_component(Types &&...arguments) { return m_Engine.register_to_system<Type>(m_Entity); }
+
+		template <class Type>
+		decltype(auto) get_component() const { return m_Engine.get_component<Type>(m_Entity); }
+
+		virtual void update() = 0;
 	};
 }

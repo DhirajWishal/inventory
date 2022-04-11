@@ -12,7 +12,7 @@ namespace inventory
 	 *
 	 * @tparam Index The entity index type. Default is default_index_type.
 	 */
-	template <class Index = default_index_type>
+	template <index_type Index = default_index_type>
 	class entity_factory
 	{
 		using entity_type = entity<Index>;

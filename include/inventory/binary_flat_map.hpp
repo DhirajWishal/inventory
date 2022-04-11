@@ -6,9 +6,32 @@
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 namespace inventory
 {
+	/**
+	 * @brief Missing entry error.
+	 * This error gets thrown if trying to access a key-value pair which was not inserted to the map prior to accessing.
+	 */
+	class missing_entry_error final : public std::runtime_error
+	{
+	public:
+		/**
+		 * @brief Construct a new missing entry error object.
+		 *
+		 * @param message The message to be thrown.
+		 */
+		explicit missing_entry_error(const std::string &message) : std::runtime_error(message.c_str()) {}
+
+		/**
+		 * @brief Construct a new missing entry error object.
+		 *
+		 * @param message The message to be thrown.
+		 */
+		explicit missing_entry_error(const char *message) : std::runtime_error(message) {}
+	};
+
 	/**
 	 * @brief Binary flap map class.
 	 * This is an associative container, which is quite different to other implementations.
@@ -45,7 +68,8 @@ namespace inventory
 		 */
 		static constexpr INV_NODISCARD bool compare_function(const entry_type &lhs, const key_type &rhs)
 		{
-			return lhs.first < rhs;
+			constexpr compare_type comparator;
+			return comparator(lhs.first, rhs);
 		}
 
 	public:
@@ -76,6 +100,39 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD decltype(auto) find(const key_type &key) const { return std::lower_bound(m_Container.begin(), m_Container.end(), key, compare_function); }
 
+		/**
+		 * @brief Get a component at a given key position.
+		 * If a key-value pair was not found, it'll automatically create one.
+		 *
+		 * @param key The key to access.
+		 * @return constexpr value_type& The value reference.
+		 */
+		constexpr INV_NODISCARD value_type &at(const key_type &key)
+		{
+			auto itr = find(key);
+			if (itr == m_Container.end() || itr->first != key)
+				itr = m_Container.insert(itr, std::make_pair(key, value_type()));
+
+			return itr->second;
+		}
+
+		/**
+		 * @brief Get a component at a given key position.
+		 * If a key-value pair was not found, it'll throw an exception.
+		 *
+		 * @param key The key to access.
+		 * @return constexpr const value_type& The value reference.
+		 */
+		constexpr INV_NODISCARD const value_type &at(const key_type &key) const
+		{
+			const auto itr = find(key);
+			if (itr == m_Container.end() || itr->first != key)
+				throw missing_entry_error("The required key-value pair was not found!");
+
+			return itr->second;
+		}
+
+	public:
 		/**
 		 * @brief Get the begin iterator.
 		 *

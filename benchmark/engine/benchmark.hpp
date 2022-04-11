@@ -18,13 +18,13 @@ namespace ivnt_test
 	inline void test(benchmark::State &state)
 	{
 		engine::engine gameEngine;
-		auto &playerVector = gameEngine.get_storage<engine::player>();
-		auto &catVector = gameEngine.get_storage<engine::cat>();
-
-		playerVector.resize(ObjectCount, engine::player(gameEngine));
-		catVector.resize(ObjectCount, engine::cat(gameEngine));
+		for (int i = 0; i < ObjectCount; i++)
+		{
+			[[maybe_unused]] auto p = engine::player(gameEngine);
+			[[maybe_unused]] auto c = engine::cat(gameEngine);
+		}
 
 		for (auto _ : state)
-			gameEngine.apply();
+			gameEngine.update();
 	}
 }
