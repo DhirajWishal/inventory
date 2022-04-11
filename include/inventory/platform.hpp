@@ -1,3 +1,5 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #pragma once
 
 #if defined(__APPLE__) || defined(__MACH__) || defined(__clang__)

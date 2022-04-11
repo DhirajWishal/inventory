@@ -1,3 +1,5 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #pragma once
 
 #include "binary_flat_map.hpp"
@@ -13,8 +15,8 @@ namespace inventory
 	 * @tparam Component The component type.
 	 * @tparam Index The entity index type. Default is the default_index_type.
 	 */
-	template <class Component, class Index = default_index_type>
-	class simple_system : public system_interface
+	template <class Component, index_type Index = default_index_type>
+	class simple_system : public system_interface<index>
 	{
 		using entity_type = entity<Index>;
 		binary_flat_map<entity_type, Component> m_Storage;

@@ -1,3 +1,5 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #include <inventory/system.hpp>
 #include <inventory/entity_factory.hpp>
 

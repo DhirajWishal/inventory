@@ -1,3 +1,5 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #pragma once
 
 #include "platform.hpp"
@@ -10,9 +12,6 @@
 
 namespace inventory
 {
-	// Set the default index type.
-	using default_index_type = uint32_t;
-
 	/**
 	 * @brief Entity class.
 	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.

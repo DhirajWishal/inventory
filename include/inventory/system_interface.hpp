@@ -1,4 +1,8 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #pragma once
+
+#include "defaults.hpp"
 
 #include <typeindex>
 #include <algorithm>
@@ -9,6 +13,7 @@ namespace inventory
 	 * @brief System interface class.
 	 * This class is used for system abstraction.
 	 */
+	 template<index_type Index>
 	class system_interface
 	{
 		std::type_index m_ThisTypeIndex;
