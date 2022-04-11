@@ -12,7 +12,23 @@ namespace inventory
 	 * @brief Missing entry error.
 	 * This error gets thrown if trying to access a key-value pair which was not inserted to the map prior to accessing.
 	 */
-	using missing_entry_error = std::runtime_error;
+	class missing_entry_error final : public std::runtime_error
+	{
+	public:
+		/**
+		 * @brief Construct a new missing entry error object.
+		 *
+		 * @param message The message to be thrown.
+		 */
+		explicit missing_entry_error(const std::string &message) : std::runtime_error(message.c_str()) {}
+
+		/**
+		 * @brief Construct a new missing entry error object.
+		 *
+		 * @param message The message to be thrown.
+		 */
+		explicit missing_entry_error(const char *message) : std::runtime_error(message) {}
+	};
 
 	/**
 	 * @brief Binary flap map class.
@@ -108,7 +124,7 @@ namespace inventory
 		{
 			const auto itr = find(key);
 			if (itr == m_Container.end() || itr->first != key)
-				throw missing_entry_error("The requested key-value pair was not found!");
+				throw missing_entry_error("The required key-value pair was not found!");
 
 			return itr->second;
 		}
