@@ -1,6 +1,6 @@
 #pragma once
 
-#include "binary_map.hpp"
+#include "binary_flat_map.hpp"
 #include "entity.hpp"
 
 namespace inventory
@@ -9,6 +9,5 @@ namespace inventory
 	class storage : public storage<Types...>
 	{
 		using entity_type = entity<Index>;
-		binary_map<entity_type, 
 	};
 } // namespace inventory

@@ -8,9 +8,9 @@ namespace inventory
 	 * @brief Entity factory class.
 	 * This class is responsible for creating new unique entities and keeping track of them.
 	 *
-	 * @tparam Index The entity index type. Default is uint32_t.
+	 * @tparam Index The entity index type. Default is default_index_type.
 	 */
-	template <class Index = uint32_t>
+	template <class Index = default_index_type>
 	class entity_factory
 	{
 		using entity_type = entity<Index>;

@@ -10,19 +10,27 @@
 
 namespace inventory
 {
+	// Set the default index type.
+	using default_index_type = uint32_t;
+
 	/**
 	 * @brief Entity class.
 	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.
 	 *
-	 * @tparam Index The index type. Default is uint32_t.
+	 * @tparam Index The index type. Default is default_index_type.
 	 */
-	template <class Index = uint32_t>
+	template <class Index = default_index_type>
 	class entity final
 	{
 		std::vector<std::reference_wrapper<system_interface>> m_RegisteredSystems;
-		const Index m_EntityID;
+		Index m_EntityID = 0;
 
 	public:
+        /**
+         * @brief Default constructor.
+         */
+        constexpr entity() = default;
+
 		/**
 		 * @brief Explicit constructor.
 		 *
@@ -33,7 +41,7 @@ namespace inventory
 		/**
 		 * @brief Destructor.
 		 */
-		constexpr ~entity()
+		~entity()
 		{
 			for (auto &systems : m_RegisteredSystems)
 			{
