@@ -1,20 +1,19 @@
 #pragma once
 
-#include "binary_flat_map.hpp"
 #include "system_interface.hpp"
 #include "entity.hpp"
 
 namespace inventory
 {
 	/**
-	 * @brief Simple system class.
-	 * This class is used to store a single component.
+	 * @brief System class.
+	 * This class is used to store a single component type.
 	 *
 	 * @tparam Component The component type.
 	 * @tparam Index The entity index type. Default is the default_index_type.
 	 */
-	template <class Component, class Index = default_index_type>
-	class simple_system : public system_interface
+	template <class Component, index_type Index = default_index_type>
+	class system : public system_interface
 	{
 		using entity_type = entity<Index>;
 		binary_flat_map<entity_type, Component> m_Storage;
@@ -23,7 +22,7 @@ namespace inventory
 		/**
 		 * @brief Default constructor.
 		 */
-		constexpr simple_system() : system_interface(std::type_index(typeid(simple_system<Index, Component>))) {}
+		constexpr system() : system_interface(std::type_index(typeid(system<Index, Component>))) {}
 
 		/**
 		 * @brief Register a new entity to the system.
@@ -44,6 +43,25 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD bool is_registered(const entity_type &ent) const { return m_Storage.contains(ent); }
 
+		/**
+		 * @brief Get a component from the container using the entity it is attached to.
+		 * This operation takes O(1) in best case, and O(log n) in the worst case.
+		 *
+		 * @param ent The entity to index.
+		 * @return constexpr Component& The component reference.
+		 */
+		constexpr Component &get(const entity_type &ent) { return m_Storage.at(ent); }
+
+		/**
+		 * @brief Get a component from the container using the entity it is attached to.
+		 * This operation takes O(1) in best case, and O(log n) in the worst case.
+		 *
+		 * @param ent The entity to index.
+		 * @return constexpr Component& The component reference.
+		 */
+		constexpr const Component &get(const entity_type &ent) const { return m_Storage.at(ent); }
+
+	public:
 		/**
 		 * @brief Get the begin iterator.
 		 *

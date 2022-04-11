@@ -1,35 +1,30 @@
 #pragma once
 
 #include "platform.hpp"
-#include "system.hpp"
+#include "system_interface.hpp"
+#include "defaults.hpp"
 
-#include <vector>
-#include <cstdint>
 #include <typeindex>
-#include <algorithm>
 
 namespace inventory
 {
-	// Set the default index type.
-	using default_index_type = uint32_t;
-
 	/**
 	 * @brief Entity class.
 	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.
 	 *
 	 * @tparam Index The index type. Default is default_index_type.
 	 */
-	template <class Index = default_index_type>
+	template <index_type Index = default_index_type>
 	class entity final
 	{
 		std::vector<std::reference_wrapper<system_interface>> m_RegisteredSystems;
 		Index m_EntityID = 0;
 
 	public:
-        /**
-         * @brief Default constructor.
-         */
-        constexpr entity() = default;
+		/**
+		 * @brief Default constructor.
+		 */
+		constexpr entity() = default;
 
 		/**
 		 * @brief Explicit constructor.

@@ -1,5 +1,6 @@
 #include <inventory/system.hpp>
 #include <inventory/entity_factory.hpp>
+#include <array>
 
 struct model
 {
@@ -17,8 +18,8 @@ struct position
 	std::array<float, 3> m_Vector;
 };
 
-using camera_system = inventory::simple_system<camera>;
-using world_system = inventory::simple_system<std::pair<model, position>>;
+using camera_system = inventory::system<camera>;
+using world_system = inventory::system<std::pair<model, position>>;
 
 int main()
 {
@@ -28,6 +29,8 @@ int main()
 	camera_system cameraSystem;
 	world_system worldSystem;
 
+	worldSystem.link(cameraSystem);
+
 	cameraSystem.register_entity(entity);
 	worldSystem.register_entity(entity);
 
@@ -35,5 +38,8 @@ int main()
 	{
 		auto entity = entry.first;
 		auto &component = entry.second;
+
+		if (cameraSystem.is_registered(entity))
+			auto &cameraComponent = cameraSystem.get(entity);
 	}
 }

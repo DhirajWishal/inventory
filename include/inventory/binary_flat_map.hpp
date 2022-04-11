@@ -4,9 +4,16 @@
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 namespace inventory
 {
+	/**
+	 * @brief Missing entry error.
+	 * This error gets thrown if trying to access a key-value pair which was not inserted to the map prior to accessing.
+	 */
+	using missing_entry_error = std::runtime_error;
+
 	/**
 	 * @brief Binary flap map class.
 	 * This is an associative container, which is quite different to other implementations.
@@ -74,6 +81,39 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD decltype(auto) find(const key_type &key) const { return std::lower_bound(m_Container.begin(), m_Container.end(), key, compare_function); }
 
+		/**
+		 * @brief Get a component at a given key position.
+		 * If a key-value pair was not found, it'll automatically create one.
+		 *
+		 * @param key The key to access.
+		 * @return constexpr decltype(auto) The value reference.
+		 */
+		constexpr INV_NODISCARD decltype(auto) at(const key_type &key)
+		{
+			auto itr = find(key);
+			if (itr == m_Container.end() || itr->first != key)
+				itr = m_Container.insert(itr, std::make_pair(key, value_type()));
+
+			return itr->second;
+		}
+
+		/**
+		 * @brief Get a component at a given key position.
+		 * If a key-value pair was not found, it'll throw an exception.
+		 *
+		 * @param key The key to access.
+		 * @return constexpr decltype(auto) The value reference.
+		 */
+		constexpr INV_NODISCARD decltype(auto) at(const key_type &key)
+		{
+			const auto itr = find(key);
+			if (itr == m_Container.end() || itr->first != key)
+				throw missing_entry_error("The requested key-value pair was not found!");
+
+			return itr->second;
+		}
+
+	public:
 		/**
 		 * @brief Get the begin iterator.
 		 *
