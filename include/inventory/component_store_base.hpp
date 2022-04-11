@@ -56,8 +56,6 @@ namespace inventory
 	template <class Type>
 	class component_store_base<Type>
 	{
-		Type m_Component;
-
 	public:
 		/**
 		 * @brief Construct a new component store base object.
@@ -91,5 +89,8 @@ namespace inventory
 		 * @return constexpr const Type& The component reference.
 		 */
 		constexpr INV_NODISCARD const Type &get() const { return m_Component; }
+
+	private:
+		Type m_Component;
 	};
 }

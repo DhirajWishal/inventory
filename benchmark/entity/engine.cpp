@@ -23,15 +23,15 @@ namespace entity
 		}
 	}
 
-	void engine::update_component(model_component &component) const
+	void engine::update_component(const model_component& component) const
 	{
 	}
 
-	void engine::update_component(camera_component &component) const
+	void engine::update_component(const camera_component &component) const
 	{
 	}
 
-	void engine::update_component(position_component &component) const
+	void engine::update_component(const position_component &component) const
 	{
 	}
 }

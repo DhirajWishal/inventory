@@ -92,7 +92,7 @@ namespace inventory
 		/**
 		 * @brief Apply a callable function over the stored data.
 		 */
-		constexpr void apply() override
+		void apply() override
 		{
 			for (auto &item : m_Container)
 				m_Callable(item);
@@ -101,7 +101,7 @@ namespace inventory
 		/**
 		 * @brief Apply a callable function over the stored data.
 		 */
-		constexpr void apply() const override
+		void apply() const override
 		{
 			for (const auto &item : m_Container)
 				m_ConstCallable(item);
@@ -112,19 +112,19 @@ namespace inventory
 		 *
 		 * @return size_t Size.
 		 */
-		constexpr INV_NODISCARD size_t size() const override { return m_Container.size(); }
+		INV_NODISCARD size_t size() const override { return m_Container.size(); }
 
 		/**
 		 * @brief Capacity of the current allocation.
 		 *
 		 * @return size_t The capacity.
 		 */
-		constexpr INV_NODISCARD size_t capacity() const override { return m_Container.capacity(); }
+		INV_NODISCARD size_t capacity() const override { return m_Container.capacity(); }
 
 		/**
 		 * @brief Clear the stored data.
 		 */
-		constexpr void clear() override { m_Container.clear(); }
+		void clear() override { m_Container.clear(); }
 
 		/**
 		 * @brief Get the stored container.
@@ -145,7 +145,7 @@ namespace inventory
 		 *
 		 * @return const std::type_info& The type info object.
 		 */
-		constexpr INV_NODISCARD const std::type_info &get_type_info() const override { return typeid(Type); }
+		INV_NODISCARD const std::type_info &get_type_info() const override { return typeid(Type); }
 
 	private:
 		std::vector<Type> m_Container = {};

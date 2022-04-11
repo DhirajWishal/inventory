@@ -20,8 +20,8 @@ namespace entity
 
 		void update();
 
-		void update_component([[maybe_unused]] model_component& component) const;
-		void update_component([[maybe_unused]] camera_component& component) const;
-		void update_component([[maybe_unused]] position_component& component) const;
+		void update_component([[maybe_unused]] const model_component& component) const;
+		void update_component([[maybe_unused]] const camera_component& component) const;
+		void update_component([[maybe_unused]] const position_component& component) const;
 	};
 }

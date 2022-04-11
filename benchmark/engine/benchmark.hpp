@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <benchmark/benchmark.h>
+
 #include "player.hpp"
 #include "cat.hpp"
 
@@ -23,8 +25,6 @@ namespace ivnt_test
 		catVector.resize(ObjectCount, engine::cat(gameEngine));
 
 		for (auto _ : state)
-		{
 			gameEngine.apply();
-		}
 	}
 }

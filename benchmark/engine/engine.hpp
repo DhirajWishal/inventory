@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <benchmark/benchmark.h>
-
 #include "components.hpp"
 #include <inventory/component_store.hpp>
 #include <inventory/container.hpp>
@@ -23,7 +21,7 @@ namespace engine
 		template <class Type>
 		void operator()(Type &element)
 		{
-			element.update();
+			//element.update();
 			update_components(element);
 			[[maybe_unused]] volatile int x = 0;
 		}

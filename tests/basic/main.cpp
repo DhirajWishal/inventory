@@ -28,17 +28,17 @@ void basic_test()
 
 	struct Updater final : public inventory::container<Updater>
 	{
-		void operator()(Apple &component) {}
-		void operator()(const Apple &component) const {}
+		void operator()([[maybe_unused]] Apple &component) {}
+		void operator()([[maybe_unused]] const Apple &component) const {}
 
-		void operator()(Orange &component) {}
-		void operator()(const Orange &component) const {}
+		void operator()([[maybe_unused]] Orange &component) {}
+		void operator()([[maybe_unused]] const Orange &component) const {}
 
-		void operator()(Banana &component) {}
-		void operator()(const Banana &component) const {}
+		void operator()([[maybe_unused]] Banana &component) {}
+		void operator()([[maybe_unused]] const Banana &component) const {}
 
-		void operator()(Mango &component) {}
-		void operator()(const Mango &component) const {}
+		void operator()([[maybe_unused]] Mango &component) {}
+		void operator()([[maybe_unused]] const Mango &component) const {}
 	};
 	Updater updater;
 	[[maybe_unused]] auto &a = updater.emplace_back<Apple>();
