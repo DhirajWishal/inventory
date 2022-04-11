@@ -1,65 +1,82 @@
-// Copyright (c) 2022 Dhiraj Wishal
-
 #pragma once
 
-#include "component_store.hpp"
+#include "platform.hpp"
+#include "system.hpp"
+
+#include <vector>
+#include <cstdint>
+#include <typeindex>
+#include <algorithm>
 
 namespace inventory
 {
 	/**
-	 * @brief Entity base class.
-	 * This class is the base class of the entity object, and is intended to be used for abstraction.
-	 */
-	class entity_base
-	{
-	};
-
-	/**
 	 * @brief Entity class.
-	 * This is an abstract entity class which can house any component and can be accessed easily using the given member functions.
+	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.
 	 *
-	 * @note This class cannot be inherited and is intended to be used as a single entity in the system.
-	 *
-	 * @tparam Types The component types.
+	 * @tparam Index The index type. Default is uint32_t.
 	 */
-	template <class... Types>
-	class entity final : public entity_base, public component_store<Types...>
+	template <class Index = uint32_t>
+	class entity final
 	{
+		std::vector<std::reference_wrapper<system_interface>> m_RegisteredSystems;
+		const Index m_EntityID;
+
 	public:
 		/**
-		 * @brief Get the component object.
+		 * @brief Explicit constructor.
 		 *
-		 * @tparam Type The component type.
-		 * @return constexpr decltype(auto) The component reference.
+		 * @param ID The entity ID of the object.
 		 */
-		template <class Type>
-		constexpr INV_NODISCARD decltype(auto) get_component() { return ::inventory::get_component<Type>(this); }
+		constexpr explicit entity(Index ID) : m_EntityID(ID) {}
 
 		/**
-		 * @brief Get the component object.
-		 *
-		 * @tparam Type The component type.
-		 * @return constexpr decltype(auto) The component reference.
+		 * @brief Destructor.
 		 */
-		template <class Type>
-		constexpr INV_NODISCARD decltype(auto) get_component() const { return ::inventory::get_component<Type>(this); }
+		constexpr ~entity()
+		{
+			for (auto &systems : m_RegisteredSystems)
+			{
+			}
+		}
 
 		/**
-		 * @brief Get the view of the required components.
+		 * @brief Check if the entity is registered to a system.
+		 * This operation takes O(log n) on average.
 		 *
-		 * @tparam Components The component types.
-		 * @return constexpr decltype(auto) The component view.
+		 * @tparam Components The components of the system.
+		 * @return true if this entity is registered to the required system.
+		 * @return false if this entity is not registered to the required system.
 		 */
 		template <class... Components>
-		constexpr INV_NODISCARD decltype(auto) get_components() { return ::inventory::get_components<Components...>(this); }
+		constexpr INV_NODISCARD bool is_registered_to() const
+		{
+			// const auto systemIndex = std::type_index(typeid(system<Components...>));
+			// const auto itr = std::lower_bound(m_RegisteredSystems.begin(), m_RegisteredSystems.end(), systemIndex);
+			//
+			// if (itr != m_RegisteredSystems.end() && *itr == systemIndex)
+			//	return true;
+
+			return false;
+		}
 
 		/**
-		 * @brief Get the view of the required components.
+		 * @brief Less than operator.
+		 * This operator is used to index the entity in a binary map, using std::less.
 		 *
-		 * @tparam Types The component types.
-		 * @return constexpr decltype(auto) The component view.
+		 * @param other The other entity.
+		 * @return true if the other entity is less than this.
+		 * @return false if the other entity is grater than this.
 		 */
-		template <class... Components>
-		constexpr INV_NODISCARD decltype(auto) get_components() const { return ::inventory::get_components<Components...>(this); }
+		constexpr INV_NODISCARD bool operator<(const entity &other) const { return m_EntityID < other.m_EntityID; }
+
+		/**
+		 * @brief Is equal to operator.
+		 *
+		 * @param other The other entity.
+		 * @return true if the two entities are equal.
+		 * @return false if the two entities are not equal.
+		 */
+		constexpr INV_NODISCARD bool operator==(const entity &other) const { return m_EntityID == other.m_EntityID; }
 	};
-}
+} // namespace inventory

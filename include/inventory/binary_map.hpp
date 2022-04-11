@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "storage.hpp"
+#include "platform.hpp"
 
 #include <memory>
 #include <typeindex>
@@ -11,7 +11,7 @@
 namespace inventory
 {
 	/**
-	 * @brief Storage map class.
+	 * @brief Binary map class.
 	 * This class is an associative container which stores all of its data in a vector.
 	 * Key-value pairs are determined using a binary search, this makes is much more faster than the usual std::unordered_map<,>
 	 *
@@ -19,7 +19,7 @@ namespace inventory
 	 * @tparam Value The value type.
 	 */
 	template <class Key, class Value>
-	class storage_map final
+	class binary_map final
 	{
 	public:
 		using key_type = Key;
@@ -41,14 +41,14 @@ namespace inventory
 
 	public:
 		/**
-		 * @brief Construct a new storage map object.
+		 * @brief Construct a new binary map object.
 		 */
-		constexpr storage_map() = default;
+		constexpr binary_map() = default;
 
 		/**
-		 * @brief Destroy the storage map object.
+		 * @brief Destroy the binary map object.
 		 */
-		~storage_map() = default;
+		~binary_map() = default;
 
 		/**
 		 * @brief Find an iterator to where a specific key is located.
@@ -135,4 +135,4 @@ namespace inventory
 	private:
 		container_type m_Container = {};
 	};
-}
+} // namespace inventory
