@@ -66,7 +66,8 @@ namespace inventory
 		 */
 		static constexpr INV_NODISCARD bool compare_function(const entry_type &lhs, const key_type &rhs)
 		{
-			return lhs.first < rhs;
+			constexpr compare_type comparator;
+			return comparator(lhs.first, rhs);
 		}
 
 	public:
@@ -102,9 +103,9 @@ namespace inventory
 		 * If a key-value pair was not found, it'll automatically create one.
 		 *
 		 * @param key The key to access.
-		 * @return constexpr decltype(auto) The value reference.
+		 * @return constexpr value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) at(const key_type &key)
+		constexpr INV_NODISCARD value_type &at(const key_type &key)
 		{
 			auto itr = find(key);
 			if (itr == m_Container.end() || itr->first != key)
@@ -118,9 +119,9 @@ namespace inventory
 		 * If a key-value pair was not found, it'll throw an exception.
 		 *
 		 * @param key The key to access.
-		 * @return constexpr decltype(auto) The value reference.
+		 * @return constexpr const value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) at(const key_type &key)
+		constexpr INV_NODISCARD const value_type &at(const key_type &key) const
 		{
 			const auto itr = find(key);
 			if (itr == m_Container.end() || itr->first != key)

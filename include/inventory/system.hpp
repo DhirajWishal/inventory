@@ -22,7 +22,7 @@ namespace inventory
 		/**
 		 * @brief Default constructor.
 		 */
-		constexpr system() : system_interface(std::type_index(typeid(system<Index, Component>))) {}
+		constexpr system() : system_interface(std::move(std::type_index(typeid(system<Component, Index>)))) {}
 
 		/**
 		 * @brief Register a new entity to the system.
@@ -50,7 +50,7 @@ namespace inventory
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr Component &get(const entity_type &ent) { return m_Storage.at(ent); }
+		constexpr INV_NODISCARD Component &get(const entity_type &ent) { return m_Storage.at(ent); }
 
 		/**
 		 * @brief Get a component from the container using the entity it is attached to.
@@ -59,7 +59,7 @@ namespace inventory
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr const Component &get(const entity_type &ent) const { return m_Storage.at(ent); }
+		constexpr INV_NODISCARD const Component &get(const entity_type &ent) const { return m_Storage.at(ent); }
 
 	public:
 		/**
