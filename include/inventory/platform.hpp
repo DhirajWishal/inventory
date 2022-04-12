@@ -2,13 +2,15 @@
 
 #pragma once
 
-#if defined(__APPLE__) || defined(__MACH__)
-#	ifdef __clang__
-#		define INV_NODISCARD
-#	endif
+#if !defined(__APPLE__) && !defined(__MACH__)
+#	define INV_USE_PARALLEL_UNSEQ
+
+#endif
+
+#ifdef __clang__
+#	define INV_NODISCARD
 
 #else
 #	define INV_NODISCARD 			[[nodiscard]]
-#	define INV_USE_PARALLEL_UNSEQ
 
 #endif
