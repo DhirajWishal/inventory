@@ -4,8 +4,6 @@
 
 #include "components.hpp"
 
-#include <entt/entt.hpp>
-
 #include <inventory/system.hpp>
 #include <inventory/entity_factory.hpp>
 
