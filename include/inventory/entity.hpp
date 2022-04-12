@@ -11,9 +11,6 @@
 
 namespace inventory
 {
-	template <class Entity>
-	class entity_factory;
-
 	/**
 	 * @brief Entity class.
 	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.
@@ -26,9 +23,6 @@ namespace inventory
 	{
 		std::array<ComponentIndex, get_component_count<Components...>()> m_Components = {};
 		std::array<bool, get_component_count<Components...>()> m_RegisteredMap = {};
-
-		template <class Entity>
-		friend class entity_factory;
 
 	public:
 		/**
