@@ -60,9 +60,9 @@ namespace inventory
 		 * @return constexpr std::pair<Index, std::reference_wrapper<Type>> The index position of the emplaced data and the emplaced data reference.
 		 */
 		template <class... Types>
-		constexpr INV_NODISCARD std::pair<const Index, std::reference_wrapper<Type>> emplace(Types &&...data)
+		constexpr INV_NODISCARD std::pair<Index, std::reference_wrapper<Type>> emplace(Types &&...data)
 		{
-			const auto index = get_index();
+			auto index = get_index();
 			auto &emplaced = m_DenseArray.emplace_back(std::forward<Types>(data)...);
 			update_sparse_vector(index, m_DenseArray.size() - 1);
 
@@ -71,6 +71,7 @@ namespace inventory
 
 		/**
 		 * @brief Remove a single entry from the dense array using it's index.
+		 * Note that this operation is quite slow, and should not be done in places such as clearing this array.
 		 *
 		 * @param index The index to remove.
 		 */
@@ -102,6 +103,16 @@ namespace inventory
 				auto beginItr = m_SparseArray.begin() + index;
 				std::transform(std::execution::unseq, beginItr, m_SparseArray.end(), beginItr, reducer);
 			}
+		}
+
+		/**
+		 * @brief Clear this container.
+		 */
+		constexpr void clear()
+		{
+			m_DenseArray.clear();
+			m_SparseArray.clear();
+			m_ReusableIndexes.clear();
 		}
 
 		/**
@@ -147,6 +158,21 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		constexpr INV_NODISCARD decltype(auto) end() const { return m_DenseArray.end(); }
+
+		/**
+		 * @brief Check if a given index is present in the container.
+		 *
+		 * @param index The index to check.
+		 * @return constexpr true if the index is present in the container.
+		 * @return constexpr false if the index is not present in the container.
+		 */
+		constexpr INV_NODISCARD bool contains(const Index &index) const
+		{
+			if (index < m_SparseArray.size())
+				return m_SparseArray[index] > invalid_index;
+
+			return false;
+		}
 
 		/**
 		 * @brief Subscript operator.
@@ -205,7 +231,7 @@ namespace inventory
 		{
 			for (auto itr = m_SparseArray.end(); itr != m_SparseArray.begin(); --itr)
 			{
-				if (*itr != invalid_index)
+				if (*itr > invalid_index)
 				{
 					m_SparseArray.erase(itr, m_SparseArray.end());
 					break;

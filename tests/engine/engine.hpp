@@ -4,25 +4,53 @@
 
 #include "components.hpp"
 
-#include <inventory/container.hpp>
+#include <inventory/system.hpp>
+#include <inventory/entity_factory.hpp>
 
-class engine final : public inventory::container<engine>
+using entity = inventory::entity<inventory::default_component_index_type, model_component, camera_component, position_component>;
+using entity_factory = inventory::entity_factory<entity>;
+
+class engine final
 {
+	inventory::system<entity, model_component> m_ModelComponents;
+	inventory::system<entity, camera_component> m_CameraComponents;
+	inventory::system<entity, position_component> m_PositionComponents;
+	entity_factory m_Factory = {};
+
 public:
-	void update([[maybe_unused]] const model_component &component) const;
-	void update([[maybe_unused]] const camera_component &component) const;
-	void update([[maybe_unused]] const position_component &component) const;
+	engine() = default;
 
-	template <class Type>
-	void operator()(Type &element)
+	entity create_entity() const { return m_Factory.create(); }
+
+	template <class Component>
+	decltype(auto) register_to_system(entity& e)
 	{
-		element.update();
-		element.update_components();
+		if constexpr (std::is_same_v<Component, model_component>)
+			return m_ModelComponents.register_entity(e);
+
+		else if constexpr (std::is_same_v<Component, camera_component>)
+			return m_CameraComponents.register_entity(e);
+
+		else if constexpr (std::is_same_v<Component, position_component>)
+			return m_PositionComponents.register_entity(e);
 	}
 
-	template <class Type>
-	void operator()(const Type &element) const
+	template <class Component>
+	decltype(auto) get_component(const entity& e)
 	{
-		element.update_components();
+		if constexpr (std::is_same_v<Component, model_component>)
+			return m_ModelComponents.get(e);
+
+		else if constexpr (std::is_same_v<Component, camera_component>)
+			return m_CameraComponents.get(e);
+
+		else if constexpr (std::is_same_v<Component, position_component>)
+			return m_PositionComponents.get(e);
 	}
+
+	void update();
+
+	void update_component([[maybe_unused]] const model_component& component) const;
+	void update_component([[maybe_unused]] const camera_component& component) const;
+	void update_component([[maybe_unused]] const position_component& component) const;
 };

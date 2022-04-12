@@ -2,71 +2,109 @@
 
 #pragma once
 
-#include "system_interface.hpp"
 #include "entity.hpp"
+#include "sparse_array.hpp"
 
 namespace inventory
 {
 	/**
+	 * @brief Component container struct.
+	 * This structure is used to store a single component.
+	 *
+	 * @tparam Component The component type.
+	 * @tparam Entity The entity type.
+	 */
+	template <class Component, class Entity>
+	struct component_container final
+	{
+		/**
+		 * @brief Construct a new component container object.
+		 *
+		 * @param component The component lvalue.
+		 * @param index The entity index lvalue.
+		 */
+		explicit component_container(Component &&component, const Entity &ent) : m_Component(std::move(component)), m_Entity(ent) {}
+
+		/**
+		 * @brief Get the component.
+		 *
+		 * @return Component& The component reference.
+		 */
+		INV_NODISCARD Component &component() { return m_Component; }
+
+		/**
+		 * @brief Get the component.
+		 *
+		 * @return const Component& The component reference.
+		 */
+		INV_NODISCARD const Component &component() const { return m_Component; }
+
+		/**
+		 * @brief Get the entity.
+		 *
+		 * @return EntityIndex& The entity ID.
+		 */
+		INV_NODISCARD const Entity& entity() const { return m_Entity; }
+
+		Component m_Component;
+		const Entity& m_Entity;
+	};
+
+	/**
 	 * @brief System class.
 	 * This class is used to store a single component type.
 	 *
+	 * @tparam Entity The entity type.
 	 * @tparam Component The component type.
-	 * @tparam Index The entity index type. Default is the default_index_type.
+	 * @tparam ComponentIndex The component index type. Default is the default_component_index_type.
 	 */
-	template <class Component, index_type Index = default_index_type>
-	class system : public system_interface<Index>
+	template <class Entity, class Component, index_type ComponentIndex = default_component_index_type>
+	class system
 	{
-		using entity_type = entity<Index>;
-		binary_flat_map<entity_type, Component> m_Storage;
+		sparse_array<component_container<Component, Entity>, ComponentIndex> m_Container;
 
 	public:
 		/**
 		 * @brief Default constructor.
 		 */
-		constexpr system() : system_interface<Index>(std::type_index(typeid(system<Component, Index>))) {}
+		constexpr system() = default;
 
 		/**
 		 * @brief Register a new entity to the system.
 		 *
+		 * @tparam Entity The entity type.
 		 * @tparam Types The constructor argument types for the component.
 		 * @param ent The entity.
 		 * @param arguments The component constructor arguments.
 		 */
 		template <class... Types>
-		constexpr decltype(auto) register_entity(const entity_type &ent, Types &&...arguments)
+		constexpr INV_NODISCARD decltype(auto) register_entity(Entity &ent, Types &&...arguments)
 		{
-			auto &component = m_Storage[ent];
-			component = Component(std::forward<Types>(arguments)...);
-			return component;
+			auto result = m_Container.emplace(component_container(Component(std::forward<Types...>(arguments)...), ent));
+			ent.register_component<Component>(result.first);
+
+			return result.second;
 		}
 
 		/**
-		 * @brief Check if a given entity is registered or not.
+		 * @brief Get a component from the container using the entity it is attached to.
+		 * This operation takes O(1) in best case, and O(log n) in the worst case.
 		 *
-		 * @param ent The entity to check.
-		 * @return true if the entity is registered.
-		 * @return false if the entity is not registered.
+		 * @tparam Entity The entity to get the component from.
+		 * @param ent The entity to index.
+		 * @return constexpr Component& The component reference.
 		 */
-		constexpr INV_NODISCARD bool is_registered(const entity_type &ent) const { return m_Storage.contains(ent); }
+		constexpr INV_NODISCARD Component &get(const Entity &ent) { return m_Container.at(ent.get_component_index<Component>()).component(); }
 
 		/**
 		 * @brief Get a component from the container using the entity it is attached to.
 		 * This operation takes O(1) in best case, and O(log n) in the worst case.
 		 *
+		 * @tparam Entity The entity to get the component from.
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr INV_NODISCARD Component &get(const entity_type &ent) { return m_Storage.at(ent); }
-
-		/**
-		 * @brief Get a component from the container using the entity it is attached to.
-		 * This operation takes O(1) in best case, and O(log n) in the worst case.
-		 *
-		 * @param ent The entity to index.
-		 * @return constexpr Component& The component reference.
-		 */
-		constexpr INV_NODISCARD const Component &get(const entity_type &ent) const { return m_Storage.at(ent); }
+		constexpr INV_NODISCARD const Component &get(const Entity &ent) const { return m_Container.at(ent.get_component_index<Component>()).component(); }
 
 	public:
 		/**
@@ -74,41 +112,41 @@ namespace inventory
 		 *
 		 * @return constexpr decltype(auto) The iterator.
 		 */
-		constexpr INV_NODISCARD decltype(auto) begin() noexcept { return m_Storage.begin(); }
+		constexpr INV_NODISCARD decltype(auto) begin() noexcept { return m_Container.begin(); }
 
 		/**
 		 * @brief Get the end iterator.
 		 *
 		 * @return constexpr decltype(auto) The iterator.
 		 */
-		constexpr INV_NODISCARD decltype(auto) end() noexcept { return m_Storage.end(); }
+		constexpr INV_NODISCARD decltype(auto) end() noexcept { return m_Container.end(); }
 
 		/**
 		 * @brief Get the begin iterator.
 		 *
 		 * @return constexpr decltype(auto) The iterator.
 		 */
-		constexpr INV_NODISCARD decltype(auto) begin() const noexcept { return m_Storage.begin(); }
+		constexpr INV_NODISCARD decltype(auto) begin() const noexcept { return m_Container.begin(); }
 
 		/**
 		 * @brief Get the end iterator.
 		 *
 		 * @return constexpr decltype(auto) The iterator.
 		 */
-		constexpr INV_NODISCARD decltype(auto) end() const noexcept { return m_Storage.end(); }
+		constexpr INV_NODISCARD decltype(auto) end() const noexcept { return m_Container.end(); }
 
 		/**
 		 * @brief Get the cons begin iterator.
 		 *
 		 * @return constexpr decltype(auto) The iterator.
 		 */
-		constexpr INV_NODISCARD decltype(auto) cbegin() const noexcept { return m_Storage.cbegin(); }
+		constexpr INV_NODISCARD decltype(auto) cbegin() const noexcept { return m_Container.cbegin(); }
 
 		/**
 		 * @brief Get the const end iterator.
 		 *
 		 * @return constexpr decltype(auto) The iterator.
 		 */
-		constexpr INV_NODISCARD decltype(auto) cend() const noexcept { return m_Storage.cend(); }
+		constexpr INV_NODISCARD decltype(auto) cend() const noexcept { return m_Container.cend(); }
 	};
 } // namespace inventory

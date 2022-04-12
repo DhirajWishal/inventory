@@ -9,7 +9,7 @@ namespace engine
 	class game_object
 	{
 		engine &m_Engine;
-		entity &m_Entity;
+		entity m_Entity;
 
 	public:
 		explicit game_object(engine &engine) : m_Engine(engine), m_Entity(m_Engine.create_entity()) {}

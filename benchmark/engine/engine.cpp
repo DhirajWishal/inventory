@@ -8,17 +8,14 @@ namespace engine
 	{
 		for (auto &models : m_ModelComponents)
 		{
-			update_component(models.second);
-		}
-
-		for (auto &camera : m_CameraComponents)
-		{
-			update_component(camera.second);
+			update_component(models.component());
+			if (models.entity().is_registered_to<camera_component>())
+				update_component(m_CameraComponents.get(models.entity()));
 		}
 
 		for (auto &position : m_PositionComponents)
 		{
-			update_component(position.second);
+			update_component(position.component());
 		}
 	}
 

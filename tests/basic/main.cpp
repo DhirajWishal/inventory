@@ -20,28 +20,28 @@ struct position
 	std::array<float, 3> m_Vector;
 };
 
-using camera_system = inventory::system<camera>;
-using world_system = inventory::system<std::pair<model, position>>;
+using entity = inventory::entity<inventory::default_component_index_type, camera, std::pair<model, position>>;
+
+using camera_system = inventory::system<entity, camera>;
+using world_system = inventory::system<entity, std::pair<model, position>>;
 
 int main()
 {
-	inventory::entity_factory factory;
-	auto entity = factory.create();
+	inventory::entity_factory<entity> factory;
+	auto ent = factory.create();
 
 	camera_system cameraSystem;
 	world_system worldSystem;
 
-	worldSystem.link(cameraSystem);
-
-	cameraSystem.register_entity(entity);
-	worldSystem.register_entity(entity);
+	cameraSystem.register_entity(ent);
+	worldSystem.register_entity(ent);
 
 	for (auto &entry : worldSystem)
 	{
-		auto entity = entry.first;
-		auto &component = entry.second;
+		auto& entity = entry.entity();
+		auto &component = entry.component();
 
-		if (cameraSystem.is_registered(entity))
+		if (entity.is_registered_to<camera>())
 			auto &cameraComponent = cameraSystem.get(entity);
 	}
 }

@@ -9,23 +9,23 @@
 
 namespace engine
 {
-    using entity = inventory::entity<inventory::default_index_type>;
-    using entity_factory = inventory::entity_factory<inventory::default_index_type>;
+	using entity = inventory::entity<inventory::default_component_index_type, model_component, camera_component, position_component>;
+	using entity_factory = inventory::entity_factory<entity>;
 
 	class engine final
 	{
-		inventory::system<model_component> m_ModelComponents;
-		inventory::system<camera_component> m_CameraComponents;
-		inventory::system<position_component> m_PositionComponents;
-		entity_factory m_Factory;
+		inventory::system<entity, model_component> m_ModelComponents;
+		inventory::system<entity, camera_component> m_CameraComponents;
+		inventory::system<entity, position_component> m_PositionComponents;
+		entity_factory m_Factory = {};
 
 	public:
 		engine() = default;
 
-		entity &create_entity() { return m_Factory.create(); }
+		entity create_entity() const { return m_Factory.create(); }
 
 		template <class Component>
-		decltype(auto) register_to_system(const entity &e)
+		decltype(auto) register_to_system(entity &e)
 		{
 			if constexpr (std::is_same_v<Component, model_component>)
 				return m_ModelComponents.register_entity(e);
