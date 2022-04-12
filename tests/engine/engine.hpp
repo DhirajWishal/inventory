@@ -7,7 +7,7 @@
 #include <inventory/system.hpp>
 #include <inventory/entity_factory.hpp>
 
-using entity = inventory::entity<inventory::default_component_index_type, model_component, camera_component, position_component>;
+using entity = inventory::entity<inventory::default_index_type, model_component, camera_component, position_component>;
 using entity_factory = inventory::entity_factory<entity>;
 
 class engine final

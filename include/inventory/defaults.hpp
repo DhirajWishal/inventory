@@ -5,8 +5,8 @@
 
 namespace inventory
 {
-	// Set the default component index type.
-	using default_component_index_type = uint32_t;
+	// Set the default index type.
+	using default_index_type = uint32_t;
 
 	/**
 	 * @brief Integral type concept.

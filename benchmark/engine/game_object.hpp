@@ -15,10 +15,10 @@ namespace engine
 		explicit game_object(engine &engine) : m_Engine(engine), m_Entity(m_Engine.create_entity()) {}
 
 		template <class Type, class... Types>
-		decltype(auto) create_component(Types &&...arguments) { return m_Engine.register_to_system<Type>(m_Entity); }
+		Type& create_component(Types &&...arguments) { return m_Engine.register_to_system<Type>(m_Entity); }
 
 		template <class Type>
-		decltype(auto) get_component() const { return m_Engine.get_component<Type>(m_Entity); }
+		Type& get_component() const { return m_Engine.get_component<Type>(m_Entity); }
 
 		virtual void update() = 0;
 	};

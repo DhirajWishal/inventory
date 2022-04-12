@@ -44,10 +44,10 @@ namespace inventory
 		 *
 		 * @return EntityIndex& The entity ID.
 		 */
-		INV_NODISCARD const Entity& entity() const { return m_Entity; }
+		INV_NODISCARD const Entity &entity() const { return m_Entity; }
 
 		Component m_Component;
-		const Entity& m_Entity;
+		const Entity &m_Entity;
 	};
 
 	/**
@@ -56,9 +56,9 @@ namespace inventory
 	 *
 	 * @tparam Entity The entity type.
 	 * @tparam Component The component type.
-	 * @tparam ComponentIndex The component index type. Default is the default_component_index_type.
+	 * @tparam ComponentIndex The component index type. Default is the default_index_type.
 	 */
-	template <class Entity, class Component, index_type ComponentIndex = default_component_index_type>
+	template <class Entity, class Component, index_type ComponentIndex = default_index_type>
 	class system
 	{
 		sparse_array<component_container<Component, Entity>, ComponentIndex> m_Container;
@@ -76,14 +76,15 @@ namespace inventory
 		 * @tparam Types The constructor argument types for the component.
 		 * @param ent The entity.
 		 * @param arguments The component constructor arguments.
+		 * @return constexpr Component& The component reference.
 		 */
 		template <class... Types>
-		constexpr INV_NODISCARD decltype(auto) register_entity(Entity &ent, Types &&...arguments)
+		constexpr INV_NODISCARD Component &register_entity(Entity &ent, Types &&...arguments)
 		{
 			auto result = m_Container.emplace(component_container(Component(std::forward<Types...>(arguments)...), ent));
 			ent.template register_component<Component>(result.first);
 
-			return result.second;
+			return result.second->component();
 		}
 
 		/**

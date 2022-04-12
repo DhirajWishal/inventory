@@ -15,10 +15,10 @@ namespace inventory
 	 * @brief Entity class.
 	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.
 	 *
-	 * @tparam ComponentIndex The component index type. Default is default_component_index_type.
+	 * @tparam ComponentIndex The component index type. Default is default_index_type.
 	 * @tparam Components The components that could be attached to this.
 	 */
-	template <index_type ComponentIndex = default_component_index_type, class... Components>
+	template <index_type ComponentIndex = default_index_type, class... Components>
 	class entity final
 	{
 		std::array<ComponentIndex, get_component_count<Components...>()> m_Components = {};

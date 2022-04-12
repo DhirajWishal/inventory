@@ -64,13 +64,13 @@ namespace inventory
 		 * @return constexpr std::pair<Index, std::reference_wrapper<Type>> The index position of the emplaced data and the emplaced data reference.
 		 */
 		template <class... Types>
-		constexpr INV_NODISCARD std::pair<Index, std::reference_wrapper<Type>> emplace(Types &&...data)
+		constexpr INV_NODISCARD std::pair<Index, Type*> emplace(Types &&...data)
 		{
 			auto index = get_index();
 			auto& emplaced = m_DenseArray.emplace_back(std::forward<Types>(data)...);
 			update_sparse_vector(index, m_DenseArray.size() - 1);
 
-			return std::make_pair(index, std::ref(emplaced));
+			return std::make_pair(index, &emplaced);
 		}
 
 		/**

@@ -20,7 +20,7 @@ struct position
 	std::array<float, 3> m_Vector;
 };
 
-using entity = inventory::entity<inventory::default_component_index_type, camera, std::pair<model, position>>;
+using entity = inventory::entity<inventory::default_index_type, camera, std::pair<model, position>>;
 
 using camera_system = inventory::system<entity, camera>;
 using world_system = inventory::system<entity, std::pair<model, position>>;
