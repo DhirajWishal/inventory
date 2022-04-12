@@ -81,7 +81,7 @@ namespace inventory
 		constexpr INV_NODISCARD decltype(auto) register_entity(Entity &ent, Types &&...arguments)
 		{
 			auto result = m_Container.emplace(component_container(Component(std::forward<Types...>(arguments)...), ent));
-			ent.register_component<Component>(result.first);
+			ent.template register_component<Component>(result.first);
 
 			return result.second;
 		}
@@ -94,7 +94,7 @@ namespace inventory
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr INV_NODISCARD Component &get(const Entity &ent) { return m_Container.at(ent.get_component_index<Component>()).component(); }
+		constexpr INV_NODISCARD Component &get(const Entity &ent) { return m_Container.at(ent.template get_component_index<Component>()).component(); }
 
 		/**
 		 * @brief Get a component from the container using the entity it is attached to.
@@ -104,7 +104,7 @@ namespace inventory
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr INV_NODISCARD const Component &get(const Entity &ent) const { return m_Container.at(ent.get_component_index<Component>()).component(); }
+		constexpr INV_NODISCARD const Component &get(const Entity &ent) const { return m_Container.at(ent.template get_component_index<Component>()).component(); }
 
 	public:
 		/**
