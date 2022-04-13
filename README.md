@@ -18,10 +18,43 @@ since entities are aware of the components that they are bound to, we can easily
 components, since they know about who owns them, we can easily query the entity and get its information.
 
 By knowing all the components that are to be stored by the registry, we can optimize the storage and retrieval of those systems from the
-registry. Because of this, we don't have to rely on legacy methods, like using inheritance.
+registry. Because of this, we don't have to rely on legacy methods, like using inheritance. But one large downside, that we must admit,
+is that this would require a single bulky `using` alias, as we need to know all the components once. One way to deal with this is by
+optimizing the entities by letting it only connect to a selected number of entities, essentially partitioning the system into tiny
+systems, which is totally up to you. The worst you can get is something like this (I'm citing Unity here),
 
-Note that the `inventory::registry` can be copied, but should not be done often, as it is a heavy object and may result in bad performance.
-Passing by reference or moving it to wherever needed will be the safest option.
+```cpp
+using registry = inventory::registry<
+    inventory::default_index_type,
+    inventory::default_index_type, 
+
+    AudioChorusFilter,
+    AudioDistortionFilter,
+    AudioEchoFilter,
+    AudioHighPassFilter,
+    AudioListener,
+    AudioLowPassFilter,
+    AudioReverbFilter,
+    AudioReverbZone,
+    AudioSource,
+
+    HaloEffect,
+    LenseFlair,
+    LineRenderer,
+    ParticleSystem,
+    Projector, 
+    TrailRenderer,
+    VisualEffect,
+
+    EventSystem,
+    EventTrigger,
+    ...
+```
+
+Note that the `inventory::registry` can be copied, but should not be done often, as it is a heavy object (typically `(sizeof(std::vector<>) * 3) + (sizeof(std::vector<>) * 3 * component_count)`)
+and may result in bad performance. Passing by reference or moving it to wherever needed will be the safest option.
+
+And fun fact, it can store any type of data! :)
 
 ## How to use
 
@@ -50,7 +83,7 @@ struct position
 };
 
 using world = std::pair<model, position>;
-using registry = inventory::registry<inventory::default_index_type, inventory::default_index_type, camera, world>;
+using registry = inventory::default_registry<camera, world>;
 
 int main()
 {

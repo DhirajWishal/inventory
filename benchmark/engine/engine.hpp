@@ -10,7 +10,10 @@
 
 namespace engine
 {
-	using registry = inventory::default_registry<model_component, camera_component, position_component>;
+	using registry = inventory::default_registry<
+		model_component,
+		camera_component,
+		position_component>;
 	using entity = typename registry::entity_index_type;
 	using entity_factory = inventory::entity_factory<entity>;
 

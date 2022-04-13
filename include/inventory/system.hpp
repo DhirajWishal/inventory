@@ -73,7 +73,7 @@ namespace inventory
 	 * @tparam EntityIndex The entity index type. Default is the default_index_type.
 	 */
 	template <class Component, index_type ComponentIndex = default_index_type, index_type EntityIndex = default_index_type>
-	class system
+	class system final
 	{
 		using container = sparse_array<component_storage<Component, EntityIndex>, ComponentIndex>;
 		container m_Container;
