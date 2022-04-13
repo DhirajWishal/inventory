@@ -4,6 +4,8 @@
 
 #include "system.hpp"
 #include "query.hpp"
+#include "flat_map.hpp"
+#include "flat_set.hpp"
 
 namespace inventory
 {
@@ -89,7 +91,16 @@ namespace inventory
 		 * @return constexpr Component& The created component reference.
 		 */
 		template <class Component, class... Types>
-		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), index, std::forward<Types>(arguments)...); }
+		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments)
+		{
+			auto &entity = get_entity(index);
+
+			m_AdjacencyMap[entity.get_component_hash()].remove(index);
+			auto &component = get_system<Component>().register_entity(entity, index, std::forward<Types>(arguments)...);
+			m_AdjacencyMap[entity.get_component_hash()].insert(index);
+
+			return component;
+		}
 
 		/**
 		 * @brief Unregister an entity from a system.
@@ -100,9 +111,13 @@ namespace inventory
 		template <class Component>
 		constexpr void unregister_from_system(const entity_index_type index)
 		{
-			auto &ent = get_entity(index);
-			if (ent.template is_registered_to<Component>())
-				get_system<Component>().unregister_entity(ent);
+			auto &entity = get_entity(index);
+			m_AdjacencyMap[entity.get_component_hash()].remove(index);
+
+			if (entity.template is_registered_to<Component>())
+				get_system<Component>().unregister_entity(entity);
+
+			m_AdjacencyMap[entity.get_component_hash()].insert(index);
 		}
 
 		/**
@@ -211,6 +226,24 @@ namespace inventory
 		template <class Component>
 		static consteval INV_NODISCARD decltype(auto) component_index() { return get_component_index<Component, Components...>(); }
 
+		/**
+		 * @brief Get the component sum.
+		 *
+		 * @tparam Type The type of the indexes.
+		 * @tparam Indexes The indexes.
+		 * @param sequence The index sequence.
+		 * @return constexpr std::size_t The hash value.
+		 */
+		template <class Type, Type... Indexes>
+		static constexpr INV_NODISCARD std::size_t get_component_hash([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence)
+		{
+			std::size_t hashValue = 0;
+			for (const auto i : std::array<uint64_t, sizeof...(Indexes)>{Indexes...})
+				index_hash_combine(hashValue, i);
+
+			return hashValue;
+		}
+
 	public:
 		/**
 		 * @brief Get the query for the required components.
@@ -225,7 +258,11 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else
-				return query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+			{
+				const auto sequence = std::integer_sequence<ComponentIndex, component_index<Selection>()...>();
+				auto &entities = m_AdjacencyMap[get_component_hash(sequence)];
+				return query(entities.begin(), entities.end(), std::move(sequence));
+			}
 		}
 
 		/**
@@ -241,12 +278,17 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else
-				return const_query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+			{
+				const auto sequence = std::integer_sequence<ComponentIndex, component_index<Selection>()...>();
+				const auto &entities = m_AdjacencyMap[get_component_hash(sequence)];
+				return const_query(entities.begin(), entities.end(), std::move(sequence));
+			}
 		}
 
 	private:
 		std::tuple<system_type<Components>...> m_Systems;
 		sparse_array<entity_type, EntityIndex> m_Entities;
+		flat_map<std::size_t, flat_set<entity_index_type>> m_AdjacencyMap;
 	};
 
 	/**

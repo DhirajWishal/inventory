@@ -244,7 +244,7 @@ namespace inventory
 		 */
 		constexpr void shrink_to_fit()
 		{
-			for (auto itr = m_SparseArray.end(); itr != m_SparseArray.begin(); --itr)
+			for (auto itr = m_SparseArray.end() - 1; itr != m_SparseArray.begin(); --itr)
 			{
 				if (*itr > invalid_index)
 				{
