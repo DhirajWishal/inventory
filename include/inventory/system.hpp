@@ -18,7 +18,7 @@ namespace inventory
 	struct component_storage final
 	{
 		Component m_Component;
-		const EntityIndex m_EntityIndex;
+		EntityIndex m_EntityIndex;
 
 		/**
 		 * @brief Create the component storage object.
@@ -104,6 +104,19 @@ namespace inventory
 			ent.template register_component<Component>(result.first);
 
 			return result.second->component();
+		}
+
+		/**
+		 * @brief Unregister an entity from the system.
+		 *
+		 * @tparam Entity The entity type.
+		 * @param ent The entity to unregister.
+		 */
+		template <class Entity>
+		constexpr void unregister_entity(Entity &ent)
+		{
+			m_Container.remove(ent.template get_component_index<Component>());
+			ent.template register_component<Component>(invalid_index<ComponentIndex>);
 		}
 
 		/**

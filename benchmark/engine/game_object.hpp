@@ -20,6 +20,9 @@ namespace engine
 		template <class Type>
 		Type& get_component() const { return m_Engine.get_component<Type>(m_Entity); }
 
+		template <class Type>
+		void destroy_component() { m_Engine.unregister_from_system<Type>(m_Entity); }
+
 		virtual void update() = 0;
 	};
 }

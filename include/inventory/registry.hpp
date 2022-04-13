@@ -52,6 +52,18 @@ namespace inventory
 		constexpr INV_NODISCARD index_type create_entity() { return m_Entities.emplace().first; }
 
 		/**
+		 * @brief Destroy an entity from the registry.
+		 * This will unregister the entity from all the systems it is attached to.
+		 *
+		 * @param index The entity index.
+		 */
+		constexpr void destroy_entity(const index_type &index)
+		{
+			(unregister_from_system<Components>(get_entity(index)), ...);
+			m_Entities.remove(index);
+		}
+
+		/**
 		 * @brief Get the entity object from the store.
 		 *
 		 * @param index The index of the entity.
@@ -78,6 +90,33 @@ namespace inventory
 		 */
 		template <class Component, class... Types>
 		constexpr INV_NODISCARD Component &register_to_system(const index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), index, std::forward<Types>(arguments)...); }
+
+		/**
+		 * @brief Unregister an entity from a system.
+		 *
+		 * @tparam Component The component type.
+		 * @param index The entity index.
+		 */
+		template <class Component>
+		constexpr void unregister_from_system(const index_type index)
+		{
+			auto &ent = get_entity(index);
+			if (ent.template is_registered_to<Component>())
+				get_system<Component>().unregister_entity(ent);
+		}
+
+		/**
+		 * @brief Unregister an entity from a system.
+		 *
+		 * @tparam Component The component type.
+		 * @param ent The entity reference.
+		 */
+		template <class Component>
+		constexpr void unregister_from_system(entity_type &ent)
+		{
+			if (ent.template is_registered_to<Component>())
+				get_system<Component>().unregister_entity(ent);
+		}
 
 		/**
 		 * @brief Get a component from the system.
@@ -176,7 +215,7 @@ namespace inventory
 		/**
 		 * @brief Get the query for the required components.
 		 *
-		 * @tparam Selection The required components.
+		 * @tparam Selection The required components.1
 		 * @return constexpr decltype(auto) The query.
 		 */
 		template <class... Selection>
@@ -193,7 +232,7 @@ namespace inventory
 		 * @brief Get the query for the required components.
 		 *
 		 * @tparam Selection The required components.
-		 * @return constexpr decltype(auto) The cosnt query.
+		 * @return constexpr decltype(auto) The const query.
 		 */
 		template <class... Selection>
 		constexpr INV_NODISCARD decltype(auto) query_components() const

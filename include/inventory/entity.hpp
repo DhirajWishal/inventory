@@ -33,10 +33,7 @@ namespace inventory
 		 * @param index The component index.
 		 */
 		template <class Component>
-		constexpr void register_component(ComponentIndex index)
-		{
-			m_Components[::inventory::get_component_index<Component, Components...>()] = index;
-		}
+		constexpr void register_component(ComponentIndex index) { m_Components[::inventory::get_component_index<Component, Components...>()] = index; }
 
 		/**
 		 * @brief Register a component to this entity.

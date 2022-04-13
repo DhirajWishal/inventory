@@ -49,6 +49,19 @@ namespace engine
 				return m_Registry.get_component<position_component>(e);
 		}
 
+		template <class Component>
+		void unregister_from_system(entity &e)
+		{
+			if constexpr (std::is_same_v<Component, model_component>)
+				m_Registry.unregister_from_system<model_component>(e);
+
+			else if constexpr (std::is_same_v<Component, camera_component>)
+				m_Registry.unregister_from_system<camera_component>(e);
+
+			else if constexpr (std::is_same_v<Component, position_component>)
+				m_Registry.unregister_from_system<position_component>(e);
+		}
+
 		void update();
 
 		void update_component([[maybe_unused]] const model_component &component) const;
