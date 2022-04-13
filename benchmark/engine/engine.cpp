@@ -4,15 +4,32 @@
 
 namespace engine
 {
-	void engine::update(const model_component &component) const
+	void engine::update()
 	{
+		for (auto &ent : m_Registry.query_components<model_component, camera_component>())
+		{
+			update_component(m_Registry.get_component<model_component>(ent));
+			update_component(m_Registry.get_component<camera_component>(ent));
+		}
+
+		for (auto &component : m_Registry.query_components<position_component>())
+		{
+			update_component(component);
+		}
 	}
 
-	void engine::update(const camera_component &component) const
+	void engine::update_component(const model_component &component) const
 	{
+		[[maybe_unused]] volatile int x = 0;
 	}
 
-	void engine::update(const position_component &component) const
+	void engine::update_component(const camera_component &component) const
 	{
+		[[maybe_unused]] volatile int x = 0;
+	}
+
+	void engine::update_component(const position_component &component) const
+	{
+		[[maybe_unused]] volatile int x = 0;
 	}
 }

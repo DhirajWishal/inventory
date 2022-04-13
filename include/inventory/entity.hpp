@@ -2,64 +2,76 @@
 
 #pragma once
 
-#include "component_store.hpp"
+#include "component_traits.hpp"
+
+#include <cassert>
 
 namespace inventory
 {
 	/**
-	 * @brief Entity base class.
-	 * This class is the base class of the entity object, and is intended to be used for abstraction.
-	 */
-	class entity_base
-	{
-	};
-
-	/**
 	 * @brief Entity class.
-	 * This is an abstract entity class which can house any component and can be accessed easily using the given member functions.
+	 * This class acts as a single entity and it contains information regarding all the systems it has been registered to.
 	 *
-	 * @note This class cannot be inherited and is intended to be used as a single entity in the system.
-	 *
-	 * @tparam Types The component types.
+	 * @tparam ComponentIndex The component index type. Default is default_index_type.
+	 * @tparam Components The components that could be attached to this.
 	 */
-	template <class... Types>
-	class entity final : public entity_base, public component_store<Types...>
+	template <index_type ComponentIndex = default_index_type, class... Components>
+	class entity final
 	{
+		std::array<ComponentIndex, get_component_count<Components...>()> m_Components = create_default_component_array<ComponentIndex, Components...>();
+
 	public:
 		/**
-		 * @brief Get the component object.
-		 *
-		 * @tparam Type The component type.
-		 * @return constexpr decltype(auto) The component reference.
+		 * @brief Default constructor.
 		 */
-		template <class Type>
-		constexpr INV_NODISCARD decltype(auto) get_component() { return ::inventory::get_component<Type>(this); }
+		constexpr entity() = default;
 
 		/**
-		 * @brief Get the component object.
+		 * @brief Register a component to this entity.
 		 *
-		 * @tparam Type The component type.
-		 * @return constexpr decltype(auto) The component reference.
+		 * @tparam Component The component type.
+		 * @param index The component index.
 		 */
-		template <class Type>
-		constexpr INV_NODISCARD decltype(auto) get_component() const { return ::inventory::get_component<Type>(this); }
+		template <class Component>
+		constexpr void register_component(ComponentIndex index)
+		{
+			m_Components[::inventory::get_component_index<Component, Components...>()] = index;
+		}
 
 		/**
-		 * @brief Get the view of the required components.
+		 * @brief Register a component to this entity.
+		 * Make sure that this entity is registered to the component system before calling this method.
 		 *
-		 * @tparam Components The component types.
-		 * @return constexpr decltype(auto) The component view.
+		 * @tparam Component The component type.
+		 * @param index The component index.
 		 */
-		template <class... Components>
-		constexpr INV_NODISCARD decltype(auto) get_components() { return ::inventory::get_components<Components...>(this); }
+		template <class Component>
+		constexpr INV_NODISCARD ComponentIndex get_component_index() const
+		{
+			assert((is_registered_to<Component>() && "This entity is not registered to this component! Make sure that the entity is registered to the component system before calling this."));
+			return m_Components[::inventory::get_component_index<Component, Components...>()];
+		}
 
 		/**
-		 * @brief Get the view of the required components.
+		 * @brief Check if the entity is registered to a system.
+		 * This operation takes O(log n) on average.
 		 *
-		 * @tparam Types The component types.
-		 * @return constexpr decltype(auto) The component view.
+		 * @tparam Component The component of the system.
+		 * @return constexpr true if this entity is registered to the required system.
+		 * @return constexpr false if this entity is not registered to the required system.
 		 */
-		template <class... Components>
-		constexpr INV_NODISCARD decltype(auto) get_components() const { return ::inventory::get_components<Components...>(this); }
+		template <class Component>
+		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[::inventory::get_component_index<Component, Components...>()] != invalid_index<ComponentIndex>; }
+
+		/**
+		 * @brief Check if the entity is registered to a system or not.
+		 * This will use the component index to check if the entity is registered or not.
+		 *
+		 * @tparam Index The index to check.
+		 * @return constexpr true if this entity is registered to the required system.
+		 * @return constexpr false if this entity is not registered to the required system.
+		 */
+		template <ComponentIndex Index>
+		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[Index] != invalid_index<ComponentIndex>; }
 	};
-}
+} // namespace inventory

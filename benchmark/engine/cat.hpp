@@ -6,10 +6,11 @@
 
 namespace engine
 {
-	class cat final : public game_object<model_component, camera_component, position_component>
+	class cat final : public game_object
 	{
 	public:
-		explicit cat(engine& engine) : game_object(engine) {}
+		explicit cat(engine& engine);
+
 		void update() override;
 	};
 }

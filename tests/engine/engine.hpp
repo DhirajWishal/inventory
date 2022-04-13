@@ -4,25 +4,49 @@
 
 #include "components.hpp"
 
-#include <inventory/container.hpp>
+#include <inventory/registry.hpp>
 
-class engine final : public inventory::container<engine>
+using registry = inventory::registry<inventory::default_index_type, inventory::default_index_type, model_component, camera_component, position_component>;
+using entity = typename registry::index_type;
+
+class engine final
 {
+	registry m_Registry;
+
 public:
-	void update([[maybe_unused]] const model_component &component) const;
-	void update([[maybe_unused]] const camera_component &component) const;
-	void update([[maybe_unused]] const position_component &component) const;
+	engine() = default;
 
-	template <class Type>
-	void operator()(Type &element)
+	entity create_entity() { return m_Registry.create_entity(); }
+
+	template <class Component>
+	decltype(auto) register_to_system(entity& e)
 	{
-		element.update();
-		element.update_components();
+		if constexpr (std::is_same_v<Component, model_component>)
+			return m_Registry.register_to_system<model_component>(e);
+
+		else if constexpr (std::is_same_v<Component, camera_component>)
+			return m_Registry.register_to_system<camera_component>(e);
+
+		else if constexpr (std::is_same_v<Component, position_component>)
+			return m_Registry.register_to_system<position_component>(e);
 	}
 
-	template <class Type>
-	void operator()(const Type &element) const
+	template <class Component>
+	decltype(auto) get_component(const entity& e)
 	{
-		element.update_components();
+		if constexpr (std::is_same_v<Component, model_component>)
+			return m_Registry.get_component<model_component>(e);
+
+		else if constexpr (std::is_same_v<Component, camera_component>)
+			return m_Registry.get_component<camera_component>(e);
+
+		else if constexpr (std::is_same_v<Component, position_component>)
+			return m_Registry.get_component<position_component>(e);
 	}
+
+	void update();
+
+	void update_component([[maybe_unused]] const model_component& component) const;
+	void update_component([[maybe_unused]] const camera_component& component) const;
+	void update_component([[maybe_unused]] const position_component& component) const;
 };

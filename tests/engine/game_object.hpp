@@ -3,44 +3,20 @@
 #pragma once
 
 #include "engine.hpp"
-#include "inventory/component_store.hpp"
 
-#include <type_traits>
-
-class game_object_interface
+class game_object
 {
+	engine& m_Engine;
+	entity m_Entity;
+
 public:
+	explicit game_object(engine& engine) : m_Engine(engine), m_Entity(m_Engine.create_entity()) {}
+
+	template <class Type, class... Types>
+	decltype(auto) create_component(Types &&...arguments) { return m_Engine.register_to_system<Type>(m_Entity); }
+
+	template <class Type>
+	decltype(auto) get_component() const { return m_Engine.get_component<Type>(m_Entity); }
+
 	virtual void update() = 0;
-	virtual void update_components() = 0;
-	virtual void update_components() const = 0;
-};
-
-template <class... Types>
-class game_object : public game_object_interface, public inventory::component_store<Types...>
-{
-	engine &m_Engine;
-
-	template <class Component, class... Components>
-	void update_components()
-	{
-		m_Engine.update(inventory::get_component<Component>(this));
-
-		if constexpr (sizeof...(Components) > 0)
-			update_components<Components...>();
-	}
-
-	template <class Component, class... Components>
-	void update_components() const
-	{
-		m_Engine.update(inventory::get_component<Component>(this));
-
-		if constexpr (sizeof...(Components) > 0)
-			update_components<Components...>();
-	}
-
-public:
-	explicit game_object(engine &engine) : m_Engine(engine) {}
-
-	void update_components() final { update_components<Types...>(); }
-	void update_components() const final { update_components<Types...>(); }
 };

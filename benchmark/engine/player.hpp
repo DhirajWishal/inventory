@@ -6,10 +6,11 @@
 
 namespace engine
 {
-	class player final : public game_object<model_component, camera_component>
+	class player final : public game_object
 	{
 	public:
-		explicit player(engine& engine) : game_object(engine) {}
+		explicit player(engine& engine);
+
 		void update() override;
 	};
 }
