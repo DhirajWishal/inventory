@@ -218,13 +218,13 @@ namespace inventory
 		 * @brief Unpack the integer sequence and check the components.
 		 *
 		 * @tparam ComponentIndex The component index type.
-		 * @tparam Indexes The component indexes.
+		 * @tparam ComponentIndexes The component indexes.
 		 * @param indexes The indexes to access.
 		 * @return constexpr true if the components are available in the current entity.
 		 * @return constexpr false if the components are not available in the current entity.
 		 */
-		template <class ComponentIndex, ComponentIndex... Indexes>
-		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, Indexes...> &indexes) const { return check<ComponentIndex, Indexes...>(); }
+		template <class ComponentIndex, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, ComponentIndexes...> &indexes) const { return check<ComponentIndex, ComponentIndexes...>(); }
 
 		/**
 		 * @brief Check if the component index is active.
