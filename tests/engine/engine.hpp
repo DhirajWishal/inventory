@@ -4,48 +4,44 @@
 
 #include "components.hpp"
 
-#include <inventory/system.hpp>
-#include <inventory/entity_factory.hpp>
+#include <inventory/registry.hpp>
 
-using entity = inventory::entity<inventory::default_index_type, model_component, camera_component, position_component>;
-using entity_factory = inventory::entity_factory<entity>;
+using registry = inventory::registry<inventory::default_index_type, inventory::default_index_type, model_component, camera_component, position_component>;
+using entity = typename registry::index_type;
 
 class engine final
 {
-	inventory::system<entity, model_component> m_ModelComponents;
-	inventory::system<entity, camera_component> m_CameraComponents;
-	inventory::system<entity, position_component> m_PositionComponents;
-	entity_factory m_Factory = {};
+	registry m_Registry;
 
 public:
 	engine() = default;
 
-	entity create_entity() const { return m_Factory.create(); }
+	entity create_entity() { return m_Registry.create_entity(); }
 
 	template <class Component>
 	decltype(auto) register_to_system(entity& e)
 	{
 		if constexpr (std::is_same_v<Component, model_component>)
-			return m_ModelComponents.register_entity(e);
+			return m_Registry.register_to_system<model_component>(e);
 
 		else if constexpr (std::is_same_v<Component, camera_component>)
-			return m_CameraComponents.register_entity(e);
+			return m_Registry.register_to_system<camera_component>(e);
 
 		else if constexpr (std::is_same_v<Component, position_component>)
-			return m_PositionComponents.register_entity(e);
+			return m_Registry.register_to_system<position_component>(e);
 	}
 
 	template <class Component>
 	decltype(auto) get_component(const entity& e)
 	{
 		if constexpr (std::is_same_v<Component, model_component>)
-			return m_ModelComponents.get(e);
+			return m_Registry.get_component<model_component>(e);
 
 		else if constexpr (std::is_same_v<Component, camera_component>)
-			return m_CameraComponents.get(e);
+			return m_Registry.get_component<camera_component>(e);
 
 		else if constexpr (std::is_same_v<Component, position_component>)
-			return m_PositionComponents.get(e);
+			return m_Registry.get_component<position_component>(e);
 	}
 
 	void update();

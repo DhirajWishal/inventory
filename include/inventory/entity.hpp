@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include "platform.hpp"
 #include "component_traits.hpp"
 
-#include <array>
 #include <cassert>
 
 namespace inventory
@@ -59,10 +57,21 @@ namespace inventory
 		 * This operation takes O(log n) on average.
 		 *
 		 * @tparam Component The component of the system.
-		 * @return true if this entity is registered to the required system.
-		 * @return false if this entity is not registered to the required system.
+		 * @return constexpr true if this entity is registered to the required system.
+		 * @return constexpr false if this entity is not registered to the required system.
 		 */
 		template <class Component>
 		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[::inventory::get_component_index<Component, Components...>()] != invalid_index<ComponentIndex>; }
+
+		/**
+		 * @brief Check if the entity is registered to a system or not.
+		 * This will use the component index to check if the entity is registered or not.
+		 *
+		 * @tparam Index The index to check.
+		 * @return constexpr true if this entity is registered to the required system.
+		 * @return constexpr false if this entity is not registered to the required system.
+		 */
+		template <ComponentIndex Index>
+		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[Index] != invalid_index<ComponentIndex>; }
 	};
 } // namespace inventory

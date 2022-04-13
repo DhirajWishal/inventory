@@ -4,16 +4,16 @@
 
 void engine::update()
 {
-	for (auto& models : m_ModelComponents)
+	for (auto& ent : m_Registry)
 	{
-		update_component(models.component());
-		if (models.entity().is_registered_to<camera_component>())
-			update_component(m_CameraComponents.get(models.entity()));
+		update_component(m_Registry.get_component<model_component>(ent));
+		update_component(m_Registry.get_component<camera_component>(ent));
 	}
 
-	for (auto& position : m_PositionComponents)
+	for (auto& ent : m_Registry)
 	{
-		update_component(position.component());
+		if (ent.is_registered_to<position_component>())
+			update_component(m_Registry.get_component<position_component>(ent));
 	}
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.hpp"
+#include "query.hpp"
 
 namespace inventory
 {
@@ -156,6 +157,26 @@ namespace inventory
 		 * @return constexpr decltype(auto) The iterator.
 		 */
 		constexpr INV_NODISCARD decltype(auto) cend() const noexcept { return m_Entities.cend(); }
+
+	private:
+		/**
+		 * @brief Get the component index from the given component list.
+		 *
+		 * @tparam Component The component to get the index of.
+		 * @return consteval decltype(auto) The component index.
+		 */
+		template <class Component>
+		static consteval INV_NODISCARD decltype(auto) component_index() { return get_component_index<Component, Components...>(); }
+
+	public:
+		/**
+		 * @brief Get the query for the required components.
+		 *
+		 * @tparam Selection The required components.
+		 * @return constexpr decltype(auto) The query.
+		 */
+		template <class... Selection>
+		constexpr INV_NODISCARD decltype(auto) query_components() { return query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>()); }
 
 	private:
 		std::tuple<system_type<Components>...> m_Systems;

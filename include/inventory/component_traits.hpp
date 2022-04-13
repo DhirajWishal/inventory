@@ -1,6 +1,7 @@
 #pragma once
 
 #include "defaults.hpp"
+#include "platform.hpp"
 
 #include <array>
 
@@ -65,7 +66,7 @@ namespace inventory
 	 * @return constexpr uint64_t The component's index.
 	 */
 	template <class Component, class... Components>
-	consteval uint64_t get_component_index() { return component_index<Component, component_index_traits<Components...>>::value; }
+	consteval INV_NODISCARD uint64_t get_component_index() { return component_index<Component, component_index_traits<Components...>>::value; }
 
 	/**
 	 * @brief Get the component count from a list of components.
@@ -74,7 +75,7 @@ namespace inventory
 	 * @return constexpr uint64_t The component count.
 	 */
 	template <class... Components>
-	consteval uint64_t get_component_count() { return component_index_traits<Components...>::count; }
+	consteval INV_NODISCARD uint64_t get_component_count() { return component_index_traits<Components...>::count; }
 
 	/**
 	 * @brief Invalid index variable.
@@ -93,7 +94,7 @@ namespace inventory
 	 * @return consteval std::array<ComponentIndex, sizeof...(Components)> The created array.
 	 */
 	template <index_type ComponentIndex, class... Components>
-	consteval std::array<ComponentIndex, sizeof...(Components)> create_default_component_array()
+	consteval INV_NODISCARD std::array<ComponentIndex, sizeof...(Components)> create_default_component_array()
 	{
 		std::array<ComponentIndex, sizeof...(Components)> componentArray;
 		componentArray.fill(invalid_index<ComponentIndex>);

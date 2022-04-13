@@ -6,7 +6,7 @@ namespace engine
 {
 	void engine::update()
 	{
-		for (auto &ent : m_Registry)
+		for (auto &ent : m_Registry.query_components<model_component, camera_component>())
 		{
 			update_component(m_Registry.get_component<model_component>(ent));
 			update_component(m_Registry.get_component<camera_component>(ent));
