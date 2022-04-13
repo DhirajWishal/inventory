@@ -189,6 +189,22 @@ namespace inventory
 				return query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
 		}
 
+		/**
+		 * @brief Get the query for the required components.
+		 *
+		 * @tparam Selection The required components.
+		 * @return constexpr decltype(auto) The cosnt query.
+		 */
+		template <class... Selection>
+		constexpr INV_NODISCARD decltype(auto) query_components() const
+		{
+			if constexpr (sizeof...(Selection) == 1)
+				return get_system<Selection...>();
+
+			else
+				return const_query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+		}
+
 	private:
 		std::tuple<system_type<Components>...> m_Systems;
 		sparse_array<entity_type, EntityIndex> m_Entities;

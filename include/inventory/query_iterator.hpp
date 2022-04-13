@@ -16,9 +16,9 @@ namespace inventory
 	template <class EntityIterator, class Indexes>
 	class query_iterator final
 	{
-		Indexes m_Indexes;
 		EntityIterator m_Current;
 		const EntityIterator m_Last;
+		Indexes m_Indexes;
 
 	public:
 		using value_type = typename EntityIterator::value_type;
@@ -307,5 +307,301 @@ namespace inventory
 	constexpr INV_NODISCARD query_iterator<EntityIterator, Indexes> operator-(int64_t number, const query_iterator<EntityIterator, Indexes> &iterator)
 	{
 		return query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
+	}
+
+	/**
+	 * @brief Const query iterator type.
+	 * This type can be used to iterate over the required components.
+	 *
+	 * @tparam EntityIterator The entity iterator type.
+	 * @tparam Indexes The indexes of the components.
+	 */
+	template <class EntityIterator, class Indexes>
+	class const_query_iterator final
+	{
+		EntityIterator m_Current;
+		const EntityIterator m_Last;
+		Indexes m_Indexes;
+
+	public:
+		using value_type = typename EntityIterator::value_type;
+		using difference_type = typename EntityIterator::difference_type;
+		using reference = const_query_iterator &;
+
+		/**
+		 * @brief Default constructor.
+		 */
+		constexpr const_query_iterator() = default;
+
+		/**
+		 * @brief Construct a new query iterator object.
+		 *
+		 * @param current The current iterator.
+		 * @param indexes The indexes to check components.
+		 */
+		constexpr explicit const_query_iterator(const EntityIterator &current, const EntityIterator &last, const Indexes &indexes) : m_Current(current), m_Last(last), m_Indexes(indexes) {}
+
+		/**
+		 * @brief Dereference operator.
+		 *
+		 * @return const value_type& The value reference.
+		 */
+		constexpr INV_NODISCARD const value_type &operator*() const { return *m_Current; }
+
+		/**
+		 * @brief Pre-increment operator.
+		 *
+		 * @return reference The value reference.
+		 */
+		constexpr INV_NODISCARD reference operator++()
+		{
+			do
+			{
+				++m_Current;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return *this;
+		}
+
+		/**
+		 * @brief Post-increment operator.
+		 *
+		 * @return reference The value reference.
+		 */
+		constexpr INV_NODISCARD const_query_iterator operator++(int)
+		{
+			auto thisCopy = *this;
+
+			do
+			{
+				m_Current++;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return thisCopy;
+		}
+
+		/**
+		 * @brief Pre-decrement operator.
+		 *
+		 * @return reference The value reference.
+		 */
+		constexpr INV_NODISCARD reference operator--()
+		{
+			do
+			{
+				--m_Current;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return *this;
+		}
+
+		/**
+		 * @brief Post-decrement operator.
+		 *
+		 * @return reference The value reference.
+		 */
+		constexpr INV_NODISCARD const_query_iterator operator--(int)
+		{
+			auto thisCopy = *this;
+
+			do
+			{
+				m_Current--;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return thisCopy;
+		}
+
+		/**
+		 * @brief Increment-Assign operator.
+		 *
+		 * @param number The number to add.
+		 * @return constexpr reference The object reference.
+		 */
+		constexpr INV_NODISCARD reference operator+=(int64_t number)
+		{
+			m_Current += number;
+			*this;
+		}
+
+		friend constexpr INV_NODISCARD const_query_iterator operator+(const const_query_iterator &iterator, int64_t number);
+		friend constexpr INV_NODISCARD const_query_iterator operator+(int64_t number, const const_query_iterator &iterator);
+
+		/**
+		 * @brief Decrement-Assign operator.
+		 *
+		 * @param number The number to subtract.
+		 * @return constexpr reference The object reference.
+		 */
+		constexpr INV_NODISCARD reference operator-=(int64_t number)
+		{
+			m_Current -= number;
+			*this;
+		}
+
+		friend constexpr INV_NODISCARD const_query_iterator operator-(const const_query_iterator &iterator, int64_t number);
+		friend constexpr INV_NODISCARD const_query_iterator operator-(int64_t number, const const_query_iterator &iterator);
+
+		/**
+		 * @brief Get the difference between this and another iterator.
+		 *
+		 * @param other The other iterator.
+		 * @return constexpr difference_type The difference.
+		 */
+		constexpr INV_NODISCARD difference_type operator-(const const_query_iterator &other) const { return m_Current - other.m_Current; }
+
+		/**
+		 * @brief Subscript operator.
+		 *
+		 * @param index The index to access.
+		 * @return constexpr value_type& The value reference.
+		 */
+		constexpr INV_NODISCARD value_type &operator[](const int64_t index) { return *(m_Current + index); }
+
+		/**
+		 * @brief Subscript operator.
+		 *
+		 * @param index The index to access.
+		 * @return constexpr value_type& The value reference.
+		 */
+		constexpr INV_NODISCARD const value_type &operator[](const int64_t index) const { return *(m_Current + index); }
+
+		/**
+		 * @brief Less than operator.
+		 *
+		 * @param iterator The other iterator.
+		 * @return true if this iterator is less than the other.
+		 * @return false if this iterator is grater than or equal to the other iterator.
+		 */
+		constexpr INV_NODISCARD bool operator<(const const_query_iterator &iterator) const { return m_Current < iterator.m_Current; }
+
+		/**
+		 * @brief Less than or equal operator.
+		 *
+		 * @param iterator The other iterator.
+		 * @return true if this iterator is less than or equal to the other.
+		 * @return false if this iterator is grater than the other iterator.
+		 */
+		constexpr INV_NODISCARD bool operator<=(const const_query_iterator &iterator) const { return m_Current <= iterator.m_Current; }
+
+		/**
+		 * @brief Grater than operator.
+		 *
+		 * @param iterator The other iterator.
+		 * @return true if this iterator is grater than the other.
+		 * @return false if this iterator is less than or equal to the other iterator.
+		 */
+		constexpr INV_NODISCARD bool operator>(const const_query_iterator &iterator) const { return m_Current > iterator.m_Current; }
+
+		/**
+		 * @brief Grater than or equal operator.
+		 *
+		 * @param iterator The other iterator.
+		 * @return true if this iterator is grater than or equal to the other.
+		 * @return false if this iterator is less than the other iterator.
+		 */
+		constexpr INV_NODISCARD bool operator>=(const const_query_iterator &iterator) const { return m_Current >= iterator.m_Current; }
+
+		/**
+		 * @brief Not equal to operator.
+		 *
+		 * @param iterator The other iterator.
+		 * @return true if this iterator is not equal to the other iterator.
+		 * @return false if this iterator is equal to the other iterator.
+		 */
+		constexpr INV_NODISCARD bool operator!=(const const_query_iterator &iterator) const { return m_Current != iterator.m_Current; }
+
+	private:
+		/**
+		 * @brief Unpack the integer sequence and check the components.
+		 *
+		 * @tparam ComponentIndex The component index type.
+		 * @tparam ComponentIndexes The component indexes.
+		 * @param indexes The indexes to access.
+		 * @return constexpr true if the components are available in the current entity.
+		 * @return constexpr false if the components are not available in the current entity.
+		 */
+		template <class ComponentIndex, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, ComponentIndexes...> &indexes) const { return check<ComponentIndex, ComponentIndexes...>(); }
+
+		/**
+		 * @brief Check if the component index is active.
+		 *
+		 * @tparam Index The index to check.
+		 * @tparam ComponentIndexes The rest of the indexes
+		 * @return true if the current entity uses the component.
+		 * @return false if the current entity does not use the component.
+		 */
+		template <index_type ComponentIndex, ComponentIndex Index, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool check() const
+		{
+			const bool result = m_Current->template is_registered_to<Index>();
+
+			if constexpr (sizeof...(ComponentIndexes))
+				return result && check<ComponentIndex, ComponentIndexes...>();
+
+			else
+				return result;
+		}
+	};
+
+	/**
+	 * @brief Friend increment operator.
+	 *
+	 * @tparam EntityIterator The entity iterator type.
+	 * @tparam Indexes The component indexes.
+	 * @param iterator The iterator.
+	 * @param number The number to increment.
+	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The incremented iterator.
+	 */
+	template <class EntityIterator, class Indexes>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator+(const const_query_iterator<EntityIterator, Indexes> &iterator, int64_t number)
+	{
+		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current + number);
+	}
+
+	/**
+	 * @brief Friend increment operator.
+	 *
+	 * @tparam EntityIterator The entity iterator type.
+	 * @tparam Indexes The component indexes.
+	 * @param number The number to increment.
+	 * @param iterator The iterator.
+	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The incremented iterator.
+	 */
+	template <class EntityIterator, class Indexes>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator+(int64_t number, const const_query_iterator<EntityIterator, Indexes> &iterator)
+	{
+		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current + number);
+	}
+
+	/**
+	 * @brief Friend decrement operator.
+	 *
+	 * @tparam EntityIterator The entity iterator type.
+	 * @tparam Indexes The component indexes.
+	 * @param iterator The iterator.
+	 * @param number The number to decrement.
+	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The decremented iterator.
+	 */
+	template <class EntityIterator, class Indexes>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator-(const const_query_iterator<EntityIterator, Indexes> &iterator, int64_t number)
+	{
+		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
+	}
+
+	/**
+	 * @brief Friend decrement operator.
+	 *
+	 * @tparam EntityIterator The entity iterator type.
+	 * @tparam Indexes The component indexes.
+	 * @param number The number to decrement.
+	 * @param iterator The iterator.
+	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The decremented iterator.
+	 */
+	template <class EntityIterator, class Indexes>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator-(int64_t number, const const_query_iterator<EntityIterator, Indexes> &iterator)
+	{
+		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
 	}
 } // namespace inventory
