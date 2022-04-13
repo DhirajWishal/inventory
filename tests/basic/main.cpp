@@ -19,7 +19,7 @@ struct position
 };
 
 using world = std::pair<model, position>;
-using registry = inventory::registry<inventory::default_index_type, inventory::default_index_type, camera, world>;
+using registry = inventory::default_registry<camera, world>;
 
 int main()
 {

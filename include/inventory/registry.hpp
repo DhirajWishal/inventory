@@ -19,7 +19,7 @@ namespace inventory
 	class registry final
 	{
 	public:
-		using index_type = EntityIndex;
+		using entity_index_type = EntityIndex;
 		using component_index_type = ComponentIndex;
 		using entity_type = entity<ComponentIndex, Components...>;
 
@@ -47,9 +47,9 @@ namespace inventory
 		/**
 		 * @brief Create a entity object.
 		 *
-		 * @return constexpr index_type The entity index.
+		 * @return constexpr entity_index_type The entity index.
 		 */
-		constexpr INV_NODISCARD index_type create_entity() { return m_Entities.emplace().first; }
+		constexpr INV_NODISCARD entity_index_type create_entity() { return m_Entities.emplace().first; }
 
 		/**
 		 * @brief Destroy an entity from the registry.
@@ -57,7 +57,7 @@ namespace inventory
 		 *
 		 * @param index The entity index.
 		 */
-		constexpr void destroy_entity(const index_type &index)
+		constexpr void destroy_entity(const entity_index_type &index)
 		{
 			(unregister_from_system<Components>(get_entity(index)), ...);
 			m_Entities.remove(index);
@@ -69,7 +69,7 @@ namespace inventory
 		 * @param index The index of the entity.
 		 * @return constexpr entity_type& The entity reference.
 		 */
-		constexpr INV_NODISCARD entity_type &get_entity(const index_type index) { return m_Entities[index]; }
+		constexpr INV_NODISCARD entity_type &get_entity(const entity_index_type index) { return m_Entities[index]; }
 
 		/**
 		 * @brief Get the entity object from the store.
@@ -77,7 +77,7 @@ namespace inventory
 		 * @param index The index of the entity.
 		 * @return constexpr entity_type const& The entity reference.
 		 */
-		constexpr INV_NODISCARD const entity_type &get_entity(const index_type index) const { return m_Entities[index]; }
+		constexpr INV_NODISCARD const entity_type &get_entity(const entity_index_type index) const { return m_Entities[index]; }
 
 		/**
 		 * @brief Register an entity to a system.
@@ -89,7 +89,7 @@ namespace inventory
 		 * @return constexpr Component& The created component reference.
 		 */
 		template <class Component, class... Types>
-		constexpr INV_NODISCARD Component &register_to_system(const index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), index, std::forward<Types>(arguments)...); }
+		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), index, std::forward<Types>(arguments)...); }
 
 		/**
 		 * @brief Unregister an entity from a system.
@@ -98,7 +98,7 @@ namespace inventory
 		 * @param index The entity index.
 		 */
 		template <class Component>
-		constexpr void unregister_from_system(const index_type index)
+		constexpr void unregister_from_system(const entity_index_type index)
 		{
 			auto &ent = get_entity(index);
 			if (ent.template is_registered_to<Component>())
@@ -126,7 +126,7 @@ namespace inventory
 		 * @return constexpr Component& The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD Component &get_component(const index_type index) { return get_system<Component>().get(get_entity(index)); }
+		constexpr INV_NODISCARD Component &get_component(const entity_index_type index) { return get_system<Component>().get(get_entity(index)); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -136,7 +136,7 @@ namespace inventory
 		 * @return constexpr const Component& The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD const Component &get_component(const index_type index) const { return get_system<Component>().get(get_entity(index)); }
+		constexpr INV_NODISCARD const Component &get_component(const entity_index_type index) const { return get_system<Component>().get(get_entity(index)); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -248,4 +248,13 @@ namespace inventory
 		std::tuple<system_type<Components>...> m_Systems;
 		sparse_array<entity_type, EntityIndex> m_Entities;
 	};
+
+	/**
+	 * @brief Default registry type.
+	 * This type is just a registry with the entity and component index types begin the default index type.
+	 *
+	 * @tparam Components The components.
+	 */
+	template <class... Components>
+	using default_registry = registry<default_index_type, default_index_type, Components...>;
 } // namespace inventory
