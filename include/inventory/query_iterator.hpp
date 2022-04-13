@@ -51,7 +51,7 @@ namespace inventory
 		constexpr INV_NODISCARD const value_type &operator*() const { return *m_Current; }
 
 		/**
-		 * @brief Pre increment operator.
+		 * @brief Pre-increment operator.
 		 *
 		 * @return reference The value reference.
 		 */
@@ -66,7 +66,7 @@ namespace inventory
 		}
 
 		/**
-		 * @brief Post increment operator.
+		 * @brief Post-increment operator.
 		 *
 		 * @return reference The value reference.
 		 */
@@ -83,7 +83,7 @@ namespace inventory
 		}
 
 		/**
-		 * @brief Pre decrement operator.
+		 * @brief Pre-decrement operator.
 		 *
 		 * @return reference The value reference.
 		 */
@@ -98,7 +98,7 @@ namespace inventory
 		}
 
 		/**
-		 * @brief Post decrement operator.
+		 * @brief Post-decrement operator.
 		 *
 		 * @return reference The value reference.
 		 */
@@ -237,7 +237,7 @@ namespace inventory
 		template <index_type ComponentIndex, ComponentIndex Index, ComponentIndex... ComponentIndexes>
 		constexpr INV_NODISCARD bool check() const
 		{
-			const bool result = m_Current->is_registered_to<Index>();
+			const bool result = m_Current->template is_registered_to<Index>();
 
 			if constexpr (sizeof...(ComponentIndexes))
 				return result && check<ComponentIndex, ComponentIndexes...>();
