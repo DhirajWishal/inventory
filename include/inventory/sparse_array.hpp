@@ -45,6 +45,8 @@ namespace inventory
 	public:
 		using value_type = Type;
 		using index_type = Index;
+		using iterator = typename dense_vector::iterator;
+		using const_iterator = typename dense_vector::const_iterator;
 
 		/**
 		 * @brief Default constructor.

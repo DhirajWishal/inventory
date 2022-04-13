@@ -8,62 +8,22 @@
 namespace inventory
 {
 	/**
-	 * @brief Component container struct.
-	 * This structure is used to store a single component.
-	 *
-	 * @tparam Component The component type.
-	 * @tparam Entity The entity type.
-	 */
-	template <class Component, class Entity>
-	struct component_container final
-	{
-		/**
-		 * @brief Construct a new component container object.
-		 *
-		 * @param component The component lvalue.
-		 * @param index The entity index lvalue.
-		 */
-		explicit component_container(Component &&component, const Entity &ent) : m_Component(std::move(component)), m_Entity(ent) {}
-
-		/**
-		 * @brief Get the component.
-		 *
-		 * @return Component& The component reference.
-		 */
-		INV_NODISCARD Component &component() { return m_Component; }
-
-		/**
-		 * @brief Get the component.
-		 *
-		 * @return const Component& The component reference.
-		 */
-		INV_NODISCARD const Component &component() const { return m_Component; }
-
-		/**
-		 * @brief Get the entity.
-		 *
-		 * @return EntityIndex& The entity ID.
-		 */
-		INV_NODISCARD const Entity &entity() const { return m_Entity; }
-
-		Component m_Component;
-		const Entity &m_Entity;
-	};
-
-	/**
 	 * @brief System class.
 	 * This class is used to store a single component type.
 	 *
-	 * @tparam Entity The entity type.
 	 * @tparam Component The component type.
 	 * @tparam ComponentIndex The component index type. Default is the default_index_type.
 	 */
-	template <class Entity, class Component, index_type ComponentIndex = default_index_type>
+	template <class Component, index_type ComponentIndex = default_index_type>
 	class system
 	{
-		sparse_array<component_container<Component, Entity>, ComponentIndex> m_Container;
+		using container = sparse_array<Component, ComponentIndex>;
+		container m_Container;
 
 	public:
+		using iterator = typename container::iterator;
+		using const_iterator = typename container::const_iterator;
+
 		/**
 		 * @brief Default constructor.
 		 */
@@ -78,34 +38,34 @@ namespace inventory
 		 * @param arguments The component constructor arguments.
 		 * @return constexpr Component& The component reference.
 		 */
-		template <class... Types>
+		template <class Entity, class... Types>
 		constexpr INV_NODISCARD Component &register_entity(Entity &ent, Types &&...arguments)
 		{
-			auto result = m_Container.emplace(component_container(Component(std::forward<Types...>(arguments)...), ent));
+			auto result = m_Container.emplace(std::forward<Types>(arguments)...);
 			ent.template register_component<Component>(result.first);
 
-			return result.second->component();
+			return *result.second;
 		}
 
 		/**
 		 * @brief Get a component from the container using the entity it is attached to.
-		 * This operation takes O(1) in best case, and O(log n) in the worst case.
 		 *
 		 * @tparam Entity The entity to get the component from.
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr INV_NODISCARD Component &get(const Entity &ent) { return m_Container.at(ent.template get_component_index<Component>()).component(); }
+		template <class Entity>
+		constexpr INV_NODISCARD Component &get(const Entity &ent) { return m_Container.at(ent.template get_component_index<Component>()); }
 
 		/**
 		 * @brief Get a component from the container using the entity it is attached to.
-		 * This operation takes O(1) in best case, and O(log n) in the worst case.
 		 *
 		 * @tparam Entity The entity to get the component from.
 		 * @param ent The entity to index.
 		 * @return constexpr Component& The component reference.
 		 */
-		constexpr INV_NODISCARD const Component &get(const Entity &ent) const { return m_Container.at(ent.template get_component_index<Component>()).component(); }
+		template <class Entity>
+		constexpr INV_NODISCARD const Component &get(const Entity &ent) const { return m_Container.at(ent.template get_component_index<Component>()); }
 
 	public:
 		/**

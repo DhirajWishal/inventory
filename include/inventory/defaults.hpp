@@ -15,5 +15,5 @@ namespace inventory
 	 * @tparam Type The type to be checked.
 	 */
 	template <class Type>
-	concept index_type = std::is_integral_v<Type>;
+	concept index_type = std::is_integral_v<Type> && std::is_unsigned_v<Type>;
 } // namespace inventory

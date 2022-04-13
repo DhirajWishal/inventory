@@ -21,7 +21,7 @@ namespace inventory
 		using entity_type = entity<ComponentIndex, Components...>;
 
 		template <class Component>
-		using system_type = system<entity_type, Component, ComponentIndex>;
+		using system_type = system<Component, ComponentIndex>;
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -30,7 +30,7 @@ namespace inventory
 		 * @return constexpr system_type<Component>& The system reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD system_type<Component>& get_system() { return std::get<system_type<Component>>(m_Systems); }
+		constexpr INV_NODISCARD system_type<Component> &get_system() { return std::get<system_type<Component>>(m_Systems); }
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -39,7 +39,7 @@ namespace inventory
 		 * @return constexpr system_type<Component> const& The system reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD const system_type<Component>& get_system() const { return std::get<system_type<Component>>(m_Systems); }
+		constexpr INV_NODISCARD const system_type<Component> &get_system() const { return std::get<system_type<Component>>(m_Systems); }
 
 		/**
 		 * @brief Create a entity object.
@@ -54,7 +54,7 @@ namespace inventory
 		 * @param index The index of the entity.
 		 * @return constexpr entity_type& The entity reference.
 		 */
-		constexpr INV_NODISCARD entity_type& get_entity(const index_type index) { return m_Entities[index]; }
+		constexpr INV_NODISCARD entity_type &get_entity(const index_type index) { return m_Entities[index]; }
 
 		/**
 		 * @brief Get the entity object from the store.
@@ -62,7 +62,7 @@ namespace inventory
 		 * @param index The index of the entity.
 		 * @return constexpr entity_type const& The entity reference.
 		 */
-		constexpr INV_NODISCARD const entity_type& get_entity(const index_type index) const { return m_Entities[index]; }
+		constexpr INV_NODISCARD const entity_type &get_entity(const index_type index) const { return m_Entities[index]; }
 
 		/**
 		 * @brief Register an entity to a system.
@@ -72,7 +72,7 @@ namespace inventory
 		 * @return constexpr Component& The created component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD Component& register_to_system(const index_type index) { return get_system<Component>().register_entity(get_entity(index)); }
+		constexpr INV_NODISCARD Component &register_to_system(const index_type index) { return get_system<Component>().register_entity(get_entity(index)); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -82,7 +82,7 @@ namespace inventory
 		 * @return constexpr Component& The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD Component& get_component(const index_type index) { return get_system<Component>().get(get_entity(index)); }
+		constexpr INV_NODISCARD Component &get_component(const index_type index) { return get_system<Component>().get(get_entity(index)); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -92,7 +92,7 @@ namespace inventory
 		 * @return constexpr const Component& The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD const Component& get_component(const index_type index) const { return get_system<Component>().get(get_entity(index)); }
+		constexpr INV_NODISCARD const Component &get_component(const index_type index) const { return get_system<Component>().get(get_entity(index)); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -102,7 +102,7 @@ namespace inventory
 		 * @return constexpr Component& The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD Component& get_component(const entity_type& ent) { return get_system<Component>().get(ent); }
+		constexpr INV_NODISCARD Component &get_component(const entity_type &ent) { return get_system<Component>().get(ent); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -112,7 +112,50 @@ namespace inventory
 		 * @return constexpr const Component& The component reference.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD const Component& get_component(const entity_type& ent) const { return get_system<Component>().get(ent); }
+		constexpr INV_NODISCARD const Component &get_component(const entity_type &ent) const { return get_system<Component>().get(ent); }
+
+	public:
+		/**
+		 * @brief Get the begin iterator.
+		 *
+		 * @return constexpr decltype(auto) The iterator.
+		 */
+		constexpr INV_NODISCARD decltype(auto) begin() noexcept { return m_Entities.begin(); }
+
+		/**
+		 * @brief Get the end iterator.
+		 *
+		 * @return constexpr decltype(auto) The iterator.
+		 */
+		constexpr INV_NODISCARD decltype(auto) end() noexcept { return m_Entities.end(); }
+
+		/**
+		 * @brief Get the begin iterator.
+		 *
+		 * @return constexpr decltype(auto) The iterator.
+		 */
+		constexpr INV_NODISCARD decltype(auto) begin() const noexcept { return m_Entities.begin(); }
+
+		/**
+		 * @brief Get the end iterator.
+		 *
+		 * @return constexpr decltype(auto) The iterator.
+		 */
+		constexpr INV_NODISCARD decltype(auto) end() const noexcept { return m_Entities.end(); }
+
+		/**
+		 * @brief Get the cons begin iterator.
+		 *
+		 * @return constexpr decltype(auto) The iterator.
+		 */
+		constexpr INV_NODISCARD decltype(auto) cbegin() const noexcept { return m_Entities.cbegin(); }
+
+		/**
+		 * @brief Get the const end iterator.
+		 *
+		 * @return constexpr decltype(auto) The iterator.
+		 */
+		constexpr INV_NODISCARD decltype(auto) cend() const noexcept { return m_Entities.cend(); }
 
 	private:
 		std::tuple<system_type<Components>...> m_Systems;

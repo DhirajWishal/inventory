@@ -3,8 +3,7 @@
 #pragma once
 
 #include "platform.hpp"
-#include "defaults.hpp"
-#include "component_index.hpp"
+#include "component_traits.hpp"
 
 #include <array>
 #include <cassert>
@@ -21,8 +20,7 @@ namespace inventory
 	template <index_type ComponentIndex = default_index_type, class... Components>
 	class entity final
 	{
-		std::array<ComponentIndex, get_component_count<Components...>()> m_Components = {};
-		std::array<bool, get_component_count<Components...>()> m_RegisteredMap = {};
+		std::array<ComponentIndex, get_component_count<Components...>()> m_Components = create_default_component_array<ComponentIndex, Components...>();
 
 	public:
 		/**
@@ -40,7 +38,6 @@ namespace inventory
 		constexpr void register_component(ComponentIndex index)
 		{
 			m_Components[::inventory::get_component_index<Component, Components...>()] = index;
-			m_RegisteredMap[::inventory::get_component_index<Component, Components...>()] = true;
 		}
 
 		/**
@@ -53,7 +50,7 @@ namespace inventory
 		template <class Component>
 		constexpr INV_NODISCARD ComponentIndex get_component_index() const
 		{
-			assert((m_RegisteredMap[::inventory::get_component_index<Component, Components...>()] && "This entity is not registered to this component! Make sure that the entity is registered to the component system before calling this."));
+			assert((is_registered_to<Component>() && "This entity is not registered to this component! Make sure that the entity is registered to the component system before calling this."));
 			return m_Components[::inventory::get_component_index<Component, Components...>()];
 		}
 
@@ -66,6 +63,6 @@ namespace inventory
 		 * @return false if this entity is not registered to the required system.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD bool is_registered_to() const { return m_RegisteredMap[::inventory::get_component_index<Component, Components...>()]; }
+		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[::inventory::get_component_index<Component, Components...>()] != invalid_index<ComponentIndex>; }
 	};
 } // namespace inventory

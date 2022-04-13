@@ -1,6 +1,8 @@
 #pragma once
 
-#include <cstdint>
+#include "defaults.hpp"
+
+#include <array>
 
 namespace inventory
 {
@@ -73,4 +75,29 @@ namespace inventory
 	 */
 	template <class... Components>
 	consteval uint64_t get_component_count() { return component_index_traits<Components...>::count; }
+
+	/**
+	 * @brief Invalid index variable.
+	 * This constexpr variable contains the invalid index of a given component index type.
+	 *
+	 * @tparam ComponentIndex The component index type.
+	 */
+	template <index_type ComponentIndex>
+	constexpr ComponentIndex invalid_index = -1;
+
+	/**
+	 * @brief Create a default component array object.
+	 *
+	 * @tparam ComponentIndex The component index type.
+	 * @tparam Components The components.
+	 * @return consteval std::array<ComponentIndex, sizeof...(Components)> The created array.
+	 */
+	template <index_type ComponentIndex, class... Components>
+	consteval std::array<ComponentIndex, sizeof...(Components)> create_default_component_array()
+	{
+		std::array<ComponentIndex, sizeof...(Components)> componentArray;
+		componentArray.fill(invalid_index<ComponentIndex>);
+
+		return componentArray;
+	}
 } // namespace inventory
