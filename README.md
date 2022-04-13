@@ -51,8 +51,9 @@ using registry = inventory::registry<
     ...
 ```
 
-Note that the `inventory::registry` can be copied, but should not be done often, as it is a heavy object (typically `(sizeof(std::vector<>) * 3) + (sizeof(std::vector<>) * 3 * component_count)`)
-and may result in bad performance. Passing by reference or moving it to wherever needed will be the safest option.
+Note that the `inventory::registry` can be copied, but should not be done often, as it is a heavy object (typically the `sizeof(inventory::registry)`
+size would be `(sizeof(std::vector<>) * 3) + (sizeof(std::vector<>) * 3 * component_count)`) and may result in bad performance. Passing by
+reference/ pointer or moving it to wherever needed will be the safest option.
 
 And fun fact, it can store any type of data! :)
 
