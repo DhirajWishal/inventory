@@ -1,3 +1,5 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #pragma once
 
 #include "system.hpp"
@@ -22,7 +24,7 @@ namespace inventory
 		using entity_type = entity<ComponentIndex, Components...>;
 
 		template <class Component>
-		using system_type = system<Component, ComponentIndex>;
+		using system_type = system<Component, ComponentIndex, EntityIndex>;
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -69,11 +71,13 @@ namespace inventory
 		 * @brief Register an entity to a system.
 		 *
 		 * @tparam Component The component to register to.
+		 * @tparam Types The argument types.
 		 * @param index The entity index.
+		 * @param arguments The arguments to be forwarded to create the component.
 		 * @return constexpr Component& The created component reference.
 		 */
-		template <class Component>
-		constexpr INV_NODISCARD Component &register_to_system(const index_type index) { return get_system<Component>().register_entity(get_entity(index)); }
+		template <class Component, class... Types>
+		constexpr INV_NODISCARD Component &register_to_system(const index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), index, std::forward<Types>(arguments)...); }
 
 		/**
 		 * @brief Get a component from the system.
@@ -176,7 +180,14 @@ namespace inventory
 		 * @return constexpr decltype(auto) The query.
 		 */
 		template <class... Selection>
-		constexpr INV_NODISCARD decltype(auto) query_components() { return query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>()); }
+		constexpr INV_NODISCARD decltype(auto) query_components()
+		{
+			if constexpr (sizeof...(Selection) == 1)
+				return get_system<Selection...>();
+
+			else
+				return query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+		}
 
 	private:
 		std::tuple<system_type<Components>...> m_Systems;

@@ -1,3 +1,5 @@
+// Copyright (c) 2022 Dhiraj Wishal
+
 #pragma once
 
 #include "defaults.hpp"
@@ -40,7 +42,7 @@ namespace inventory
 		 * @param index The index to reduce.
 		 * @return constexpr Index The return of it.
 		 */
-		constexpr static Index reducer(const Index& index) { return index - 1; }
+		constexpr static Index reducer(const Index &index) { return index - 1; }
 
 	public:
 		using value_type = Type;
@@ -66,10 +68,10 @@ namespace inventory
 		 * @return constexpr std::pair<Index, std::reference_wrapper<Type>> The index position of the emplaced data and the emplaced data reference.
 		 */
 		template <class... Types>
-		constexpr INV_NODISCARD std::pair<Index, Type*> emplace(Types &&...data)
+		constexpr INV_NODISCARD std::pair<Index, Type *> emplace(Types &&...data)
 		{
 			auto index = get_index();
-			auto& emplaced = m_DenseArray.emplace_back(std::forward<Types>(data)...);
+			auto &emplaced = m_DenseArray.emplace_back(std::forward<Types>(data)...);
 			update_sparse_vector(index, m_DenseArray.size() - 1);
 
 			return std::make_pair(index, &emplaced);
@@ -111,7 +113,7 @@ namespace inventory
 #ifdef INV_USE_PARALLEL_UNSEQ
 				std::transform(std::execution::unseq, beginItr, m_SparseArray.end(), beginItr, reducer);
 
-#else 
+#else
 				std::transform(beginItr, m_SparseArray.end(), beginItr, reducer);
 
 #endif
@@ -134,7 +136,7 @@ namespace inventory
 		 * @param index The index to access.
 		 * @return constexpr Type& The data reference.
 		 */
-		constexpr INV_NODISCARD Type& at(const Index& index) { return m_DenseArray[m_SparseArray[index]]; }
+		constexpr INV_NODISCARD Type &at(const Index &index) { return m_DenseArray[m_SparseArray[index]]; }
 
 		/**
 		 * @brief Get an element at a given position.
@@ -142,7 +144,7 @@ namespace inventory
 		 * @param index The index to access.
 		 * @return constexpr const Type& The data reference.
 		 */
-		constexpr INV_NODISCARD const Type& at(const Index& index) const { return m_DenseArray[m_SparseArray[index]]; }
+		constexpr INV_NODISCARD const Type &at(const Index &index) const { return m_DenseArray[m_SparseArray[index]]; }
 
 		/**
 		 * @brief Get the begin iterator.
@@ -179,7 +181,7 @@ namespace inventory
 		 * @return constexpr true if the index is present in the container.
 		 * @return constexpr false if the index is not present in the container.
 		 */
-		constexpr INV_NODISCARD bool contains(const Index& index) const
+		constexpr INV_NODISCARD bool contains(const Index &index) const
 		{
 			if (index < m_SparseArray.size())
 				return m_SparseArray[index] > invalid_index;
@@ -193,7 +195,7 @@ namespace inventory
 		 * @param index The index to access.
 		 * @return constexpr Type& The data reference.
 		 */
-		constexpr INV_NODISCARD Type& operator[](const Index& index) { return m_DenseArray[m_SparseArray[index]]; }
+		constexpr INV_NODISCARD Type &operator[](const Index &index) { return m_DenseArray[m_SparseArray[index]]; }
 
 		/**
 		 * @brief Subscript operator.
@@ -201,7 +203,7 @@ namespace inventory
 		 * @param index The index to access.
 		 * @return constexpr const Type& The data reference.
 		 */
-		constexpr INV_NODISCARD const Type& operator[](const Index& index) const { return m_DenseArray[m_SparseArray[index]]; }
+		constexpr INV_NODISCARD const Type &operator[](const Index &index) const { return m_DenseArray[m_SparseArray[index]]; }
 
 	private:
 		/**

@@ -12,10 +12,9 @@ namespace engine
 			update_component(m_Registry.get_component<camera_component>(ent));
 		}
 
-		for (auto &ent : m_Registry)
+		for (auto &component : m_Registry.query_components<position_component>())
 		{
-			if (ent.is_registered_to<position_component>())
-				update_component(m_Registry.get_component<position_component>(ent));
+			update_component(component);
 		}
 	}
 
