@@ -67,6 +67,7 @@ namespace engine
 		}
 
 		void update();
+		void update_primitive();
 
 		void update_component([[maybe_unused]] const model_component &component) const;
 		void update_component([[maybe_unused]] const camera_component &component) const;

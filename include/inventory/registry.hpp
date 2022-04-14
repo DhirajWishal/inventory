@@ -4,6 +4,7 @@
 
 #include "system.hpp"
 #include "entity_component_cache.hpp"
+#include "query.hpp"
 
 namespace inventory
 {
@@ -254,7 +255,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The query.
 		 */
 		template <class... Selection>
-		constexpr INV_NODISCARD decltype(auto) query_components()
+		constexpr INV_NODISCARD decltype(auto) query()
 		{
 			if constexpr (sizeof...(Selection) == 1)
 				return get_system<Selection...>();
@@ -280,6 +281,44 @@ namespace inventory
 
 			else if constexpr (sizeof...(Selection) > 1)
 				return m_ECCache.get_entities(std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+
+			else
+				return *this;
+		}
+
+		/**
+		 * @brief Get the query for the required components.
+		 *
+		 * @tparam Selection The required components.1
+		 * @return constexpr decltype(auto) The query.
+		 */
+		template <class... Selection>
+		constexpr INV_NODISCARD decltype(auto) query_primitive()
+		{
+			if constexpr (sizeof...(Selection) == 1)
+				return get_system<Selection...>();
+
+			else if constexpr (sizeof...(Selection) > 1)
+				return ::inventory::query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+
+			else
+				return *this;
+		}
+
+		/**
+		 * @brief Get the query for the required components.
+		 *
+		 * @tparam Selection The required components.
+		 * @return constexpr decltype(auto) The const query.
+		 */
+		template <class... Selection>
+		constexpr INV_NODISCARD decltype(auto) query_primitive() const
+		{
+			if constexpr (sizeof...(Selection) == 1)
+				return get_system<Selection...>();
+
+			else if constexpr (sizeof...(Selection) > 1)
+				return ::inventory::const_query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
 
 			else
 				return *this;

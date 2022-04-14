@@ -41,52 +41,92 @@ namespace inventory
 		/**
 		 * @brief Dereference operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator*() { return *m_Current; }
+		constexpr INV_NODISCARD value_type &operator*() { return *m_Current; }
 
 		/**
 		 * @brief Dereference operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return const value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator*() const { return *m_Current; }
+		constexpr INV_NODISCARD const value_type &operator*() const { return *m_Current; }
 
 		/**
 		 * @brief Pre-increment operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator++() { return ++m_Current; }
+		constexpr INV_NODISCARD reference operator++()
+		{
+			do
+			{
+				++m_Current;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return *this;
+		}
 
 		/**
 		 * @brief Post-increment operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator++(int) { return m_Current++; }
+		constexpr INV_NODISCARD query_iterator operator++(int)
+		{
+			auto thisCopy = *this;
+
+			do
+			{
+				m_Current++;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return thisCopy;
+		}
 
 		/**
 		 * @brief Pre-decrement operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator--() { return --m_Current; }
+		constexpr INV_NODISCARD reference operator--()
+		{
+			do
+			{
+				--m_Current;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return *this;
+		}
 
 		/**
 		 * @brief Post-decrement operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator--(int) { return m_Current--; }
+		constexpr INV_NODISCARD query_iterator operator--(int)
+		{
+			auto thisCopy = *this;
+
+			do
+			{
+				m_Current--;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return thisCopy;
+		}
 
 		/**
 		 * @brief Increment-Assign operator.
 		 *
 		 * @param number The number to add.
-		 * @return constexpr decltype(auto) The object reference.
+		 * @return constexpr reference The object reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator+=(int64_t number) { return m_Current += number; }
+		constexpr INV_NODISCARD reference operator+=(int64_t number)
+		{
+			m_Current += number;
+			*this;
+		}
 
 		friend constexpr INV_NODISCARD query_iterator operator+(const query_iterator &iterator, int64_t number);
 		friend constexpr INV_NODISCARD query_iterator operator+(int64_t number, const query_iterator &iterator);
@@ -95,9 +135,13 @@ namespace inventory
 		 * @brief Decrement-Assign operator.
 		 *
 		 * @param number The number to subtract.
-		 * @return constexpr decltype(auto) The object reference.
+		 * @return constexpr reference The object reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator-=(int64_t number) { return m_Current -= number; }
+		constexpr INV_NODISCARD reference operator-=(int64_t number)
+		{
+			m_Current -= number;
+			*this;
+		}
 
 		friend constexpr INV_NODISCARD query_iterator operator-(const query_iterator &iterator, int64_t number);
 		friend constexpr INV_NODISCARD query_iterator operator-(int64_t number, const query_iterator &iterator);
@@ -106,25 +150,25 @@ namespace inventory
 		 * @brief Get the difference between this and another iterator.
 		 *
 		 * @param other The other iterator.
-		 * @return constexpr decltype(auto) The difference.
+		 * @return constexpr difference_type The difference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator-(const query_iterator &other) const { return m_Current - other.m_Current; }
+		constexpr INV_NODISCARD difference_type operator-(const query_iterator &other) const { return m_Current - other.m_Current; }
 
 		/**
 		 * @brief Subscript operator.
 		 *
 		 * @param index The index to access.
-		 * @return constexpr decltype(auto) The value reference.
+		 * @return constexpr value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator[](const int64_t index) { return *(m_Current + index); }
+		constexpr INV_NODISCARD value_type &operator[](const int64_t index) { return *(m_Current + index); }
 
 		/**
 		 * @brief Subscript operator.
 		 *
 		 * @param index The index to access.
-		 * @return constexpr decltype(auto) The value reference.
+		 * @return constexpr value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator[](const int64_t index) const { return *(m_Current + index); }
+		constexpr INV_NODISCARD const value_type &operator[](const int64_t index) const { return *(m_Current + index); }
 
 		/**
 		 * @brief Less than operator.
@@ -170,6 +214,39 @@ namespace inventory
 		 * @return false if this iterator is equal to the other iterator.
 		 */
 		constexpr INV_NODISCARD bool operator!=(const query_iterator &iterator) const { return m_Current != iterator.m_Current; }
+
+	private:
+		/**
+		 * @brief Unpack the integer sequence and check the components.
+		 *
+		 * @tparam ComponentIndex The component index type.
+		 * @tparam ComponentIndexes The component indexes.
+		 * @param indexes The indexes to access.
+		 * @return constexpr true if the components are available in the current entity.
+		 * @return constexpr false if the components are not available in the current entity.
+		 */
+		template <class ComponentIndex, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, ComponentIndexes...> &indexes) const { return check<ComponentIndex, ComponentIndexes...>(); }
+
+		/**
+		 * @brief Check if the component index is active.
+		 *
+		 * @tparam Index The index to check.
+		 * @tparam ComponentIndexes The rest of the indexes
+		 * @return true if the current entity uses the component.
+		 * @return false if the current entity does not use the component.
+		 */
+		template <index_type ComponentIndex, ComponentIndex Index, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool check() const
+		{
+			const bool result = m_Current->template is_registered_to<Index>();
+
+			if constexpr (sizeof...(ComponentIndexes))
+				return result && check<ComponentIndex, ComponentIndexes...>();
+
+			else
+				return result;
+		}
 	};
 
 	/**
@@ -267,45 +344,85 @@ namespace inventory
 		/**
 		 * @brief Dereference operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return const value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator*() const { return *m_Current; }
+		constexpr INV_NODISCARD const value_type &operator*() const { return *m_Current; }
 
 		/**
 		 * @brief Pre-increment operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator++() { return ++m_Current; }
+		constexpr INV_NODISCARD reference operator++()
+		{
+			do
+			{
+				++m_Current;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return *this;
+		}
 
 		/**
 		 * @brief Post-increment operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator++(int) { return m_Current++; }
+		constexpr INV_NODISCARD const_query_iterator operator++(int)
+		{
+			auto thisCopy = *this;
+
+			do
+			{
+				m_Current++;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return thisCopy;
+		}
 
 		/**
 		 * @brief Pre-decrement operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator--() { return --m_Current; }
+		constexpr INV_NODISCARD reference operator--()
+		{
+			do
+			{
+				--m_Current;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return *this;
+		}
 
 		/**
 		 * @brief Post-decrement operator.
 		 *
-		 * @return decltype(auto) The value reference.
+		 * @return reference The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator--(int) { return m_Current--; }
+		constexpr INV_NODISCARD const_query_iterator operator--(int)
+		{
+			auto thisCopy = *this;
+
+			do
+			{
+				m_Current--;
+			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+
+			return thisCopy;
+		}
 
 		/**
 		 * @brief Increment-Assign operator.
 		 *
 		 * @param number The number to add.
-		 * @return constexpr decltype(auto) The object reference.
+		 * @return constexpr reference The object reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator+=(int64_t number) { return m_Current += number; }
+		constexpr INV_NODISCARD reference operator+=(int64_t number)
+		{
+			m_Current += number;
+			*this;
+		}
 
 		friend constexpr INV_NODISCARD const_query_iterator operator+(const const_query_iterator &iterator, int64_t number);
 		friend constexpr INV_NODISCARD const_query_iterator operator+(int64_t number, const const_query_iterator &iterator);
@@ -314,9 +431,13 @@ namespace inventory
 		 * @brief Decrement-Assign operator.
 		 *
 		 * @param number The number to subtract.
-		 * @return constexpr decltype(auto) The object reference.
+		 * @return constexpr reference The object reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator-=(int64_t number) { return m_Current -= number; }
+		constexpr INV_NODISCARD reference operator-=(int64_t number)
+		{
+			m_Current -= number;
+			*this;
+		}
 
 		friend constexpr INV_NODISCARD const_query_iterator operator-(const const_query_iterator &iterator, int64_t number);
 		friend constexpr INV_NODISCARD const_query_iterator operator-(int64_t number, const const_query_iterator &iterator);
@@ -325,25 +446,25 @@ namespace inventory
 		 * @brief Get the difference between this and another iterator.
 		 *
 		 * @param other The other iterator.
-		 * @return constexpr decltype(auto) The difference.
+		 * @return constexpr difference_type The difference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator-(const const_query_iterator &other) const { return m_Current - other.m_Current; }
+		constexpr INV_NODISCARD difference_type operator-(const const_query_iterator &other) const { return m_Current - other.m_Current; }
 
 		/**
 		 * @brief Subscript operator.
 		 *
 		 * @param index The index to access.
-		 * @return constexpr decltype(auto) The value reference.
+		 * @return constexpr value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator[](const int64_t index) { return *(m_Current + index); }
+		constexpr INV_NODISCARD value_type &operator[](const int64_t index) { return *(m_Current + index); }
 
 		/**
 		 * @brief Subscript operator.
 		 *
 		 * @param index The index to access.
-		 * @return constexpr decltype(auto) The value reference.
+		 * @return constexpr value_type& The value reference.
 		 */
-		constexpr INV_NODISCARD decltype(auto) operator[](const int64_t index) const { return *(m_Current + index); }
+		constexpr INV_NODISCARD const value_type &operator[](const int64_t index) const { return *(m_Current + index); }
 
 		/**
 		 * @brief Less than operator.
@@ -389,6 +510,39 @@ namespace inventory
 		 * @return false if this iterator is equal to the other iterator.
 		 */
 		constexpr INV_NODISCARD bool operator!=(const const_query_iterator &iterator) const { return m_Current != iterator.m_Current; }
+
+	private:
+		/**
+		 * @brief Unpack the integer sequence and check the components.
+		 *
+		 * @tparam ComponentIndex The component index type.
+		 * @tparam ComponentIndexes The component indexes.
+		 * @param indexes The indexes to access.
+		 * @return constexpr true if the components are available in the current entity.
+		 * @return constexpr false if the components are not available in the current entity.
+		 */
+		template <class ComponentIndex, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, ComponentIndexes...> &indexes) const { return check<ComponentIndex, ComponentIndexes...>(); }
+
+		/**
+		 * @brief Check if the component index is active.
+		 *
+		 * @tparam Index The index to check.
+		 * @tparam ComponentIndexes The rest of the indexes
+		 * @return true if the current entity uses the component.
+		 * @return false if the current entity does not use the component.
+		 */
+		template <index_type ComponentIndex, ComponentIndex Index, ComponentIndex... ComponentIndexes>
+		constexpr INV_NODISCARD bool check() const
+		{
+			const bool result = m_Current->template is_registered_to<Index>();
+
+			if constexpr (sizeof...(ComponentIndexes))
+				return result && check<ComponentIndex, ComponentIndexes...>();
+
+			else
+				return result;
+		}
 	};
 
 	/**

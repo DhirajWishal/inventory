@@ -15,7 +15,26 @@ namespace ivnt_test
 	 * @param state The benchmark state.
 	 */
 	template <int ObjectCount>
-	inline void test(benchmark::State &state)
+	inline void iteration_test_primitive(benchmark::State& state)
+	{
+		engine::engine gameEngine;
+		for (int i = 0; i < ObjectCount; i++)
+		{
+			[[maybe_unused]] auto p = engine::player(gameEngine);
+			[[maybe_unused]] auto c = engine::cat(gameEngine);
+		}
+
+		for (auto _ : state)
+			gameEngine.update_primitive();
+	}
+
+	/**
+	 * @brief Test function to test the engine.
+	 *
+	 * @param state The benchmark state.
+	 */
+	template <int ObjectCount>
+	inline void iteration_test_query(benchmark::State& state)
 	{
 		engine::engine gameEngine;
 		for (int i = 0; i < ObjectCount; i++)

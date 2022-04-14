@@ -15,7 +15,7 @@ namespace entt_test
 	 * @param state The benchmark state.
 	 */
 	template <int ObjectCount>
-	inline void test(benchmark::State &state)
+	inline void iteration_test(benchmark::State& state)
 	{
 		entity::engine gameEngine;
 		for (int i = 0; i < ObjectCount; i++)
