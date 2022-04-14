@@ -8,9 +8,6 @@ namespace engine
 	{
 		[[maybe_unused]] auto& m = create_component<model_component>();
 		[[maybe_unused]] auto& c = create_component<camera_component>();
-		[[maybe_unused]] auto& p = create_component<position_component>();
-
-		destroy_component<position_component>();
 	}
 
 	void player::update()

@@ -232,10 +232,10 @@ namespace inventory
 		 * @tparam Type The type of the indexes.
 		 * @tparam Indexes The indexes.
 		 * @param sequence The index sequence.
-		 * @return constexpr std::size_t The hash value.
+		 * @return constexpr decltype(auto) The hash value.
 		 */
 		template <class Type, Type... Indexes>
-		static constexpr INV_NODISCARD std::size_t get_component_hash([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence)
+		static constexpr INV_NODISCARD decltype(auto) get_component_hash([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence)
 		{
 			std::size_t hashValue = 0;
 			for (const auto i : std::array<uint64_t, sizeof...(Indexes)>{Indexes...})
@@ -257,12 +257,11 @@ namespace inventory
 			if constexpr (sizeof...(Selection) == 1)
 				return get_system<Selection...>();
 
+			else if constexpr (sizeof...(Selection) > 1)
+				return m_AdjacencyMap[get_component_hash(std::integer_sequence<ComponentIndex, component_index<Selection>()...>())];
+
 			else
-			{
-				const auto sequence = std::integer_sequence<ComponentIndex, component_index<Selection>()...>();
-				auto &entities = m_AdjacencyMap[get_component_hash(sequence)];
-				return query(entities.begin(), entities.end(), std::move(sequence));
-			}
+				return *this;
 		}
 
 		/**
@@ -272,17 +271,16 @@ namespace inventory
 		 * @return constexpr decltype(auto) The const query.
 		 */
 		template <class... Selection>
-		constexpr INV_NODISCARD decltype(auto) query_components() const
+		constexpr INV_NODISCARD decltype(auto) query() const
 		{
 			if constexpr (sizeof...(Selection) == 1)
 				return get_system<Selection...>();
 
+			else if constexpr (sizeof...(Selection) > 1)
+				return m_AdjacencyMap.at(get_component_hash(std::integer_sequence<ComponentIndex, component_index<Selection>()...>()));
+
 			else
-			{
-				const auto sequence = std::integer_sequence<ComponentIndex, component_index<Selection>()...>();
-				const auto &entities = m_AdjacencyMap[get_component_hash(sequence)];
-				return const_query(entities.begin(), entities.end(), std::move(sequence));
-			}
+				return *this;
 		}
 
 	private:

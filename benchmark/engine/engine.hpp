@@ -24,6 +24,7 @@ namespace engine
 	public:
 		engine() = default;
 
+		registry &get_registry() { return m_Registry; }
 		entity create_entity() { return m_Registry.create_entity(); }
 
 		template <class Component>

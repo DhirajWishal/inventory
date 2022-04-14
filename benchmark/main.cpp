@@ -3,6 +3,12 @@
 #include "engine/benchmark.hpp"
 #include "entity/benchmark.hpp"
 
+BENCHMARK(entt_test::insertion_test);
+BENCHMARK(ivnt_test::insertion_test);
+
+BENCHMARK(entt_test::deletion_test);
+BENCHMARK(ivnt_test::deletion_test);
+
 BENCHMARK(entt_test::test<1>);
 BENCHMARK(ivnt_test::test<1>);
 

@@ -6,13 +6,13 @@ namespace engine
 {
 	void engine::update()
 	{
-		for (auto &ent : m_Registry.query_components<model_component, camera_component>())
+		for (auto &ent : m_Registry.query<model_component, camera_component>())
 		{
 			update_component(m_Registry.get_component<model_component>(ent));
 			update_component(m_Registry.get_component<camera_component>(ent));
 		}
 
-		for (auto &component : m_Registry.query_components<position_component>())
+		for (auto &component : m_Registry.query<position_component>())
 		{
 			update_component(component);
 		}

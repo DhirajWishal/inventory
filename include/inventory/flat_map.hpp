@@ -52,6 +52,42 @@ namespace inventory
 		~flat_map() = default;
 
 		/**
+		 * @brief Get the value stored at a given position using the key.
+		 * This will allocate a new entry if the key does not exist within the container.
+		 *
+		 * @param key The key value to index.
+		 * @return constexpr value_type& The value type reference.
+		 */
+		constexpr INV_NODISCARD value_type &at(const key_type &key)
+		{
+			auto itr = find(key);
+
+			// If the iterator points to the end or if the keys do not match, lets make a new entry.
+			if (itr == m_Container.end() || itr->first != key)
+				itr = m_Container.insert(itr, entry_type(key, value_type()));
+
+			return itr->second;
+		}
+
+		/**
+		 * @brief Get the value stored at a given position using the key.
+		 * This will allocate a new entry if the key does not exist within the container.
+		 *
+		 * @param key The key value to index.
+		 * @return constexpr value_type& The value type reference.
+		 */
+		constexpr INV_NODISCARD const value_type &at(const key_type &key) const
+		{
+			auto itr = find(key);
+
+			// If the iterator points to the end or if the keys do not match, lets make a new entry.
+			if (itr == m_Container.end() || itr->first != key)
+				itr = m_Container.insert(itr, entry_type(key, value_type()));
+
+			return itr->second;
+		}
+
+		/**
 		 * @brief Find an iterator to where a specific key is located.
 		 *
 		 * @param key The key to check.
@@ -134,6 +170,6 @@ namespace inventory
 		constexpr INV_NODISCARD decltype(auto) size() const { return m_Container.size(); }
 
 	private:
-		container_type m_Container = {};
+		mutable container_type m_Container = {};
 	};
 }

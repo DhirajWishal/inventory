@@ -21,5 +21,7 @@ namespace entity
 		decltype(auto) get_component() const { return m_Engine.get_registry().get<Type>(m_EntityID); }
 
 		virtual void update() = 0;
+
+		entt::entity get_entity() const { return m_EntityID; }
 	};
 }
