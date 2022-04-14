@@ -3,7 +3,6 @@
 #pragma once
 
 #include "system.hpp"
-#include "entity_component_cache.hpp"
 #include "query.hpp"
 
 namespace inventory
@@ -29,7 +28,6 @@ namespace inventory
 
 		using system_container_type = std::tuple<system_type<Components>...>;
 		using entity_container_type = sparse_array<entity_type, EntityIndex>;
-		using entity_cache_container_type = entity_component_cache<component_index_type, get_component_count<Components...>()>;
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -94,16 +92,7 @@ namespace inventory
 		 * @return constexpr Component& The created component reference.
 		 */
 		template <class Component, class... Types>
-		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments)
-		{
-			auto &entity = get_entity(index);
-
-			m_ECCache.remove_entity(entity.get_bits(), index);
-			auto &component = get_system<Component>().register_entity(entity, std::forward<Types>(arguments)...);
-			m_ECCache.add_entity(entity.get_bits(), index);
-
-			return component;
-		}
+		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), std::forward<Types>(arguments)...); }
 
 		/**
 		 * @brief Unregister an entity from a system.
@@ -115,12 +104,8 @@ namespace inventory
 		constexpr void unregister_from_system(const entity_index_type index)
 		{
 			auto &entity = get_entity(index);
-
-			m_ECCache.remove_entity(entity.get_bits(), index);
 			if (entity.template is_registered_to<Component>())
 				get_system<Component>().unregister_entity(entity);
-
-			m_ECCache.add_entity(entity.get_bits(), index);
 		}
 
 		/**
@@ -243,7 +228,7 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else if constexpr (sizeof...(Selection) > 1)
-				return m_ECCache.get_entities(std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+				return ::inventory::query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
 
 			else
 				return *this;
@@ -262,44 +247,6 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else if constexpr (sizeof...(Selection) > 1)
-				return m_ECCache.get_entities(std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
-
-			else
-				return *this;
-		}
-
-		/**
-		 * @brief Get the query for the required components.
-		 *
-		 * @tparam Selection The required components.1
-		 * @return constexpr decltype(auto) The query.
-		 */
-		template <class... Selection>
-		constexpr INV_NODISCARD decltype(auto) query_primitive()
-		{
-			if constexpr (sizeof...(Selection) == 1)
-				return get_system<Selection...>();
-
-			else if constexpr (sizeof...(Selection) > 1)
-				return ::inventory::query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
-
-			else
-				return *this;
-		}
-
-		/**
-		 * @brief Get the query for the required components.
-		 *
-		 * @tparam Selection The required components.
-		 * @return constexpr decltype(auto) The const query.
-		 */
-		template <class... Selection>
-		constexpr INV_NODISCARD decltype(auto) query_primitive() const
-		{
-			if constexpr (sizeof...(Selection) == 1)
-				return get_system<Selection...>();
-
-			else if constexpr (sizeof...(Selection) > 1)
 				return ::inventory::const_query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
 
 			else
@@ -309,7 +256,6 @@ namespace inventory
 	private:
 		system_container_type m_Systems;
 		entity_container_type m_Entities;
-		entity_cache_container_type m_ECCache;
 	};
 
 	/**

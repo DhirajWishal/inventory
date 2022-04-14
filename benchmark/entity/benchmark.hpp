@@ -17,15 +17,17 @@ namespace entt_test
 	template <int ObjectCount>
 	inline void iteration_test(benchmark::State& state)
 	{
-		entity::engine gameEngine;
-		for (int i = 0; i < ObjectCount; i++)
-		{
-			[[maybe_unused]] auto p = entity::player(gameEngine);
-			[[maybe_unused]] auto c = entity::cat(gameEngine);
-		}
-
 		for (auto _ : state)
+		{
+			entity::engine gameEngine;
+			for (int i = 0; i < ObjectCount; i++)
+			{
+				[[maybe_unused]] auto p = entity::player(gameEngine);
+				[[maybe_unused]] auto c = entity::cat(gameEngine);
+			}
+
 			gameEngine.update();
+		}
 	}
 
 	/**
@@ -34,7 +36,7 @@ namespace entt_test
 	 *
 	 * @param state The state counter.
 	 */
-	inline void insertion_test(benchmark::State &state)
+	inline void insertion_test(benchmark::State& state)
 	{
 		entity::engine gameEngine;
 		for (auto _ : state)

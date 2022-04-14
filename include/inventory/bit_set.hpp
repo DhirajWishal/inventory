@@ -117,6 +117,13 @@ namespace inventory
 		constexpr INV_NODISCARD uint64_t size() const { return resolve_array_size<Bits>(); }
 
 		/**
+		 * @brief Get the indexable capacity of the internal byte array.
+		 *
+		 * @return constexpr uint64_t The capacity.
+		 */
+		constexpr INV_NODISCARD uint64_t capacity() const { return m_Bytes.size() * 8; }
+
+		/**
 		 * @brief Test a given position to check if the bit value is 1 or 0.
 		 *
 		 * @param pos The position of the bit.

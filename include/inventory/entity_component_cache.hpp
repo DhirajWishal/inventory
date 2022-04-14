@@ -160,6 +160,8 @@ namespace inventory
 						  { if (entry.first || bits) entry.second.remove(index); });
 
 #endif
+
+			// m_Cache[bits].remove(index);
 		}
 	};
 } // namespace inventory
