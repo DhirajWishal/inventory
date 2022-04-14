@@ -26,6 +26,10 @@ namespace inventory
 		template <class Component>
 		using system_type = system<Component, ComponentIndex>;
 
+		using system_container_type = std::tuple<system_type<Components>...>;
+		using entity_container_type = sparse_array<entity_type, EntityIndex>;
+		using entity_cache_container_type = entity_component_cache<component_index_type, get_component_count<Components...>()>;
+
 		/**
 		 * @brief Get the system object from the registry.
 		 *
@@ -282,10 +286,9 @@ namespace inventory
 		}
 
 	private:
-		std::tuple<system_type<Components>...> m_Systems;
-		sparse_array<entity_type, EntityIndex> m_Entities;
-		flat_map<std::size_t, flat_set<entity_index_type>> m_AdjacencyMap;
-		entity_component_cache<component_index_type, get_component_count<Components...>()> m_ECCache;
+		system_container_type m_Systems;
+		entity_container_type m_Entities;
+		entity_cache_container_type m_ECCache;
 	};
 
 	/**
