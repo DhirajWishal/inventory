@@ -3,6 +3,7 @@
 #pragma once
 
 #include "component_traits.hpp"
+#include "bit_set.hpp"
 
 #include <cassert>
 
@@ -18,7 +19,10 @@ namespace inventory
 	template <index_type ComponentIndex = default_index_type, class... Components>
 	class entity final
 	{
+		using bit_set_type = bit_set<get_component_count<Components...>()>;
+
 		std::array<ComponentIndex, get_component_count<Components...>()> m_Components = create_default_component_array<ComponentIndex, Components...>();
+		bit_set_type m_Bits; // This is used to check if a component is in use.
 
 	public:
 		/**
@@ -33,7 +37,13 @@ namespace inventory
 		 * @param index The component index.
 		 */
 		template <class Component>
-		constexpr void register_component(ComponentIndex index) { m_Components[::inventory::get_component_index<Component, Components...>()] = index; }
+		constexpr void register_component(ComponentIndex index)
+		{
+			constexpr auto pos = ::inventory::get_component_index<Component, Components...>();
+
+			m_Components[pos] = index;
+			m_Bits.toggle(pos, index != invalid_index<ComponentIndex>);
+		}
 
 		/**
 		 * @brief Register a component to this entity.
@@ -58,7 +68,7 @@ namespace inventory
 		 * @return constexpr false if this entity is not registered to the required system.
 		 */
 		template <class Component>
-		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[::inventory::get_component_index<Component, Components...>()] != invalid_index<ComponentIndex>; }
+		constexpr INV_NODISCARD bool is_registered_to() const { return m_Bits[::inventory::get_component_index<Component, Components...>()]; }
 
 		/**
 		 * @brief Check if the entity is registered to a system or not.
@@ -69,7 +79,14 @@ namespace inventory
 		 * @return constexpr false if this entity is not registered to the required system.
 		 */
 		template <ComponentIndex Index>
-		constexpr INV_NODISCARD bool is_registered_to() const { return m_Components[Index] != invalid_index<ComponentIndex>; }
+		constexpr INV_NODISCARD bool is_registered_to() const { return m_Bits[Index]; }
+
+		/**
+		 * @brief Get the bits object containing the component availability info.
+		 *
+		 * @return constexpr bit_set The bit set containing the information.
+		 */
+		constexpr decltype(auto) get_bits() const { return m_Bits; }
 
 		/**
 		 * @brief Get the component hash.

@@ -3,6 +3,11 @@
 #include "platform.hpp"
 #include <array>
 
+#ifdef INV_USE_UNSEQ
+#include <execution>
+
+#endif
+
 namespace inventory
 {
 	/**
@@ -64,6 +69,23 @@ namespace inventory
 			 * @return false if this is grater than or equal to the other.
 			 */
 			constexpr INV_NODISCARD bool operator<(const bit_field other) const { return m_Value < other.m_Value; }
+
+			/**
+			 * @brief Grater than or equal operator.
+			 *
+			 * @param other The other bit field to compare.
+			 * @return true if this is grater than or equal the other.
+			 * @return false if this is less than the other.
+			 */
+			constexpr INV_NODISCARD bool operator>=(const bit_field other) const { return m_Value >= other.m_Value; }
+
+			/**
+			 * @brief Bitwise and operator.
+			 *
+			 * @param other The other bit field.
+			 * @return constexpr uint8_t The bitwise AND value.
+			 */
+			constexpr INV_NODISCARD uint8_t operator&(const bit_field other) const { return m_Value & other.m_Value; }
 		};
 
 		/**
@@ -88,42 +110,11 @@ namespace inventory
 		constexpr bit_set() = default;
 
 		/**
-		 * @brief Access a bit in the given position.
+		 * @brief Get the size of the internal byte array.
 		 *
-		 * @param pos The position of the bit.
-		 * @return true if the bit is 1.
-		 * @return false if the bit is 0.
+		 * @return constexpr uint64_t The size.
 		 */
-		constexpr INV_NODISCARD bool &access(const uint64_t pos)
-		{
-			const auto index = pos / 8;
-			switch (pos % 8)
-			{
-			case 1:
-				return m_Bytes[index].m_B;
-
-			case 2:
-				return m_Bytes[index].m_C;
-
-			case 3:
-				return m_Bytes[index].m_D;
-
-			case 4:
-				return m_Bytes[index].m_E;
-
-			case 5:
-				return m_Bytes[index].m_F;
-
-			case 6:
-				return m_Bytes[index].m_G;
-
-			case 7:
-				return m_Bytes[index].m_H;
-
-			default:
-				return m_Bytes[index].m_A;
-			}
-		}
+		constexpr INV_NODISCARD uint64_t size() const { return resolve_array_size<Bits>(); }
 
 		/**
 		 * @brief Test a given position to check if the bit value is 1 or 0.
@@ -164,6 +155,65 @@ namespace inventory
 		}
 
 		/**
+		 * @brief Toggle a bit to true.
+		 *
+		 * @param pos The bit position to toggle.
+		 * @param value The value to set.
+		 */
+		constexpr void toggle(const uint64_t pos, const bool value)
+		{
+			const auto index = pos / 8;
+			switch (pos % 8)
+			{
+			case 1:
+				m_Bytes[index].m_B = value;
+				break;
+
+			case 2:
+				m_Bytes[index].m_C = value;
+				break;
+
+			case 3:
+				m_Bytes[index].m_D = value;
+				break;
+
+			case 4:
+				m_Bytes[index].m_E = value;
+				break;
+
+			case 5:
+				m_Bytes[index].m_F = value;
+				break;
+
+			case 6:
+				m_Bytes[index].m_G = value;
+				break;
+
+			case 7:
+				m_Bytes[index].m_H = value;
+				break;
+
+			default:
+				m_Bytes[index].m_A = value;
+				break;
+			}
+		}
+
+		/**
+		 * @brief Toggle a bit to true.
+		 *
+		 * @param pos The bit position to toggle.
+		 */
+		constexpr void toggle_true(const uint64_t pos) { toggle(pos, true); }
+
+		/**
+		 * @brief Toggle a bit to false.
+		 *
+		 * @param pos The bit position to toggle.
+		 */
+		constexpr void toggle_false(const uint64_t pos) { toggle(pos, true); }
+
+		/**
 		 * @brief Get the container that's actually holding the data.
 		 *
 		 * @return constexpr decltype(auto) The container.
@@ -177,16 +227,89 @@ namespace inventory
 		 * @return true if the bit value is 1.
 		 * @return false if the bit value is 0.
 		 */
-		constexpr INV_NODISCARD bool &operator[](const uint64_t pos) { return access(pos); }
+		constexpr INV_NODISCARD bool operator[](const uint64_t pos) const { return test(pos); }
 
 		/**
-		 * @brief Index a single bit using the position of it.
+		 * @brief Not equal to operator.
 		 *
-		 * @param pos The position to access.
-		 * @return true if the bit value is 1.
-		 * @return false if the bit value is 0.
+		 * @param other The other bit set.
+		 * @return true if this bit set is not equal to the other.
+		 * @return false if this bit set is equal to the other.
 		 */
-		constexpr INV_NODISCARD bool operator[](const uint64_t pos) const { return test(pos); }
+		constexpr INV_NODISCARD bool operator!=(const bit_set other) const
+		{
+#ifdef INV_USE_UNSEQ
+			return std::equal(std::execution::unseq, m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							  { return lhs != rhs; });
+
+#else
+			return std::equal(m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							  { return lhs != rhs; });
+
+#endif
+		}
+
+		/**
+		 * @brief Less than operator.
+		 *
+		 * @param other The other bit set.
+		 * @return true if this bit set is less than the other.
+		 * @return false if this bit set is grater than or equal to the other.
+		 */
+		constexpr INV_NODISCARD bool operator<(const bit_set other) const
+		{
+#ifdef INV_USE_UNSEQ
+			return std::equal(std::execution::unseq, m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							  { return lhs < rhs; });
+
+#else
+			return std::equal(m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							  { return lhs < rhs; });
+
+#endif
+		}
+
+		/**
+		 * @brief Logical AND operator.
+		 * This will internally perform a bitwise AND to all the bytes stored.
+		 *
+		 * @param other The other bit set.
+		 * @return true if all the bits are present.
+		 * @return false if there are no bits in common.
+		 */
+		constexpr INV_NODISCARD bool operator&&(const bit_set other) const
+		{
+#ifdef INV_USE_UNSEQ
+			return !std::equal(std::execution::unseq, m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							   { return !((lhs & rhs) == rhs.m_Value); });
+
+#else
+			return !std::equal(m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							   { return !((lhs & rhs) == rhs.m_Value); });
+
+#endif
+		}
+
+		/**
+		 * @brief Logical OR operator.
+		 * This will internally perform a bitwise AND to all the bytes stored.
+		 *
+		 * @param other The other bit set.
+		 * @return true if there is at least one bit in common.
+		 * @return false if there are no bits in common.
+		 */
+		constexpr INV_NODISCARD bool operator||(const bit_set other) const
+		{
+#ifdef INV_USE_UNSEQ
+			return !std::equal(std::execution::unseq, m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							   { return !((lhs & rhs) > 0); });
+
+#else
+			return !std::equal(m_Bytes.begin(), m_Bytes.end(), other.m_Bytes.begin(), [](const auto lhs, const auto rhs)
+							   { return !((lhs & rhs) > 0); });
+
+#endif
+		}
 
 	private:
 		std::array<bit_field, resolve_array_size<Bits>()> m_Bytes = {};

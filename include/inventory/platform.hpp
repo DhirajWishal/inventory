@@ -3,7 +3,7 @@
 #pragma once
 
 #if !defined(__APPLE__) && !defined(__MACH__)
-#	define INV_USE_PARALLEL_UNSEQ
+#	define INV_USE_UNSEQ
 
 #endif
 

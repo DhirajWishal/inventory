@@ -3,9 +3,7 @@
 #pragma once
 
 #include "system.hpp"
-#include "query.hpp"
-#include "flat_map.hpp"
-#include "flat_set.hpp"
+#include "entity_component_cache.hpp"
 
 namespace inventory
 {
@@ -95,9 +93,9 @@ namespace inventory
 		{
 			auto &entity = get_entity(index);
 
-			m_AdjacencyMap[entity.get_component_hash()].remove(index);
+			m_ECCache.remove_entity(entity.get_bits(), index);
 			auto &component = get_system<Component>().register_entity(entity, index, std::forward<Types>(arguments)...);
-			m_AdjacencyMap[entity.get_component_hash()].insert(index);
+			m_ECCache.add_entity(entity.get_bits(), index);
 
 			return component;
 		}
@@ -112,12 +110,12 @@ namespace inventory
 		constexpr void unregister_from_system(const entity_index_type index)
 		{
 			auto &entity = get_entity(index);
-			m_AdjacencyMap[entity.get_component_hash()].remove(index);
 
+			m_ECCache.remove_entity(entity.get_bits(), index);
 			if (entity.template is_registered_to<Component>())
 				get_system<Component>().unregister_entity(entity);
 
-			m_AdjacencyMap[entity.get_component_hash()].insert(index);
+			m_ECCache.add_entity(entity.get_bits(), index);
 		}
 
 		/**
@@ -258,7 +256,7 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else if constexpr (sizeof...(Selection) > 1)
-				return m_AdjacencyMap[get_component_hash(std::integer_sequence<ComponentIndex, component_index<Selection>()...>())];
+				return m_ECCache.get_entities(std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
 
 			else
 				return *this;
@@ -277,7 +275,7 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else if constexpr (sizeof...(Selection) > 1)
-				return m_AdjacencyMap.at(get_component_hash(std::integer_sequence<ComponentIndex, component_index<Selection>()...>()));
+				return m_ECCache.get_entities(std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
 
 			else
 				return *this;
@@ -287,6 +285,7 @@ namespace inventory
 		std::tuple<system_type<Components>...> m_Systems;
 		sparse_array<entity_type, EntityIndex> m_Entities;
 		flat_map<std::size_t, flat_set<entity_index_type>> m_AdjacencyMap;
+		entity_component_cache<component_index_type, get_component_count<Components...>()> m_ECCache;
 	};
 
 	/**

@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-#ifdef INV_USE_PARALLEL_UNSEQ
+#ifdef INV_USE_UNSEQ
 #	include <execution>
 
 #endif
@@ -110,7 +110,7 @@ namespace inventory
 
 				auto beginItr = m_SparseArray.begin() + index;
 
-#ifdef INV_USE_PARALLEL_UNSEQ
+#ifdef INV_USE_UNSEQ
 				std::transform(std::execution::unseq, beginItr, m_SparseArray.end(), beginItr, reducer);
 
 #else
