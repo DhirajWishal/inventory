@@ -24,7 +24,7 @@ namespace inventory
 		using entity_type = entity<ComponentIndex, Components...>;
 
 		template <class Component>
-		using system_type = system<Component, ComponentIndex, EntityIndex>;
+		using system_type = system<Component, ComponentIndex>;
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -94,7 +94,7 @@ namespace inventory
 			auto &entity = get_entity(index);
 
 			m_ECCache.remove_entity(entity.get_bits(), index);
-			auto &component = get_system<Component>().register_entity(entity, index, std::forward<Types>(arguments)...);
+			auto &component = get_system<Component>().register_entity(entity, std::forward<Types>(arguments)...);
 			m_ECCache.add_entity(entity.get_bits(), index);
 
 			return component;

@@ -22,13 +22,6 @@ namespace inventory
 	{
 	public:
 		/**
-		 * @brief Construct a new sequence not registered error object.
-		 *
-		 * @param message The message to be thrown.
-		 */
-		explicit sequence_not_registered_error(const std::string &message) : std::runtime_error(message.c_str()) {}
-
-		/**
 		 * @brief Construct a new sequence not registered error object
 		 *
 		 * @param message The message to be thrown.
@@ -137,11 +130,15 @@ namespace inventory
 		 */
 		constexpr void add_entity(const bit_set_type bits, const EntityIndex index)
 		{
-			for (auto &[set, entities] : m_Cache)
-			{
-				if (set || bits)
-					entities.insert(index);
-			}
+#ifdef INV_USE_UNSEQ
+			std::for_each(std::execution::unseq, m_Cache.begin(), m_Cache.end(), [bits, index](auto &entry)
+						  { if (entry.first || bits) entry.second.insert(index); });
+
+#else
+			std::for_each(m_Cache.begin(), m_Cache.end(), [bits, index](auto &entry)
+						  { if (entry.first || bits) entry.second.insert(index); });
+
+#endif
 
 			m_Cache[bits].insert(index);
 		}
@@ -154,11 +151,15 @@ namespace inventory
 		 */
 		constexpr void remove_entity(const bit_set_type bits, const EntityIndex index)
 		{
-			for (auto &[set, entities] : m_Cache)
-			{
-				if (set || bits)
-					entities.remove(index);
-			}
+#ifdef INV_USE_UNSEQ
+			std::for_each(std::execution::unseq, m_Cache.begin(), m_Cache.end(), [bits, index](auto &entry)
+						  { if (entry.first || bits) entry.second.remove(index); });
+
+#else
+			std::for_each(m_Cache.begin(), m_Cache.end(), [bits, index](auto &entry)
+						  { if (entry.first || bits) entry.second.remove(index); });
+
+#endif
 		}
 	};
 } // namespace inventory

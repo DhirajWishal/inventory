@@ -8,74 +8,16 @@
 namespace inventory
 {
 	/**
-	 * @brief Component storage structure.
-	 * This structure contains the actual component and its owning entity.
-	 *
-	 * @tparam Component The component type.
-	 * @tparam EntityIndex The entity index type.
-	 */
-	template <class Component, index_type EntityIndex>
-	struct component_storage final
-	{
-		Component m_Component;
-		EntityIndex m_EntityIndex;
-
-		/**
-		 * @brief Create the component storage object.
-		 *
-		 * @param component The component.
-		 * @param index The entity index.
-		 */
-		constexpr explicit component_storage(Component &&component, const EntityIndex index) : m_Component(std::move(component)), m_EntityIndex(index) {}
-
-		/**
-		 * @brief Get the component from the container.
-		 *
-		 * @return constexpr Component& The component reference.
-		 */
-		constexpr INV_NODISCARD Component &component() { return m_Component; }
-
-		/**
-		 * @brief Get the component from the container.
-		 *
-		 * @return constexpr Component& The component reference.
-		 */
-		constexpr INV_NODISCARD const Component &component() const { return m_Component; }
-
-		/**
-		 * @brief Explicit component reference operator.
-		 *
-		 * @return constexpr Component& The component reference.
-		 */
-		INV_NODISCARD operator Component &() { return m_Component; }
-
-		/**
-		 * @brief Explicit component reference operator.
-		 *
-		 * @return constexpr Component& The component reference.
-		 */
-		INV_NODISCARD operator const Component &() const { return m_Component; }
-
-		/**
-		 * @brief Get the component's entity.
-		 *
-		 * @return constexpr EntityIndex The entity index.
-		 */
-		constexpr EntityIndex entity() const { return m_EntityIndex; }
-	};
-
-	/**
 	 * @brief System class.
 	 * This class is used to store a single component type.
 	 *
 	 * @tparam Component The component type.
 	 * @tparam ComponentIndex The component index type. Default is the default_index_type.
-	 * @tparam EntityIndex The entity index type. Default is the default_index_type.
 	 */
-	template <class Component, index_type ComponentIndex = default_index_type, index_type EntityIndex = default_index_type>
+	template <class Component, index_type ComponentIndex = default_index_type>
 	class system final
 	{
-		using container = sparse_array<component_storage<Component, EntityIndex>, ComponentIndex>;
+		using container = sparse_array<Component, ComponentIndex>;
 		container m_Container;
 
 	public:
@@ -98,12 +40,12 @@ namespace inventory
 		 * @return constexpr Component& The component reference.
 		 */
 		template <class Entity, class... Types>
-		constexpr INV_NODISCARD Component &register_entity(Entity &ent, const EntityIndex index, Types &&...arguments)
+		constexpr INV_NODISCARD Component &register_entity(Entity &ent, Types &&...arguments)
 		{
-			auto result = m_Container.emplace(component_storage(Component(std::forward<Types>(arguments)...), index));
+			auto result = m_Container.emplace(std::forward<Types>(arguments)...);
 			ent.template register_component<Component>(result.first);
 
-			return result.second->component();
+			return *result.second;
 		}
 
 		/**
