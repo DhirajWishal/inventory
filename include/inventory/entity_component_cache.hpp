@@ -58,7 +58,7 @@ namespace inventory
 		 * @return false if the sequence does not exist.
 		 */
 		template <class Type, Type... Indexes>
-		constexpr decltype(auto) sequence_exists([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence) const
+		constexpr INV_NODISCARD decltype(auto) sequence_exists([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence) const
 		{
 			bit_set_type bitSet;
 			(bitSet.toggle_true(Indexes), ...);
@@ -83,7 +83,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The entities.
 		 */
 		template <class Type, Type... Indexes>
-		constexpr decltype(auto) get_entities([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence) const
+		constexpr INV_NODISCARD decltype(auto) get_entities([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence) const
 		{
 			bit_set_type bitSet;
 			(bitSet.toggle_true(Indexes), ...);
@@ -107,7 +107,7 @@ namespace inventory
 		 * @return constexpr decltype(auto) The entities.
 		 */
 		template <class Type, Type... Indexes>
-		constexpr decltype(auto) get_entities([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence)
+		constexpr INV_NODISCARD decltype(auto) get_entities([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence)
 		{
 			bit_set_type bitSet;
 			(bitSet.toggle_true(Indexes), ...);

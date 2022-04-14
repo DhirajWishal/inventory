@@ -229,24 +229,6 @@ namespace inventory
 		template <class Component>
 		static consteval INV_NODISCARD decltype(auto) component_index() { return get_component_index<Component, Components...>(); }
 
-		/**
-		 * @brief Get the component sum.
-		 *
-		 * @tparam Type The type of the indexes.
-		 * @tparam Indexes The indexes.
-		 * @param sequence The index sequence.
-		 * @return constexpr decltype(auto) The hash value.
-		 */
-		template <class Type, Type... Indexes>
-		static constexpr INV_NODISCARD decltype(auto) get_component_hash([[maybe_unused]] const std::integer_sequence<Type, Indexes...> &sequence)
-		{
-			std::size_t hashValue = 0;
-			for (const auto i : std::array<uint64_t, sizeof...(Indexes)>{Indexes...})
-				index_hash_combine(hashValue, i);
-
-			return hashValue;
-		}
-
 	public:
 		/**
 		 * @brief Get the query for the required components.
