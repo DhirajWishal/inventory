@@ -15,7 +15,7 @@ namespace ivnt_test
 	 * @param state The benchmark state.
 	 */
 	template <int ObjectCount>
-	inline void iteration_test_primitive(benchmark::State& state)
+	inline void iteration_test_primitive(benchmark::State &state)
 	{
 		engine::engine gameEngine;
 		for (int i = 0; i < ObjectCount; i++)
@@ -34,7 +34,7 @@ namespace ivnt_test
 	 * @param state The benchmark state.
 	 */
 	template <int ObjectCount>
-	inline void iteration_test_query(benchmark::State& state)
+	inline void iteration_test_query(benchmark::State &state)
 	{
 		engine::engine gameEngine;
 		for (int i = 0; i < ObjectCount; i++)
@@ -69,7 +69,7 @@ namespace ivnt_test
 	 *
 	 * @param state The state counter.
 	 */
-	inline void deletion_test(benchmark::State& state)
+	inline void deletion_test(benchmark::State &state)
 	{
 		engine::engine gameEngine;
 		for (auto _ : state)

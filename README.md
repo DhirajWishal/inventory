@@ -94,7 +94,7 @@ int main()
     entityRegistry.register_to_system<camera>(ent);
     entityRegistry.register_to_system<world>(ent);
 
-    for (auto &entity : entityRegistry.query_components<camera, world>())
+    for (auto &entity : entityRegistry.query<camera, world>())
     {
         entityRegistry.get_component<world>(entity);
         entityRegistry.get_component<camera>(entity);

@@ -228,7 +228,12 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else if constexpr (sizeof...(Selection) > 1)
-				return ::inventory::query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+			{
+				bit_set<get_component_count<Components...>()> bitset;
+				(bitset.toggle_true(component_index<Selection>()), ...);
+
+				return ::inventory::query(begin(), end(), bitset);
+			}
 
 			else
 				return *this;
@@ -247,7 +252,12 @@ namespace inventory
 				return get_system<Selection...>();
 
 			else if constexpr (sizeof...(Selection) > 1)
-				return ::inventory::const_query(begin(), end(), std::integer_sequence<ComponentIndex, component_index<Selection>()...>());
+			{
+				bit_set<get_component_count<Components...>()> bitset;
+				(bitset.toggle_true(component_index<Selection>()), ...);
+
+				return ::inventory::const_query(begin(), end(), bitset);
+			}
 
 			else
 				return *this;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "component_traits.hpp"
+#include "bit_set.hpp"
 
 namespace inventory
 {
@@ -11,14 +12,14 @@ namespace inventory
 	 * This type can be used to iterate over the required components.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The indexes of the components.
+	 * @tparam BitSet The bit set type.
 	 */
-	template <class EntityIterator, class Indexes>
+	template <class EntityIterator, class BitSet>
 	class query_iterator final
 	{
 		EntityIterator m_Current;
 		const EntityIterator m_Last;
-		Indexes m_Indexes;
+		const BitSet m_BitSet;
 
 	public:
 		using value_type = typename EntityIterator::value_type;
@@ -34,9 +35,9 @@ namespace inventory
 		 * @brief Construct a new query iterator object.
 		 *
 		 * @param current The current iterator.
-		 * @param indexes The indexes to check components.
+		 * @param bitset The bitset to check.
 		 */
-		constexpr explicit query_iterator(EntityIterator &current, const EntityIterator &last, const Indexes &indexes) : m_Current(current), m_Last(last), m_Indexes(indexes) {}
+		constexpr explicit query_iterator(EntityIterator &current, const EntityIterator &last, const BitSet bitset) : m_Current(current), m_Last(last), m_BitSet(bitset) {}
 
 		/**
 		 * @brief Dereference operator.
@@ -62,7 +63,7 @@ namespace inventory
 			do
 			{
 				++m_Current;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return *this;
 		}
@@ -79,7 +80,7 @@ namespace inventory
 			do
 			{
 				m_Current++;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return thisCopy;
 		}
@@ -94,7 +95,7 @@ namespace inventory
 			do
 			{
 				--m_Current;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return *this;
 		}
@@ -111,7 +112,7 @@ namespace inventory
 			do
 			{
 				m_Current--;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return thisCopy;
 		}
@@ -217,96 +218,72 @@ namespace inventory
 
 	private:
 		/**
-		 * @brief Unpack the integer sequence and check the components.
+		 * @brief Check if the entity's bitset contains all the values we need.
 		 *
-		 * @tparam ComponentIndex The component index type.
-		 * @tparam ComponentIndexes The component indexes.
-		 * @param indexes The indexes to access.
-		 * @return constexpr true if the components are available in the current entity.
-		 * @return constexpr false if the components are not available in the current entity.
+		 * @return true if the current entity uses the components.
+		 * @return false if the current entity does not use the components.
 		 */
-		template <class ComponentIndex, ComponentIndex... ComponentIndexes>
-		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, ComponentIndexes...> &indexes) const { return check<ComponentIndex, ComponentIndexes...>(); }
-
-		/**
-		 * @brief Check if the component index is active.
-		 *
-		 * @tparam Index The index to check.
-		 * @tparam ComponentIndexes The rest of the indexes
-		 * @return true if the current entity uses the component.
-		 * @return false if the current entity does not use the component.
-		 */
-		template <index_type ComponentIndex, ComponentIndex Index, ComponentIndex... ComponentIndexes>
-		constexpr INV_NODISCARD bool check() const
-		{
-			const bool result = m_Current->template is_registered_to<Index>();
-
-			if constexpr (sizeof...(ComponentIndexes))
-				return result && check<ComponentIndex, ComponentIndexes...>();
-
-			else
-				return result;
-		}
+		constexpr INV_NODISCARD bool check() const { return m_BitSet && m_Current->get_bits(); }
 	};
 
 	/**
 	 * @brief Friend increment operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param iterator The iterator.
 	 * @param number The number to increment.
-	 * @return constexpr query_iterator<EntityIterator, Indexes> The incremented iterator.
+	 * @return constexpr query_iterator<EntityIterator, BitSet> The incremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD query_iterator<EntityIterator, Indexes> operator+(const query_iterator<EntityIterator, Indexes> &iterator, int64_t number)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD query_iterator<EntityIterator, BitSet> operator+(const query_iterator<EntityIterator, BitSet> &iterator, int64_t number)
 	{
-		return query_iterator<EntityIterator, Indexes>(iterator.m_Current + number);
+		return query_iterator<EntityIterator, BitSet>(iterator.m_Current + number);
 	}
 
 	/**
 	 * @brief Friend increment operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param number The number to increment.
 	 * @param iterator The iterator.
-	 * @return constexpr query_iterator<EntityIterator, Indexes> The incremented iterator.
+	 * @return constexpr query_iterator<EntityIterator, BitSet> The incremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD query_iterator<EntityIterator, Indexes> operator+(int64_t number, const query_iterator<EntityIterator, Indexes> &iterator)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD query_iterator<EntityIterator, BitSet> operator+(int64_t number, const query_iterator<EntityIterator, BitSet> &iterator)
 	{
-		return query_iterator<EntityIterator, Indexes>(iterator.m_Current + number);
+		return query_iterator<EntityIterator, BitSet>(iterator.m_Current + number);
 	}
 
 	/**
 	 * @brief Friend decrement operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param iterator The iterator.
 	 * @param number The number to decrement.
-	 * @return constexpr query_iterator<EntityIterator, Indexes> The decremented iterator.
+	 * @return constexpr query_iterator<EntityIterator, BitSet> The decremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD query_iterator<EntityIterator, Indexes> operator-(const query_iterator<EntityIterator, Indexes> &iterator, int64_t number)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD query_iterator<EntityIterator, BitSet> operator-(const query_iterator<EntityIterator, BitSet> &iterator, int64_t number)
 	{
-		return query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
+		return query_iterator<EntityIterator, BitSet>(iterator.m_Current - number);
 	}
 
 	/**
 	 * @brief Friend decrement operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param number The number to decrement.
 	 * @param iterator The iterator.
-	 * @return constexpr query_iterator<EntityIterator, Indexes> The decremented iterator.
+	 * @return constexpr query_iterator<EntityIterator, BitSet> The decremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD query_iterator<EntityIterator, Indexes> operator-(int64_t number, const query_iterator<EntityIterator, Indexes> &iterator)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD query_iterator<EntityIterator, BitSet> operator-(int64_t number, const query_iterator<EntityIterator, BitSet> &iterator)
 	{
-		return query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
+		return query_iterator<EntityIterator, BitSet>(iterator.m_Current - number);
 	}
 
 	/**
@@ -314,14 +291,14 @@ namespace inventory
 	 * This type can be used to iterate over the required components.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The indexes of the components.
+	 * @tparam BitSet The bit set type.
 	 */
-	template <class EntityIterator, class Indexes>
+	template <class EntityIterator, class BitSet>
 	class const_query_iterator final
 	{
 		EntityIterator m_Current;
 		const EntityIterator m_Last;
-		Indexes m_Indexes;
+		const BitSet m_BitSet;
 
 	public:
 		using value_type = typename EntityIterator::value_type;
@@ -337,9 +314,9 @@ namespace inventory
 		 * @brief Construct a new query iterator object.
 		 *
 		 * @param current The current iterator.
-		 * @param indexes The indexes to check components.
+		 * @param bitset The bitset to check.
 		 */
-		constexpr explicit const_query_iterator(const EntityIterator &current, const EntityIterator &last, const Indexes &indexes) : m_Current(current), m_Last(last), m_Indexes(indexes) {}
+		constexpr explicit const_query_iterator(const EntityIterator &current, const EntityIterator &last, const BitSet bitset) : m_Current(current), m_Last(last), m_BitSet(bitset) {}
 
 		/**
 		 * @brief Dereference operator.
@@ -358,7 +335,7 @@ namespace inventory
 			do
 			{
 				++m_Current;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return *this;
 		}
@@ -375,7 +352,7 @@ namespace inventory
 			do
 			{
 				m_Current++;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return thisCopy;
 		}
@@ -390,7 +367,7 @@ namespace inventory
 			do
 			{
 				--m_Current;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return *this;
 		}
@@ -407,7 +384,7 @@ namespace inventory
 			do
 			{
 				m_Current--;
-			} while (m_Current != m_Last && !unpack_check(m_Indexes));
+			} while (m_Current != m_Last && check());
 
 			return thisCopy;
 		}
@@ -513,95 +490,71 @@ namespace inventory
 
 	private:
 		/**
-		 * @brief Unpack the integer sequence and check the components.
+		 * @brief Check if the entity uses the required components.
 		 *
-		 * @tparam ComponentIndex The component index type.
-		 * @tparam ComponentIndexes The component indexes.
-		 * @param indexes The indexes to access.
-		 * @return constexpr true if the components are available in the current entity.
-		 * @return constexpr false if the components are not available in the current entity.
+		 * @return true if the current entity uses the components.
+		 * @return false if the current entity does not use the components.
 		 */
-		template <class ComponentIndex, ComponentIndex... ComponentIndexes>
-		constexpr INV_NODISCARD bool unpack_check([[maybe_unused]] const std::integer_sequence<ComponentIndex, ComponentIndexes...> &indexes) const { return check<ComponentIndex, ComponentIndexes...>(); }
-
-		/**
-		 * @brief Check if the component index is active.
-		 *
-		 * @tparam Index The index to check.
-		 * @tparam ComponentIndexes The rest of the indexes
-		 * @return true if the current entity uses the component.
-		 * @return false if the current entity does not use the component.
-		 */
-		template <index_type ComponentIndex, ComponentIndex Index, ComponentIndex... ComponentIndexes>
-		constexpr INV_NODISCARD bool check() const
-		{
-			const bool result = m_Current->template is_registered_to<Index>();
-
-			if constexpr (sizeof...(ComponentIndexes))
-				return result && check<ComponentIndex, ComponentIndexes...>();
-
-			else
-				return result;
-		}
+		constexpr INV_NODISCARD bool check() const { return m_BitSet && m_Current->get_bits(); }
 	};
 
 	/**
 	 * @brief Friend increment operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param iterator The iterator.
 	 * @param number The number to increment.
-	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The incremented iterator.
+	 * @return constexpr const_query_iterator<EntityIterator, BitSet> The incremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator+(const const_query_iterator<EntityIterator, Indexes> &iterator, int64_t number)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, BitSet> operator+(const const_query_iterator<EntityIterator, BitSet> &iterator, int64_t number)
 	{
-		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current + number);
+		return const_query_iterator<EntityIterator, BitSet>(iterator.m_Current + number);
 	}
 
 	/**
 	 * @brief Friend increment operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param number The number to increment.
 	 * @param iterator The iterator.
-	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The incremented iterator.
+	 * @return constexpr const_query_iterator<EntityIterator, BitSet> The incremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator+(int64_t number, const const_query_iterator<EntityIterator, Indexes> &iterator)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, BitSet> operator+(int64_t number, const const_query_iterator<EntityIterator, BitSet> &iterator)
 	{
-		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current + number);
+		return const_query_iterator<EntityIterator, BitSet>(iterator.m_Current + number);
 	}
 
 	/**
 	 * @brief Friend decrement operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param iterator The iterator.
 	 * @param number The number to decrement.
-	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The decremented iterator.
+	 * @return constexpr const_query_iterator<EntityIterator, BitSet> The decremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator-(const const_query_iterator<EntityIterator, Indexes> &iterator, int64_t number)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, BitSet> operator-(const const_query_iterator<EntityIterator, BitSet> &iterator, int64_t number)
 	{
-		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
+		return const_query_iterator<EntityIterator, BitSet>(iterator.m_Current - number);
 	}
 
 	/**
 	 * @brief Friend decrement operator.
 	 *
 	 * @tparam EntityIterator The entity iterator type.
-	 * @tparam Indexes The component indexes.
+	 * @tparam BitSet The bit set type.
 	 * @param number The number to decrement.
 	 * @param iterator The iterator.
-	 * @return constexpr const_query_iterator<EntityIterator, Indexes> The decremented iterator.
+	 * @return constexpr const_query_iterator<EntityIterator, BitSet> The decremented iterator.
 	 */
-	template <class EntityIterator, class Indexes>
-	constexpr INV_NODISCARD const_query_iterator<EntityIterator, Indexes> operator-(int64_t number, const const_query_iterator<EntityIterator, Indexes> &iterator)
+	template <class EntityIterator, class BitSet>
+	constexpr INV_NODISCARD const_query_iterator<EntityIterator, BitSet> operator-(int64_t number, const const_query_iterator<EntityIterator, BitSet> &iterator)
 	{
-		return const_query_iterator<EntityIterator, Indexes>(iterator.m_Current - number);
+		return const_query_iterator<EntityIterator, BitSet>(iterator.m_Current - number);
 	}
 } // namespace inventory
