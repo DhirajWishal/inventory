@@ -4,6 +4,7 @@
 
 #include "system.hpp"
 #include "query.hpp"
+#include "flat_set.hpp"
 
 namespace inventory
 {
@@ -28,6 +29,9 @@ namespace inventory
 
 		using system_container_type = std::tuple<system_type<Components>...>;
 		using entity_container_type = sparse_array<entity_type, EntityIndex>;
+
+		using callback_type = std::function<void(registry &, const entity_index_type index)>;
+		using callback_container = std::array<flat_set<callback_type>, get_component_count<Components...>()>;
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -60,9 +64,9 @@ namespace inventory
 		 *
 		 * @param index The entity index.
 		 */
-		constexpr void destroy_entity(const entity_index_type &index)
+		constexpr void destroy_entity(const entity_index_type index)
 		{
-			(unregister_from_system<Components>(get_entity(index)), ...);
+			(unregister_from_system<Components>(index), ...);
 			m_Entities.remove(index);
 		}
 
@@ -92,7 +96,14 @@ namespace inventory
 		 * @return constexpr Component& The created component reference.
 		 */
 		template <class Component, class... Types>
-		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments) { return get_system<Component>().register_entity(get_entity(index), std::forward<Types>(arguments)...); }
+		constexpr INV_NODISCARD Component &register_to_system(const entity_index_type index, Types &&...arguments)
+		{
+			auto &callbacks = m_RegisterCallbacks[get_component_index<Component, Components...>()];
+			std::for_each(callbacks.begin(), callbacks.end(), [this, index](auto &callback)
+						  { callback(*this, index); });
+
+			return get_system<Component>().register_entity(get_entity(index), std::forward<Types>(arguments)...);
+		}
 
 		/**
 		 * @brief Unregister an entity from a system.
@@ -103,22 +114,13 @@ namespace inventory
 		template <class Component>
 		constexpr void unregister_from_system(const entity_index_type index)
 		{
+			auto &callbacks = m_UnregisterCallbacks[get_component_index<Component, Components...>()];
+			std::for_each(callbacks.begin(), callbacks.end(), [this, index](auto &callback)
+						  { callback(*this, index); });
+
 			auto &entity = get_entity(index);
 			if (entity.template is_registered_to<Component>())
 				get_system<Component>().unregister_entity(entity);
-		}
-
-		/**
-		 * @brief Unregister an entity from a system.
-		 *
-		 * @tparam Component The component type.
-		 * @param ent The entity reference.
-		 */
-		template <class Component>
-		constexpr void unregister_from_system(entity_type &ent)
-		{
-			if (ent.template is_registered_to<Component>())
-				get_system<Component>().unregister_entity(ent);
 		}
 
 		/**
@@ -160,6 +162,61 @@ namespace inventory
 		 */
 		template <class Component>
 		constexpr INV_NODISCARD const Component &get_component(const entity_type &ent) const { return get_system<Component>().get(ent); }
+
+	public:
+		/**
+		 * @brief Attach a callback which will be called upon registering to the component.
+		 *
+		 * @tparam Component The component type.
+		 * @param callback The callback to attach.
+		 */
+		template <class Component>
+		constexpr void attach_on_register_callback(callback_type &&callback) { m_RegisterCallbacks[get_component_index<Component, Components...>()].insert(std::move(callback)); }
+
+		/**
+		 * @brief Attach a callback which will be called upon registering to the component.
+		 *
+		 * @tparam Component The component type.
+		 * @param callback The callback to attach.
+		 */
+		template <class Component>
+		constexpr void attach_on_register_callback(const callback_type &callback) { m_RegisterCallbacks[get_component_index<Component, Components...>()].insert(callback); }
+
+		/**
+		 * @brief Detach a callback from the component.
+		 *
+		 * @tparam Component The component type.
+		 * @param callback The callback to detach.
+		 */
+		template <class Component>
+		constexpr void detach_on_register_callback(const callback_type &callback) { m_RegisterCallbacks[get_component_index<Component, Components...>()].remove(callback); }
+
+		/**
+		 * @brief Attach a callback which will be called upon unregistering to the component.
+		 *
+		 * @tparam Component The component type.
+		 * @param callback The callback to attach.
+		 */
+		template <class Component>
+		constexpr void attach_on_unregister_callback(callback_type &&callback) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].insert(std::move(callback)); }
+
+		/**
+		 * @brief Attach a callback which will be called upon unregistering to the component.
+		 *
+		 * @tparam Component The component type.
+		 * @param callback The callback to attach.
+		 */
+		template <class Component>
+		constexpr void attach_on_unregister_callback(const callback_type &callback) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].insert(callback); }
+
+		/**
+		 * @brief Detach a callback from the component.
+		 *
+		 * @tparam Component The component type.
+		 * @param callback The callback to detach.
+		 */
+		template <class Component>
+		constexpr void detach_on_unregister_callback(const callback_type &callback) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].remove(callback); }
 
 	public:
 		/**
@@ -266,6 +323,8 @@ namespace inventory
 	private:
 		system_container_type m_Systems;
 		entity_container_type m_Entities;
+		callback_container m_RegisterCallbacks;
+		callback_container m_UnregisterCallbacks;
 	};
 
 	/**

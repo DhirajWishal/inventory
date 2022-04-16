@@ -24,14 +24,18 @@ using registry = inventory::default_registry<camera, world>;
 int main()
 {
 	registry entityRegistry;
+
+	entityRegistry.attach_on_register_callback<camera>([](registry& reg, const registry::entity_index_type index) {});
+	entityRegistry.detach_on_unregister_callback<camera>([](registry& reg, const registry::entity_index_type index) {});
+
 	auto ent = entityRegistry.create_entity();
 
-	entityRegistry.register_to_system<camera>(ent);
-	entityRegistry.register_to_system<world>(ent);
+	[[maybe_unused]] auto& c = entityRegistry.register_to_system<camera>(ent);
+	[[maybe_unused]] auto& w = entityRegistry.register_to_system<world>(ent);
 
-	for (auto &entity : entityRegistry.query<camera, world>())
+	for (auto& entity : entityRegistry.query<camera, world>())
 	{
-		entityRegistry.get_component<world>(entity);
-		entityRegistry.get_component<camera>(entity);
+		[[maybe_unused]] auto& cc = entityRegistry.get_component<world>(entity);
+		[[maybe_unused]] auto& cw = entityRegistry.get_component<camera>(entity);
 	}
 }
