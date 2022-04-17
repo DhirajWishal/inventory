@@ -60,11 +60,8 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD reference operator++()
 		{
-			do
-			{
-				++m_Current;
-			} while (m_Current != m_Last && check());
-
+			while (++m_Current != m_Last && !check())
+				;
 			return *this;
 		}
 
@@ -77,11 +74,8 @@ namespace inventory
 		{
 			auto thisCopy = *this;
 
-			do
-			{
-				m_Current++;
-			} while (m_Current != m_Last && check());
-
+			while (++m_Current != m_Last && !check())
+				;
 			return thisCopy;
 		}
 
@@ -92,11 +86,8 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD reference operator--()
 		{
-			do
-			{
-				--m_Current;
-			} while (m_Current != m_Last && check());
-
+			while (--m_Current != m_Last && !check())
+				;
 			return *this;
 		}
 
@@ -109,11 +100,8 @@ namespace inventory
 		{
 			auto thisCopy = *this;
 
-			do
-			{
-				m_Current--;
-			} while (m_Current != m_Last && check());
-
+			while (--m_Current != m_Last && !check())
+				;
 			return thisCopy;
 		}
 
@@ -223,7 +211,7 @@ namespace inventory
 		 * @return true if the current entity uses the components.
 		 * @return false if the current entity does not use the components.
 		 */
-		constexpr INV_NODISCARD bool check() const { return m_BitSet && m_Current->get_bits(); }
+		constexpr INV_NODISCARD bool check() const { return m_Current->get_bits() && m_BitSet; }
 	};
 
 	/**
@@ -332,11 +320,8 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD reference operator++()
 		{
-			do
-			{
-				++m_Current;
-			} while (m_Current != m_Last && check());
-
+			while (++m_Current != m_Last && !check())
+				;
 			return *this;
 		}
 
@@ -349,11 +334,8 @@ namespace inventory
 		{
 			auto thisCopy = *this;
 
-			do
-			{
-				m_Current++;
-			} while (m_Current != m_Last && check());
-
+			while (++m_Current != m_Last && !check())
+				;
 			return thisCopy;
 		}
 
@@ -364,11 +346,8 @@ namespace inventory
 		 */
 		constexpr INV_NODISCARD reference operator--()
 		{
-			do
-			{
-				--m_Current;
-			} while (m_Current != m_Last && check());
-
+			while (--m_Current != m_Last && !check())
+				;
 			return *this;
 		}
 
@@ -381,11 +360,8 @@ namespace inventory
 		{
 			auto thisCopy = *this;
 
-			do
-			{
-				m_Current--;
-			} while (m_Current != m_Last && check());
-
+			while (--m_Current != m_Last && !check())
+				;
 			return thisCopy;
 		}
 
@@ -495,7 +471,7 @@ namespace inventory
 		 * @return true if the current entity uses the components.
 		 * @return false if the current entity does not use the components.
 		 */
-		constexpr INV_NODISCARD bool check() const { return m_BitSet && m_Current->get_bits(); }
+		constexpr INV_NODISCARD bool check() const { return m_Current->get_bits() && m_BitSet; }
 	};
 
 	/**
