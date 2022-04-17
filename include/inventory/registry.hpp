@@ -194,6 +194,14 @@ namespace inventory
 		constexpr void detach_on_register_callback(const callback_index index) { m_RegisterCallbacks[get_component_index<Component, Components...>()].remove(index); }
 
 		/**
+		 * @brief Detach all the on register callbacks from the component.
+		 *
+		 * @tparam Component The component type.
+		 */
+		template <class Component>
+		constexpr void detach_on_register_callback() { m_RegisterCallbacks[get_component_index<Component, Components...>()].clear(); }
+
+		/**
 		 * @brief Attach a callback which will be called upon unregistering to the component.
 		 *
 		 * @tparam Component The component type.
@@ -221,6 +229,14 @@ namespace inventory
 		 */
 		template <class Component>
 		constexpr void detach_on_unregister_callback(const callback_index index) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].remove(index); }
+
+		/**
+		 * @brief Detach all the on unregister callbacks from the component.
+		 *
+		 * @tparam Component The component type.
+		 */
+		template <class Component>
+		constexpr void detach_on_unregister_callback() { m_RegisterCallbacks[get_component_index<Component, Components...>()].clear(); }
 
 	public:
 		/**
