@@ -20,9 +20,11 @@ namespace engine
 	class engine final
 	{
 		registry m_Registry;
+		registry::callback_index m_ModelCallbackIndex = 0;
 
 	public:
-		engine() = default;
+		engine();
+		~engine();
 
 		registry &get_registry() { return m_Registry; }
 		entity create_entity() { return m_Registry.create_entity(); }

@@ -4,6 +4,16 @@
 
 namespace engine
 {
+	engine::engine()
+	{
+		m_ModelCallbackIndex = m_Registry.attach_on_register_callback<model_component>([](registry &reg, const entity entity) {});
+	}
+
+	engine::~engine()
+	{
+		m_Registry.detach_on_register_callback<model_component>(m_ModelCallbackIndex);
+	}
+
 	void engine::update()
 	{
 		for (auto &ent : m_Registry.query<model_component, camera_component>())

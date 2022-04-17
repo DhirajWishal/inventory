@@ -4,7 +4,6 @@
 
 #include "system.hpp"
 #include "query.hpp"
-#include "flat_set.hpp"
 
 namespace inventory
 {
@@ -30,8 +29,9 @@ namespace inventory
 		using system_container_type = std::tuple<system_type<Components>...>;
 		using entity_container_type = sparse_array<entity_type, EntityIndex>;
 
+		using callback_index = uint8_t;
 		using callback_type = std::function<void(registry &, const entity_index_type index)>;
-		using callback_container = std::array<flat_set<callback_type>, get_component_count<Components...>()>;
+		using callback_container = std::array<sparse_array<callback_type, callback_index>, get_component_count<Components...>()>;
 
 		/**
 		 * @brief Get the system object from the registry.
@@ -169,54 +169,58 @@ namespace inventory
 		 *
 		 * @tparam Component The component type.
 		 * @param callback The callback to attach.
+		 * @return callback_index The callback index of the attached callback.
 		 */
 		template <class Component>
-		constexpr void attach_on_register_callback(callback_type &&callback) { m_RegisterCallbacks[get_component_index<Component, Components...>()].insert(std::move(callback)); }
+		constexpr INV_NODISCARD callback_index attach_on_register_callback(callback_type &&callback) { return m_RegisterCallbacks[get_component_index<Component, Components...>()].emplace(std::move(callback)).first; }
 
 		/**
 		 * @brief Attach a callback which will be called upon registering to the component.
 		 *
 		 * @tparam Component The component type.
 		 * @param callback The callback to attach.
+		 * @return callback_index The callback index of the attached callback.
 		 */
 		template <class Component>
-		constexpr void attach_on_register_callback(const callback_type &callback) { m_RegisterCallbacks[get_component_index<Component, Components...>()].insert(callback); }
+		constexpr INV_NODISCARD callback_index attach_on_register_callback(const callback_type &callback) { return m_RegisterCallbacks[get_component_index<Component, Components...>()].emplace(callback).first; }
 
 		/**
 		 * @brief Detach a callback from the component.
 		 *
 		 * @tparam Component The component type.
-		 * @param callback The callback to detach.
+		 * @param index The callback index to detach.
 		 */
 		template <class Component>
-		constexpr void detach_on_register_callback(const callback_type &callback) { m_RegisterCallbacks[get_component_index<Component, Components...>()].remove(callback); }
+		constexpr void detach_on_register_callback(const callback_index index) { m_RegisterCallbacks[get_component_index<Component, Components...>()].remove(index); }
 
 		/**
 		 * @brief Attach a callback which will be called upon unregistering to the component.
 		 *
 		 * @tparam Component The component type.
 		 * @param callback The callback to attach.
+		 * @return callback_index The callback index of the attached callback.
 		 */
 		template <class Component>
-		constexpr void attach_on_unregister_callback(callback_type &&callback) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].insert(std::move(callback)); }
+		constexpr INV_NODISCARD callback_index attach_on_unregister_callback(callback_type &&callback) { return m_UnregisterCallbacks[get_component_index<Component, Components...>()].emplace(std::move(callback)).first; }
 
 		/**
 		 * @brief Attach a callback which will be called upon unregistering to the component.
 		 *
 		 * @tparam Component The component type.
 		 * @param callback The callback to attach.
+		 * @return callback_index The callback index of the attached callback.
 		 */
 		template <class Component>
-		constexpr void attach_on_unregister_callback(const callback_type &callback) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].insert(callback); }
+		constexpr INV_NODISCARD callback_index attach_on_unregister_callback(const callback_type &callback) { return m_UnregisterCallbacks[get_component_index<Component, Components...>()].emplace(callback).first; }
 
 		/**
 		 * @brief Detach a callback from the component.
 		 *
 		 * @tparam Component The component type.
-		 * @param callback The callback to detach.
+		 * @param index The callback index to detach.
 		 */
 		template <class Component>
-		constexpr void detach_on_unregister_callback(const callback_type &callback) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].remove(callback); }
+		constexpr void detach_on_unregister_callback(const callback_index index) { m_UnregisterCallbacks[get_component_index<Component, Components...>()].remove(index); }
 
 	public:
 		/**

@@ -19,8 +19,6 @@ namespace entity
 		{
 			update_component(position.get<position_component>(entity));
 		}
-
-		m_Registry.on_construct();
 	}
 
 	void engine::update_component(const model_component &component) const
