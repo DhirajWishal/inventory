@@ -34,6 +34,11 @@ namespace inventory
 		using callback_container = std::array<sparse_array<callback_type, callback_index>, get_component_count<Components...>()>;
 
 		/**
+		 * @brief Default constructor.
+		 */
+		constexpr registry() = default;
+
+		/**
 		 * @brief Get the system object from the registry.
 		 *
 		 * @tparam Component The component type.
@@ -105,6 +110,21 @@ namespace inventory
 			return get_system<Component>().register_entity(get_entity(index), std::forward<Types>(arguments)...);
 		}
 
+	private:
+		/**
+		 * @brief Unregister an entity from a system.
+		 *
+		 * @tparam Component The component type.
+		 * @param entity The entity.
+		 */
+		template <class Component>
+		constexpr void unregister_from_system(entity_type &entity)
+		{
+			if (entity.template is_registered_to<Component>())
+				get_system<Component>().unregister_entity(entity);
+		}
+
+	public:
 		/**
 		 * @brief Unregister an entity from a system.
 		 *
@@ -118,9 +138,7 @@ namespace inventory
 			std::for_each(callbacks.begin(), callbacks.end(), [this, index](auto &callback)
 						  { callback(*this, index); });
 
-			auto &entity = get_entity(index);
-			if (entity.template is_registered_to<Component>())
-				get_system<Component>().unregister_entity(entity);
+			unregister_from_system<Component>(get_entity(index));
 		}
 
 		/**
